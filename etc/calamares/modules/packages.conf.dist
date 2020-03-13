@@ -4,3 +4,4 @@ operations:
    - remove:
       - 'calamares'
       - 'calamares-settings-debian'
+      - 'live-config-dist'
