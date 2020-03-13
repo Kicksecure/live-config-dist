@@ -1,5 +1,5 @@
 #!/bin/sh
-# Creates an "Install Whonix" icon on the live session tested with:
+# Creates an "Install Whonix" or "Install Kicksecure" icon on the live session tested with:
 # Xfce, LXDE, LXqt, Gnome, KDE, Mate, Cinnamon
 
 
@@ -8,13 +8,19 @@
 mkdir -p ~/Desktop
 
 
+if test -f /usr/bin/kicksecure ; then
+   project_name="Kicksecure"
+else
+   project_name="Whonix-Host"
+fi
+
 # Among the Debian desktop environments, LXDE is the only one
 # that behaves completely different.
 if [ -f /usr/bin/lxsession ]; then
     echo "[Desktop Entry]" > ~/Desktop/install-host.desktop
     echo "Type=Link" >> ~/Desktop/install-host.desktop
-    echo "Name=Install Whonix-Host" >> ~/Desktop/install-host.desktop
-    echo "Icon=install-Whonix-Host" >> ~/Desktop/install-host.desktop
+    echo "Name=Install ${project_name}" >> ~/Desktop/install-host.desktop
+    echo "Icon=install-${project_name}" >> ~/Desktop/install-host.desktop
     echo "URL=/usr/share/applications/install-host.desktop" \
           >> ~/Desktop/install-host.desktop
 else
