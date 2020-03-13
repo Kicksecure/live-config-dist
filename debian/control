@@ -1,0 +1,25 @@
+## Copyright (C) 2012 - 2018 ENCRYPTED SUPPORT LP <adrelanos@riseup.net>
+## See the file COPYING for copying conditions.
+
+Source: whonix-libvirt
+Section: misc
+Priority: optional
+Maintainer: Patrick Schleizer <adrelanos@riseup.net>
+Build-Depends: debhelper (>= 12), genmkfile, config-package-dev
+Homepage: https://github.com/Whonix/whonix-libvirt
+Vcs-Browser: https://github.com/Whonix/whonix-libvirt
+Vcs-Git: https://github.com/Whonix/whonix-libvirt.git
+Standards-Version: 4.3.0
+
+Package: whonix-libvirt
+Architecture: all
+Depends: adduser, qemu-kvm, libvirt-daemon-system, libvirt-clients,
+ virt-manager, gir1.2-spiceclientgtk-3.0, dnsmasq-base, helper-scripts,
+ ${misc:Depends}
+Description: Whonix Libvirt XML Files for KVM and QEMU
+ Libvirt XML files for Whonix-Gateway, Whonix-Workstation,
+ Whonix-Custom-Workstation and Whonix's internal network.
+ .
+ See also:
+ - https://www.whonix.org/wiki/KVM
+ - https://www.whonix.org/wiki/QEMU
