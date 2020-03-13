@@ -4,5 +4,4 @@
 ## See the file COPYING for copying conditions.
 
 #W: live-config-dist: binary-without-manpage usr/bin/install-host
-#W: live-config-dist: binary-without-manpage usr/bin/install-host
 genmkfile_lintian_post_opts+=" --suppress-tags binary-without-manpage"
