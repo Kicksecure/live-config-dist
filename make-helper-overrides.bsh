@@ -5,3 +5,6 @@
 
 #W: live-config-dist: binary-without-manpage usr/bin/install-host
 genmkfile_lintian_post_opts+=" --suppress-tags binary-without-manpage"
+
+# I: live-config-dist: package-contains-empty-directory usr/share/live-config-dist/
+genmkfile_lintian_post_opts+=" --suppress-tags package-contains-empty-directory"
