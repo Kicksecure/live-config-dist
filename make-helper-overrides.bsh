@@ -3,6 +3,6 @@
 ## Copyright (C) 2020 - 2020 Patrick Schleizer <adrelanos@riseup.net>
 ## See the file COPYING for copying conditions.
 
-#W: whonix-libvirt: binary-without-manpage usr/bin/install-whonix-host
-#W: whonix-libvirt: binary-without-manpage usr/bin/install-whonix-host
+#W: live-config-dist: binary-without-manpage usr/bin/install-whonix-host
+#W: live-config-dist: binary-without-manpage usr/bin/install-whonix-host
 genmkfile_lintian_post_opts+=" --suppress-tags binary-without-manpage"

@@ -2,5 +2,5 @@
 ## See the file COPYING for copying conditions.
 
 version=4
-opts=filenamemangle=s/.+\/v?(\d\S+)\.tar\.gz/whonix-libvirt-$1\.tar\.gz/ \
-  https://github.com/Whonix/whonix-libvirt/tags .*/v?(\d\S+)\.tar\.gz
+opts=filenamemangle=s/.+\/v?(\d\S+)\.tar\.gz/live-config-dist-$1\.tar\.gz/ \
+  https://github.com/Whonix/live-config-dist/tags .*/v?(\d\S+)\.tar\.gz
