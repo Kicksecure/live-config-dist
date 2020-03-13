@@ -16,8 +16,8 @@ Architecture: all
 Depends: helper-scripts,
  ${misc:Depends}
 Description: calamares-settings-whonix and maybe calamares-settings-kicksecure
- Installed in Whonix-Host ISO Live.
+ Installed in Host ISO Live.
  .
- Supposed to be removed in Whonix-Host installed.
+ Supposed to be removed in Host installed.
  .
- Enables autologin for Whonix-Host ISO Live.
+ Enables autologin for Host ISO Live.
