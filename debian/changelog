@@ -1,3 +1,9 @@
+live-config-dist (3:0.3-1) unstable; urgency=medium
+
+  * New upstream version (local package).
+
+ -- Patrick Schleizer <adrelanos@riseup.net>  Fri, 13 Mar 2020 16:12:21 +0000
+
 live-config-dist (3:0.2-1) unstable; urgency=medium
 
   * New upstream version (local package).

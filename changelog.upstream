@@ -1,3 +1,33 @@
+commit 0d89e8eb73519105724ad79d3c43432a6c9271cf
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Mar 13 12:11:09 2020 -0400
+
+    readme
+
+commit 39cfefb992f77ff367a09d2b63f986919ecebedd
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Mar 13 12:09:24 2020 -0400
+
+    allow running calamares without sudo password entry
+
+commit 906ac3be5382a47f788bd5ba2b8e655bf3df2945
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Mar 13 12:05:26 2020 -0400
+
+    lintian
+
+commit bbb7342f1875c7bee5ab72da5b524e5761d5d0dd
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Mar 13 11:57:17 2020 -0400
+
+    comment
+
+commit dead61ca5ae524fb025a2236e49b44be9c6a5128
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Mar 13 11:53:59 2020 -0400
+
+    add changelog.upstream
+
 commit 321fbc4792f2fa9f86821cfcf09a308e35ba21a3
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Fri Mar 13 11:33:41 2020 -0400
