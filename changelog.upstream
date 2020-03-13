@@ -1,0 +1,108 @@
+commit 321fbc4792f2fa9f86821cfcf09a308e35ba21a3
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Mar 13 11:33:41 2020 -0400
+
+    uninstall this package (ourselves) inside chroot during calamares
+
+commit 0b77f482c7d38737419d194398d71aa6e83af76a
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Mar 13 11:32:33 2020 -0400
+
+    description
+
+commit 64f24c8d0e2fe6c2fc46115deddca656514e1cd5
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Mar 13 11:32:01 2020 -0400
+
+    work towards kicksecure support
+
+commit fa6e31c290a1e10757f013d395437f40671acb50
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Mar 13 11:26:13 2020 -0400
+
+    etc/lightdm/lightdm.conf.d/whonix-iso-autologin.conf -> etc/lightdm/lightdm.conf.d/iso-autologin.conf
+
+commit 06abf4a9f6f8208c02d26c3d6ae6012f26e38ff8
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Mar 13 11:25:39 2020 -0400
+
+    usr/share/applications/install-whonix-host.desktop -> usr/share/applications/install-host.desktop
+
+commit e50995161c39bc7b4aa3483bccb845c451b436c5
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Mar 13 11:25:02 2020 -0400
+
+    install-whonix-host -> install-host
+
+commit 096a868b1339e935fac0dbd542e233af179341da
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Mar 13 11:24:17 2020 -0400
+
+    rename to more generic name install-whonix-host -> install-host
+
+commit 38d0d9130564ec3fe914c726f729d077ff43ade4
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Mar 13 11:19:21 2020 -0400
+
+    initial packaging
+
+commit 942fa45f24b21d51e1178d8e0edbb9c97f452454
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Mar 13 11:16:06 2020 -0400
+
+    changelog
+
+commit 8eeb3212901e5bfc04976a486a1059e139d54726
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Mar 13 11:14:45 2020 -0400
+
+    rename whonix-libvirt -> live-config-dist
+
+commit 5662dbb5a0e25ecf4feb87ce81379551dc9656ce
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Mar 13 11:13:32 2020 -0400
+
+    import packaging files from package whonix-libvirt
+
+commit 5c2abdd3404747bb512cecdf6db80e372ea93a2d
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Mar 13 11:10:42 2020 -0400
+
+    enable autologin for Whonix Live Iso
+
+commit b9e5f6764d6e4c1c774ede12712d4b60e86caa71
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Mar 13 10:27:33 2020 -0400
+
+    no longer config-package-dev hide /etc/lightdm/lightdm.conf.d/whonix-autologin.conf
+    
+    because we want auto login for iso boots
+
+commit 2cc97020a2c0862a1bcd8b47a63c3657326f52b5
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Mar 13 10:23:58 2020 -0400
+
+    change displace extension from .whonix to .dist
+
+commit 573fcdef9b1bb40e911e39fe48de4493d76b29d3
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Mar 13 10:23:16 2020 -0400
+
+    change displace extension from .whonix to .dist
+
+commit 6c30439624bc9cb529552fbdd9ace155a109e050
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Mar 13 10:19:42 2020 -0400
+
+    import calamares settings for Whonix from whonix-libvirt package
+    
+    Thanks to @Onion-Knight who contriuted most of these settings earlier to
+    whonix-libvirt package.
+    
+    https://forums.whonix.org/t/whonix-host-operating-system/3931/166
+
+commit a263367b19f89a14ad1f6ef55e950c6fc4c189b2
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Mar 13 10:10:23 2020 -0400
+
+    initial commit
