@@ -27,8 +27,8 @@ $difftool /etc/calamares/settings.conf${orig_maybe} etc/calamares/settings.conf.
 
 $difftool /usr/bin/add-calamares-desktop-icon${orig_maybe} usr/bin/add-calamares-desktop-icon.dist
 
-$difftool /usr/bin/install-debian usr/bin/install-whonix-host
+$difftool /usr/bin/install-debian usr/bin/install-host
 
-$difftool /usr/share/applications/install-debian.desktop usr/share/applications/install-whonix-host.desktop
+$difftool /usr/share/applications/install-debian.desktop usr/share/applications/install-host.desktop
 
 true

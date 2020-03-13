@@ -11,15 +11,15 @@ mkdir -p ~/Desktop
 # Among the Debian desktop environments, LXDE is the only one
 # that behaves completely different.
 if [ -f /usr/bin/lxsession ]; then
-    echo "[Desktop Entry]" > ~/Desktop/install-whonix-host.desktop
-    echo "Type=Link" >> ~/Desktop/install-whonix-host.desktop
-    echo "Name=Install Whonix-Host" >> ~/Desktop/install-whonix-host.desktop
-    echo "Icon=install-Whonix-Host" >> ~/Desktop/install-whonix-host.desktop
-    echo "URL=/usr/share/applications/install-whonix-host.desktop" \
-          >> ~/Desktop/install-whonix-host.desktop
+    echo "[Desktop Entry]" > ~/Desktop/install-host.desktop
+    echo "Type=Link" >> ~/Desktop/install-host.desktop
+    echo "Name=Install Whonix-Host" >> ~/Desktop/install-host.desktop
+    echo "Icon=install-Whonix-Host" >> ~/Desktop/install-host.desktop
+    echo "URL=/usr/share/applications/install-host.desktop" \
+          >> ~/Desktop/install-host.desktop
 else
-    cp /usr/share/applications/install-whonix-host.desktop ~/Desktop
+    cp /usr/share/applications/install-host.desktop ~/Desktop
     # Xfce needs this executable otherwise it complains, everything
     # else doesn't seem to care either way.
-    chmod +x ~/Desktop/install-whonix-host.desktop
+    chmod +x ~/Desktop/install-host.desktop
 fi
