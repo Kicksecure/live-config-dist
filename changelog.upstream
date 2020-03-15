@@ -1,3 +1,19 @@
+commit 431a9afab1c286773743cb9fe5de2c0ed1014e0a
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sun Mar 15 15:01:42 2020 -0400
+
+    renamed:    usr/share/pixmaps/install-whonix-host.png -> usr/share/pixmaps/install-host.png
+    
+    https://forums.whonix.org/t/whonix-host-operating-system/3931/175
+    
+    https://github.com/Whonix/live-config-dist/pull/1
+
+commit 27e5311b6a62f765c485a14236925142b09cf8d5
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Fri Mar 13 12:12:21 2020 -0400
+
+    bumped changelog version
+
 commit 0d89e8eb73519105724ad79d3c43432a6c9271cf
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Fri Mar 13 12:11:09 2020 -0400
