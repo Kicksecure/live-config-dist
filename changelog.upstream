@@ -1,3 +1,21 @@
+commit 1cef0d3c9db3f29de7b57026c33123a945eb13ee
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Apr 2 12:28:12 2020 -0400
+
+    copyright
+
+commit fb40b5095e042db6c4ce25d3974a9537fe214f7d
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Apr 2 12:27:45 2020 -0400
+
+    add CONTRIBUTING.md COPYING
+
+commit 64ceffdc3871135dd38f796580e2a520660b0c8a
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Apr 2 07:52:06 2020 -0400
+
+    bumped changelog version
+
 commit 2b872edadae5cc673ac5312f396dcc8e58d536b2
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Thu Apr 2 07:22:38 2020 -0400
