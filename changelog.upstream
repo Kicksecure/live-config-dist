@@ -1,3 +1,41 @@
+commit 100e7ec5b8c98d0b89d567c7f8ffdb79dd30be0b
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Apr 11 18:30:32 2020 -0400
+
+    config-package-dev displace
+    
+    https://forums.whonix.org/t/whonix-host-operating-system/3931/230
+
+commit 8d2e9f61be87a85b4127bde277d2dc03c0d30a38
+Merge: fe601c0 0a9f51b
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Apr 11 17:48:43 2020 -0400
+
+    Merge remote-tracking branch 'origin/master'
+
+commit 0a9f51bae29bdc565f98e5ac566572e6f6a34f54
+Merge: fe601c0 668941c
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Apr 11 21:48:14 2020 +0000
+
+    Merge pull request #2 from onions-knight/patch-2
+    
+    Create main.py
+
+commit 668941cbc36bef941d10405b85f808498a954d3e
+Author: onions-knight <38859709+onions-knight@users.noreply.github.com>
+Date:   Fri Apr 10 13:54:48 2020 +0000
+
+    Create main.py
+    
+    Fix to allow creation of initramfs while still keeping live-boot packages. See https://forums.whonix.org/t/whonix-host-operating-system/3931/224
+
+commit fe601c0ef61d9a13c0519531312601a8e2880e92
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Apr 2 12:34:20 2020 -0400
+
+    bumped changelog version
+
 commit 1cef0d3c9db3f29de7b57026c33123a945eb13ee
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Thu Apr 2 12:28:12 2020 -0400
