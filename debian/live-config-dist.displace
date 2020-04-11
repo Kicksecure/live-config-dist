@@ -5,3 +5,6 @@
 /etc/calamares/modules/users.conf.dist
 /etc/calamares/settings.conf.dist
 /usr/bin/add-calamares-desktop-icon.dist
+
+## http://forums.whonix.org/t/whonix-host-operating-system/3931/230
+/usr/lib/x86_64-linux-gnu/calamares/modules/initramfs/main.py.dist
