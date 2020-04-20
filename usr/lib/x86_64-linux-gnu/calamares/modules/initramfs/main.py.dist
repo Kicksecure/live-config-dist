@@ -20,18 +20,14 @@
 #   along with Calamares. If not, see <http://www.gnu.org/licenses/>.
 
 from libcalamares.utils import target_env_call
-import os
-release = os.uname()[2]
-initrdname = "/boot/initrd.img-"
-fullpath = str(initrdname+str(release))
 
 def run():
     """ Generate an initramfs image.
 
     :return:
     """
-    return_code = target_env_call(["mkinitramfs", "-o", fullpath])
-
+    return_code = target_env_call(["update-initramfs.orig.initramfs-tools", "-k", "all", "-c",
+                                   "-t"])
     if return_code != 0:
         return (
             "Failed to run update-initramfs on the target",
