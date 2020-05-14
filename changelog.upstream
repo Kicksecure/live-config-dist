@@ -1,3 +1,19 @@
+commit 96b6b10c519b47eb29e21c92c01a22043077f018
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu May 14 18:46:20 2020 -0400
+
+    delete etc/modprobe.d/30_live-config-dist.conf move to whonix-libvirt
+    
+    so `options overlay metacopy=on` is set on Whonix-Host too
+    
+    https://phabricator.whonix.org/T914
+
+commit cc48ff6a5bea7980c22993001d422010d0ead07a
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu Apr 23 06:55:14 2020 -0400
+
+    bumped changelog version
+
 commit e51112a722d98372c64f3543dda0e3b75f7ccaef
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Thu Apr 23 06:39:34 2020 -0400
