@@ -7,7 +7,7 @@ Supposed to be removed in Host installed.
 Enables autologin for Host ISO Live.
 ## How to install `live-config-dist` using apt-get ##
 
-1\. Download [Whonix's Signing Key]().
+1\. Download Whonix's Signing Key.
 
 ```
 wget https://www.whonix.org/patrick.asc
