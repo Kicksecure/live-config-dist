@@ -26,6 +26,7 @@ sequence:
   - partition
   - mount
   - unpackfs
+  - sources-media
   - fstab
   - bootloader-config
   - grubcfg
@@ -34,6 +35,7 @@ sequence:
   - luksbootkeyfile
   - initramfscfg
   - initramfs
+  - sources-media-unmount
   - umount
 
 # Phase 3 - postinstall.
