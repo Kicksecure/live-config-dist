@@ -1,3 +1,48 @@
+commit c67375d9a94b22bdbb6f91cb064babba774b75d0
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Oct 27 12:31:57 2020 -0400
+
+    readme
+
+commit 7ad9f05982fe3a17738156d0f3b0ae4a96ba061e
+Merge: a852db7 7dfffb5
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Oct 27 12:31:44 2020 -0400
+
+    Merge remote-tracking branch 'github/master'
+
+commit 7dfffb5876c9022741c693fddd44d0d531997e24
+Merge: a852db7 7883908
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Oct 27 16:30:04 2020 +0000
+
+    Merge pull request #4 from onions-knight/master
+    
+    Update settings.conf.dist
+
+commit 788390812585671d575d571449176ed795e27d34
+Merge: 27e5311 12a73de
+Author: onions-knight <38859709+onions-knight@users.noreply.github.com>
+Date:   Tue Oct 27 15:25:09 2020 +0000
+
+    Merge pull request #1 from onions-knight/onions-knight-patch-1
+    
+    Update settings.conf.dist
+
+commit 12a73de45fb011291f94409950dfc452cb18f12b
+Author: onions-knight <38859709+onions-knight@users.noreply.github.com>
+Date:   Tue Oct 27 15:24:04 2020 +0000
+
+    Update settings.conf.dist
+    
+    Adding sources-media and unmount-sources-media to allow downloading of grub-efi package during efi install
+
+commit a852db7ed48c963a19ff74d276c9ac97fbc61a0f
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Thu May 14 18:51:05 2020 -0400
+
+    bumped changelog version
+
 commit 96b6b10c519b47eb29e21c92c01a22043077f018
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Thu May 14 18:46:20 2020 -0400
