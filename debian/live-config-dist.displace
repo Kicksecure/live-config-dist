@@ -3,6 +3,7 @@
 
 /etc/calamares/modules/packages.conf.dist
 /etc/calamares/modules/users.conf.dist
+/etc/calamares/modules/bootloader.conf.dist
 /etc/calamares/settings.conf.dist
 /usr/bin/add-calamares-desktop-icon.dist
 
