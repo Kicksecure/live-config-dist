@@ -1,3 +1,42 @@
+commit e53a7742b8937b172b07d30dec8342875c30d96d
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jan 23 01:42:57 2021 -0500
+
+    config-package-dev displace /etc/calamares/modules/bootloader
+    
+    https://forums.whonix.org/t/whonix-host-operating-system/3931/296
+
+commit b3b49b54cfd464a4fbeda335ade5ac9195f6dc9d
+Merge: a201616 f9ed238
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jan 23 01:07:09 2021 -0500
+
+    Merge remote-tracking branch 'gitlab-whonix/master'
+
+commit f9ed238f97f7fc3e947917baaaa55ca4ecd9d733
+Merge: a201616 20d2b3c
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Sat Jan 23 06:04:55 2021 +0000
+
+    Merge branch 'onion_knight_2-master-patch-15461' into 'master'
+    
+    Add new file bootloader.conf. Default debian calamares file, with line...
+    
+    See merge request whonix/live-config-dist!1
+
+commit 20d2b3c791878fb1f9350c0cc4706b186a973f4d
+Author: Onion Knight <onion_knight@tutanota.com>
+Date:   Fri Jan 22 14:53:10 2021 +0000
+
+    Add new file bootloader.conf. Default debian calamares file, with line "efiBootloaderId:" uncommented and added "Debian" to solve “Minimal BASH-like editing…” / “grub>” at boot.
+    See https://forums.whonix.org/t/whonix-host-operating-system/3931/296
+
+commit a201616e6da53d3aa2dae6f57504552a8d2ee701
+Author: Patrick Schleizer <adrelanos@riseup.net>
+Date:   Tue Oct 27 12:31:57 2020 -0400
+
+    bumped changelog version
+
 commit c67375d9a94b22bdbb6f91cb064babba774b75d0
 Author: Patrick Schleizer <adrelanos@riseup.net>
 Date:   Tue Oct 27 12:31:57 2020 -0400
