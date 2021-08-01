@@ -5,10 +5,10 @@ welcomeStyleCalamares: true
 strings:
     productName:         Whonix-Host GNU/Linux
     shortProductName:    Whonix-Host
-    version:             15 (buster)
+    version:             15 (bullseye)
     shortVersion:        15
-    versionedName:       Whonix-Host GNU/Linux 15
-    shortVersionedName:  Whonix-Host 15
+    versionedName:       Whonix-Host GNU/Linux 16
+    shortVersionedName:  Whonix-Host 16
     bootloaderEntryName: Whonix-Host
     productUrl:          https://whonix.org
     supportUrl:          https://www.whonix.org/wiki/Support
