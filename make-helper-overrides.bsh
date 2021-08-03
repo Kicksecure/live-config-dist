@@ -3,8 +3,8 @@
 ## Copyright (C) 2020 - 2021 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-#W: live-config-dist: binary-without-manpage usr/bin/install-host
-genmkfile_lintian_post_opts+=" --suppress-tags binary-without-manpage"
+#W: live-config-dist: no-manual-page usr/bin/install-host
+genmkfile_lintian_post_opts+=" --suppress-tags no-manual-page"
 
 # I: live-config-dist: package-contains-empty-directory usr/share/live-config-dist/
 genmkfile_lintian_post_opts+=" --suppress-tags package-contains-empty-directory"
