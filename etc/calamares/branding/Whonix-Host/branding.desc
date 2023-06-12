@@ -5,7 +5,7 @@ welcomeStyleCalamares: true
 strings:
     productName:         Whonix-Host GNU/Linux
     shortProductName:    Whonix-Host
-    version:             16 (bullseye)
+    version:             16 (bookworm)
     shortVersion:        16
     versionedName:       Whonix-Host GNU/Linux 16
     shortVersionedName:  Whonix-Host 16
