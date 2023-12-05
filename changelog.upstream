@@ -1,3 +1,43 @@
+commit 717972e0b772aed39ca710fe16a754edb01482b9
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Dec 5 13:50:10 2023 -0500
+
+    Kicksecure
+
+commit aa30e630a988775892163745608a6e14523c4f6f
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Dec 5 13:49:52 2023 -0500
+
+    Kicksecure
+
+commit d9488602b7837be936b4da924dc32efd006e44f0
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Dec 5 13:48:36 2023 -0500
+
+    Kicksecure
+
+commit 00a385b7299c463bca6b5122f2a3e59cdb80d84c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Dec 5 13:48:16 2023 -0500
+
+    Kicksecure
+
+commit dfdba6ef6341f4072699567f19fe0317577c8c0d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Dec 5 13:37:38 2023 -0500
+
+    keep hardened grub linux kernel parameters synchronized with Live ISO
+    
+    use required extra linux kernel parameters when booting from Live ISO
+    
+    https://forums.whonix.org/t/whonix-host-chainboot-boot-grub-grub-cfg-to-keep-whonix-host-iso-kernel-boot-parameters-synchronized-with-whonix-host-installed/9546
+
+commit db734b183e3f62a66543306293b19a9012c31afc
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Nov 11 20:18:17 2023 +0000
+
+    bumped changelog version
+
 commit dae753cbb0da8d5c61af858c17472d02018bc44e
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Nov 11 13:41:30 2023 -0500
