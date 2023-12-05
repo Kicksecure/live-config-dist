@@ -15,8 +15,8 @@ strings:
     releaseNotesUrl:     https://www.kicksecure.com/wiki/Changelog
 
 images:
-    productLogo:         "whonix-logo.png"
-    productIcon:         "whonix-logo.png"
+    productLogo:         "logo.png"
+    productIcon:         "logo.png"
     productWelcome:      "welcome.png"
 
 slideshow:               "show.qml"
