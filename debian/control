@@ -22,3 +22,5 @@ Description: calamares-settings-kicksecure and maybe calamares-settings-whonix
  Supposed to be removed in Host installed.
  .
  Enables autologin for Host ISO Live.
+ .
+ Kernel parameters required for Live ISO.

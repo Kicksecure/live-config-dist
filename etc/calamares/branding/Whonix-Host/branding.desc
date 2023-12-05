@@ -1,18 +1,18 @@
 ---
-componentName:   Whonix-Host
+componentName:   Kicksecure
 welcomeStyleCalamares: true
 
 strings:
-    productName:         Whonix-Host GNU/Linux
-    shortProductName:    Whonix-Host
+    productName:         Kicksecure
+    shortProductName:    Kicksecure
     version:             17 (bookworm)
     shortVersion:        17
-    versionedName:       Whonix-Host GNU/Linux 17
-    shortVersionedName:  Whonix-Host 17
-    bootloaderEntryName: Whonix-Host
-    productUrl:          https://whonix.org
-    supportUrl:          https://www.whonix.org/wiki/Support
-    releaseNotesUrl:     https://www.whonix.org/wiki/Whonix_Release_Notes
+    versionedName:       Kicksecure 17
+    shortVersionedName:  Kicksecure 17
+    bootloaderEntryName: Kicksecure
+    productUrl:          https://www.kicksecure.com
+    supportUrl:          https://www.kicksecure.com/wiki/Support
+    releaseNotesUrl:     https://www.kicksecure.com/wiki/Changelog
 
 images:
     productLogo:         "whonix-logo.png"

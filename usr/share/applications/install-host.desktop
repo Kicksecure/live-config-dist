@@ -1,11 +1,11 @@
 [Desktop Entry]
 Type=Application
 Version=1.0
-Name=Install Whonix-Host
+Name=Install to Hard Drive
 GenericName=Calamares Installer
 Exec=install-host
-Comment=Calamares - Installer for Whonix-Host Live
-Keywords=calamares;system;install;whonix;installer
+Comment=Calamares - Installer
+Keywords=calamares;system;install;installer
 Icon=install-host
 Terminal=false
 Categories=Qt;System;

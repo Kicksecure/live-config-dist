@@ -1,6 +1,6 @@
 #!/bin/sh
 ###
-# Wrapper for running calamares on Whonix-Host live media
+# Wrapper for running calamares on live media
 ###
 
 # Stale file left behind by live-build that messes with partitioning
