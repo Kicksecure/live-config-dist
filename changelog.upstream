@@ -1,3 +1,25 @@
+commit c6dec2e39e5bbfada586416fd4d388482bedc2e3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Dec 11 10:00:20 2023 -0500
+
+    pngs
+
+commit 2c6bb712d235553fd0ec84a1f638d738f6143cbf
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Dec 11 09:49:40 2023 -0500
+
+    no longer modify calamares initramfs-tools module
+    
+    because installer will be dracut based
+    
+    http://forums.whonix.org/t/whonix-host-operating-system/3931/230
+
+commit e53e3b8bf70134c1e317b83fb6250a7263b4b806
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Dec 8 19:49:10 2023 +0000
+
+    bumped changelog version
+
 commit 885ac75b3550282771caff968599b215cd107b2d
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Dec 8 14:48:50 2023 -0500
