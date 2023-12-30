@@ -1,0 +1,27 @@
+#!/bin/bash
+
+###
+## Wrapper for running calamares on live media
+###
+
+## dracut          : /run/live/medium/live/filesystem.squashfs
+## initramfs-tools?: /run/initramfs/live/LiveOS/squashfs.img
+if ! test -e /run/initramfs/live/LiveOS/squashfs.img ; then
+  mkdir --parents ln -s /run/live/medium/live
+  if test -e /run/live/medium/live/filesystem.squashfs ; then
+    ln -s /run/live/medium/live/filesystem.squashfs /run/initramfs/live/LiveOS/squashfs.img
+  fi
+fi
+
+## Stale file left behind by live-build that messes with partitioning.
+## TODO: Is this still required?
+if test -f /etc/fstab ; then
+  mv --verbose /etc/fstab /etc/fstab.orig.calamares
+fi
+
+calamares
+
+if ! test -f /etc/fstab ; then
+  ## Restore stale fstab, for what it's worth.
+  mv --verbose /etc/fstab.orig.calamares /etc/fstab
+fi
