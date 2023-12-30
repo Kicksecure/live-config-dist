@@ -1,17 +1,18 @@
 #!/bin/sh
+
 # Creates an "Install Whonix" or "Install Kicksecure" icon on the live session tested with:
 # Xfce, LXDE, LXqt, Gnome, KDE, Mate, Cinnamon
 
-
 # Create ~/Desktop just in case this runs before the xdg folder
 # creation script.
-mkdir -p ~/Desktop
+mkdir --parents ~/Desktop
 
-
-if test -f /usr/bin/kicksecure ; then
+if test -f /usr/share/kicksecure/marker ; then
    project_name="Kicksecure"
-else
+elif test -f /usr/share/whonix/marker ; then
    project_name="Whonix-Host"
+else
+   project_name="unknown-fork"
 fi
 
 # Among the Debian desktop environments, LXDE is the only one
