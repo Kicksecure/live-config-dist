@@ -2,3 +2,4 @@
 ## See the file COPYING for copying conditions.
 
 %sudo ALL=NOPASSWD: /usr/bin/calamares
+%sudo ALL=NOPASSWD: /usr/bin/install-host-root

@@ -4,11 +4,21 @@
 ## Wrapper for running calamares on live media
 ###
 
+set -x
+## TODO: error handler that uses "sleep"
+#set -e
+
+cat /etc/motd
+
+sudo --non-interactive install-host-root
+
 ## Access control to run calamares as root for xwayland
 xhost +si:localuser:root
 
-sudo --non-interactive --set-home install-host-root
-## TODO:
-#pkexec install-host-root
+pkexec calamares
 
 xhost -si:localuser:root
+
+true "Feel free to close this window."
+
+sleep 86400
