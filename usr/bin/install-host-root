@@ -8,9 +8,9 @@ set -x
 
 ## dracut          : /run/live/medium/live/filesystem.squashfs
 ## initramfs-tools?: /run/initramfs/live/LiveOS/squashfs.img
-if test -e /run/initramfs/live/LiveOS/squashfs.img ; then
-  mkdir --parents /run/live/medium/live
-  if ! test -e /run/live/medium/live/filesystem.squashfs ; then
+if test -e /run/live/medium/live/filesystem.squashfs ; then
+  if ! test -e /run/initramfs/live/LiveOS/squashfs.img ; then
+    mkdir --parents /run/initramfs/live/LiveOS
     ln -s /run/live/medium/live/filesystem.squashfs /run/initramfs/live/LiveOS/squashfs.img
   fi
 fi
