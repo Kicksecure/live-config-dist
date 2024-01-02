@@ -5,30 +5,40 @@
 
 ## Compare calamares-settings-debian with derivative calamares settings.
 
-#set -x
+set -x
 
-if [ "$difftool" = "" ]; then
-   difftool=diff
-fi
+difftool=meld
 
-if test -f /etc/calamares/modules/packages.conf.dist-orig ; then
-   orig_maybe=".dist-orig"
-fi
+dir1="/etc/calamares"
+dir2="etc/calamares"
 
-$difftool /etc/calamares/modules/packages.conf${orig_maybe} etc/calamares/modules/packages.conf.dist
+# Optional suffix for original files
+orig_maybe=".dist"
 
-$difftool /etc/calamares/modules/users.conf${orig_maybe} etc/calamares/modules/users.conf.dist
+# Function to compare files
+compare_files() {
+    local file1="$1"
+    local file2="$2"
+    $difftool ${file1} "${file2}"
+}
 
-$difftool /etc/calamares/branding/debian/branding.desc etc/calamares/branding/Kicksecure/branding.desc
+# Iterate over the files and directories within the base directory
+find "$dir1" -type f | while read -r file; do
+    # Construct the corresponding file path in the second directory
+    true "file: $file"
+    file2=${file/$dir1/$dir2}
 
-$difftool /etc/calamares/branding/debian/show.qml etc/calamares/branding/Kicksecure/show.qml
-
-$difftool /etc/calamares/settings.conf${orig_maybe} etc/calamares/settings.conf.dist
+    # Check if the corresponding file exists in the second directory
+    if [ -f "$file2" ]; then
+        compare_files "$file" "$file2${orig_maybe}"
+    fi
+    if [ -f "$file2${orig_maybe}" ]; then
+        compare_files "$file" "$file2${orig_maybe}"
+    fi
+done
 
 $difftool /usr/bin/add-calamares-desktop-icon${orig_maybe} usr/bin/add-calamares-desktop-icon.dist
-
 $difftool /usr/bin/install-debian usr/bin/install-host
-
 $difftool /usr/share/applications/install-debian.desktop usr/share/applications/install-host.desktop
 
 true
