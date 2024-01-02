@@ -37,7 +37,7 @@ find "$dir1" -type f | while read -r file; do
     fi
 done
 
-$difftool /usr/bin/add-calamares-desktop-icon${orig_maybe} usr/bin/add-calamares-desktop-icon.dist
+$difftool /usr/bin/add-calamares-desktop-icon usr/bin/add-calamares-desktop-icon.dist
 $difftool /usr/bin/install-debian usr/bin/install-host
 $difftool /usr/share/applications/install-debian.desktop usr/share/applications/install-host.desktop
 

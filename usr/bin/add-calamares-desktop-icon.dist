@@ -3,6 +3,10 @@
 # Creates an "Install Whonix" or "Install Kicksecure" icon on the live session tested with:
 # Xfce, LXDE, LXqt, Gnome, KDE, Mate, Cinnamon
 
+# We query xdg-user-dir because the Desktop directory has different
+# names for different languages
+DESKTOP=$(xdg-user-dir DESKTOP)
+
 # Create ~/Desktop just in case this runs before the xdg folder
 # creation script.
 mkdir --parents ~/Desktop
