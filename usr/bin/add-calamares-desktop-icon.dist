@@ -34,3 +34,9 @@ else
     # else doesn't seem to care either way.
     chmod +x ~/Desktop/install-host.desktop
 fi
+
+## Avoid Xfce "Untrusted application launcher"
+## https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1037299
+## https://forum.xfce.org/viewtopic.php?id=16357
+f=~/Desktop/install-host.desktop
+gio set -t string "$f" metadata::xfce-exe-checksum "$(sha256sum "$f" | awk '{print $1}')"
