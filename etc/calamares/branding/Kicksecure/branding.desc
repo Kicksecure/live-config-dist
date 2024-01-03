@@ -15,7 +15,7 @@ strings:
     releaseNotesUrl:     https://www.kicksecure.com/wiki/Changelog
 
 images:
-    productLogo:         "logo.png"
+    #productLogo:         "logo.png"
     productIcon:         "logo.png"
     productWelcome:      "welcome.png"
 
