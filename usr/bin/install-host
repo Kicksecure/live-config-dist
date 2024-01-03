@@ -8,6 +8,7 @@ set -x
 ## TODO: error handler that uses "sleep"
 #set -e
 
+## TODO
 cat /etc/motd
 
 # Allow Calamares to scale the window for hidpi displays
@@ -25,7 +26,10 @@ sudo --non-interactive install-host-root
 
 ## Access control to run calamares as root for xwayland
 xhost +si:localuser:root
-pkexec calamares
+
+## Not easy to pass extra options here. Doing so inside the wrapper.
+pkexec install-host-calamares-wrapper
+
 xhost -si:localuser:root
 
 true "Feel free to close this window."

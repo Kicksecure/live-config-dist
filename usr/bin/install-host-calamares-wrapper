@@ -1,0 +1,11 @@
+#!/bin/bash
+
+set -x
+set -e
+
+unset TMP
+unset TMPDIR
+unset TEMP
+unset TEMPDIR
+
+calamares -D8
