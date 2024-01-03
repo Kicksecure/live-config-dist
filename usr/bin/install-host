@@ -27,6 +27,11 @@ sudo --non-interactive install-host-root
 ## Access control to run calamares as root for xwayland
 xhost +si:localuser:root
 
+## Calamares has no native Wayland support yet.
+## Requires X11 or XWayland.
+## Rootless Calamares not possible yet.
+## https://github.com/calamares/calamares/issues/2268
+##
 ## Not easy to pass extra options here. Doing so inside the wrapper.
 pkexec install-host-calamares-wrapper
 
