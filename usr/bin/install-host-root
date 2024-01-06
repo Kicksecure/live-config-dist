@@ -6,6 +6,8 @@
 
 set -x
 
+true "$0: START"
+
 #ls -la /run/live/medium/live/filesystem.squashfs
 #ls -la /run/initramfs/live/LiveOS/squashfs.img
 
@@ -28,3 +30,5 @@ fi
   ## Restore stale fstab, for what it's worth.
   #mv --verbose /etc/fstab.orig.calamares /etc/fstab
 #fi
+
+true "$0: END"

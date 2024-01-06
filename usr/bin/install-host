@@ -5,6 +5,9 @@
 ###
 
 set -x
+
+true "$0: START"
+
 ## TODO: error handler that uses "sleep"
 #set -e
 
@@ -37,6 +40,7 @@ pkexec install-host-calamares-wrapper
 
 xhost -si:localuser:root
 
+true "$0: END"
 true "Feel free to close this window."
 
 sleep 86400

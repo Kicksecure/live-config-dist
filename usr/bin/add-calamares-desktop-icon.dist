@@ -3,6 +3,12 @@
 # Creates an "Install Whonix" or "Install Kicksecure" icon on the live session tested with:
 # Xfce, LXDE, LXqt, Gnome, KDE, Mate, Cinnamon
 
+set -x
+
+true "$0: START"
+
+set -e
+
 # We query xdg-user-dir because the Desktop directory has different
 # names for different languages
 DESKTOP=$(xdg-user-dir DESKTOP)
@@ -40,3 +46,5 @@ fi
 ## https://forum.xfce.org/viewtopic.php?id=16357
 f=~/Desktop/install-host.desktop
 gio set -t string "$f" metadata::xfce-exe-checksum "$(sha256sum "$f" | awk '{print $1}')"
+
+true "$0: END"

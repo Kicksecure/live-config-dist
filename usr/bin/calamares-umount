@@ -10,12 +10,12 @@
 ## umounting the temporary mounts beforehand.
 ## https://github.com/calamares/calamares/issues/1258
 
+echo "$0: START"
+
 if [ ! "$(id -u)" = "0" ]; then
   echo "$0: Must be run as root! (sudo)" >&2
   exit 1
 fi
-
-echo "$0: START"
 
 reverse_proc_mounts=$(tac /proc/mounts)
 

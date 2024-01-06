@@ -1,11 +1,22 @@
 #!/bin/bash
 
 set -x
+
+true "$0: START"
+
 set -e
 
+true "$0: INFO: calamares breaks when using libpam-tmpdir
+
+Therefore unsetting temporary files related environment variables.
+
+https://github.com/calamares/calamares/issues/2269
+"
 unset TMP
 unset TMPDIR
 unset TEMP
 unset TEMPDIR
 
 calamares -D8
+
+true "$0: END"
