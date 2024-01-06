@@ -14,7 +14,7 @@ Rules-Requires-Root: no
 
 Package: live-config-dist
 Architecture: all
-Depends: helper-scripts, pkexec, rsync, libglib2.0-bin,
+Depends: helper-scripts, pkexec, rsync, libglib2.0-bin, xdg-user-dirs,
  ${misc:Depends}
 Description: calamares-settings-kicksecure and maybe calamares-settings-whonix
  Installed in Host ISO Live.
