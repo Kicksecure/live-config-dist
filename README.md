@@ -1,10 +1,12 @@
-# calamares-settings-whonix and maybe calamares-settings-kicksecure #
+# calamares-settings-kicksecure and maybe calamares-settings-whonix #
 
 Installed in Host ISO Live.
 
 Supposed to be removed in Host installed.
 
 Enables autologin for Host ISO Live.
+
+Kernel parameters required for Live ISO.
 
 ## How to install `live-config-dist` using apt-get ##
 
