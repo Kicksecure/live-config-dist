@@ -1,3 +1,21 @@
+commit 48d87ce2a07f9de025c35d7373da70ad5a0fd882
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 25 07:36:14 2024 -0500
+
+    .
+
+commit 203229c92d6c478dffbdb15399294d323d07c04d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 25 07:10:29 2024 -0500
+
+    dracutlukscfg
+
+commit 783cd46bb1020b9f47d177a5c6e0fe41e4bd75e9
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 18 14:10:31 2024 +0000
+
+    bumped changelog version
+
 commit 2418017b921ccf66b4051fdc2fa46a15f36f02e2
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Jan 18 08:54:22 2024 -0500
