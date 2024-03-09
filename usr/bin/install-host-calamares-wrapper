@@ -6,49 +6,14 @@ true "$0: START"
 
 set -e
 
-true "$0: **Important Information for Users**
-
-**User Credentials:**
-
-- **Default Username:** user
-- **Default Password:** changeme
-
-**Please Keep This Window Open:**
-
-- **Installation Failure:** If the installation process encounters any issues, the information displayed in this window will be crucial for troubleshooting and support requests.
-- **Installation Success:** Once the installation is complete, this window might not be necessary anymore. However, it's advisable to wait until you're certain that the installation has successfully finished before closing it.
-
-**Determining the Installation Outcome:**
-
-- **Success Indicators:**
-  - Absence of error messages.
-  - The system boots into the newly installed environment without issues.
-- **Failure Indicators:**
-  - Presence of error popups.
-  - The system is unbootable.
-
-**Credits:**
-
-- The information displayed in the terminal is a from Kicksecure.
-- The graphical installer interface is powered by Calamares.
-"
-
-sleep 3
-
 ## calamares breaks when using libpam-tmpdir
 ## Therefore unsetting temporary files related environment variables.
 ## https://github.com/calamares/calamares/issues/2269
-
 unset TMP
 unset TMPDIR
 unset TEMP
 unset TEMPDIR
 
-if calamares -D8 ; then
-  true "$0: INFO: Calamares success."
-else
-  true "$0: ERROR: Calamares failure."
-fi
+calamares -D8
 
 true "$0: END"
-sleep 86400

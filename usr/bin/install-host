@@ -9,10 +9,36 @@ set -x
 true "$0: START"
 
 ## TODO: error handler that uses "sleep"
-#set -e
+set -e
 
-## TODO
-cat /etc/motd
+true "$0: **Important Information for Users**
+
+**User Credentials:**
+
+- **Default Username:** user
+- **Default Password:** changeme
+
+**Please Keep This Window Open:**
+
+- **Installation Failure:** If the installation process encounters any issues, the information displayed in this window will be crucial for troubleshooting and support requests.
+- **Installation Success:** Once the installation is complete, this window might not be necessary anymore. However, it's advisable to wait until you're certain that the installation has successfully finished before closing it.
+
+**Determining the Installation Outcome:**
+
+- **Success Indicators:**
+  - Absence of error messages.
+  - The system boots into the newly installed environment without issues.
+- **Failure Indicators:**
+  - Presence of error popups.
+  - The system is unbootable.
+
+**Credits:**
+
+- The information displayed in the terminal is a from Kicksecure.
+- The graphical installer interface is powered by Calamares.
+"
+
+sleep 3
 
 # Allow Calamares to scale the window for hidpi displays
 # This is fixed in the Calamares 3.3.0 series, so we can remove this
