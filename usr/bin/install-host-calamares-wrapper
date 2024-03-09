@@ -6,12 +6,34 @@ true "$0: START"
 
 set -e
 
-true "$0: INFO: calamares breaks when using libpam-tmpdir
+true "$0: INFO: USER INFORMATION
 
-Therefore unsetting temporary files related environment variables.
+Default username:
+user
 
-https://github.com/calamares/calamares/issues/2269
-"
+Default password:
+changeme
+
+Do not premature close this window!
+
+- If installation fails: The log will be needed for support requests.
+- If installation succeeds: You can most likely ignore this window and close it as soon as the installation has been completed.
+
+How do I know if installation succeeded or failed?
+
+- If there is no error popup, installation probably succeeded.
+- The same is true if the installed system is bootable.
+- In case there is an error popup and the system is unbootable, installation failed.
+
+credits:
+
+- The output inside this terminal has been developed by Kicksecure.
+- The graphical installer window is based on Calamares."
+
+## calamares breaks when using libpam-tmpdir
+## Therefore unsetting temporary files related environment variables.
+## https://github.com/calamares/calamares/issues/2269
+
 unset TMP
 unset TMPDIR
 unset TEMP
