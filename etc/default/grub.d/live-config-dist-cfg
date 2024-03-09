@@ -1,0 +1,20 @@
+#!/bin/sh
+
+## Copyright (C) 2024 - 2024 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## (TM) unicode sign unsupported.
+if test -f /usr/share/kicksecure/marker ; then
+  GRUB_DISTRIBUTOR="Kicksecure"
+elif test -f /usr/share/whonix/marker ; then
+  GRUB_DISTRIBUTOR="Whonix"
+else
+  GRUB_DISTRIBUTOR="derivative"
+fi
+
+GRUB_DISTRIBUTOR="$GRUB_DISTRIBUTOR ISO"
+
+if test -f /var/lib/dist-base-files/build_version ; then
+  build_version=$(cat /var/lib/dist-base-files/build_version)
+  GRUB_DISTRIBUTOR="$GRUB_DISTRIBUTOR $build_version"
+fi
