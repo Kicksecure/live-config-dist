@@ -8,7 +8,6 @@ set -x
 
 true "$0: START"
 
-## TODO: error handler that uses "sleep"
 set -e
 
 true "$0: **Important Information for Users**
@@ -39,6 +38,18 @@ true "$0: **Important Information for Users**
 "
 
 sleep 3
+
+error_handler() {
+  true "##############################"
+  true "## ERROR detected!"
+  true "## BASH_COMMAND: $BASH_COMMAND"
+  true "## Please report this bug!"
+  true "##############################"
+  sleep 86400
+  exit 1
+}
+
+trap "error_handler" ERR
 
 # Allow Calamares to scale the window for hidpi displays
 # This is fixed in the Calamares 3.3.0 series, so we can remove this
