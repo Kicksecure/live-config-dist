@@ -1,3 +1,21 @@
+commit 7f2c711122764ae3d9a49ff6d29f157dbfe154e6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Mar 9 10:25:56 2024 -0500
+
+    debugging
+
+commit 3083cfcf0c7cd2869f64c1f3eeecbdebb03cb926
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Mar 9 10:25:15 2024 -0500
+
+    remove /home/user/Desktop/install-host.desktop on package removal
+
+commit ca409044eb6de925e40bcf9b630ce9865b77043a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Mar 9 15:15:57 2024 +0000
+
+    bumped changelog version
+
 commit eafc27de0b5a399b691cb8c356c060099039e2ad
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Mar 9 10:10:40 2024 -0500
