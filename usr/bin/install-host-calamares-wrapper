@@ -33,6 +33,8 @@ true "$0: **Important Information for Users**
 - The graphical installer interface is powered by Calamares.
 "
 
+sleep 3
+
 ## calamares breaks when using libpam-tmpdir
 ## Therefore unsetting temporary files related environment variables.
 ## https://github.com/calamares/calamares/issues/2269
@@ -42,6 +44,11 @@ unset TMPDIR
 unset TEMP
 unset TEMPDIR
 
-calamares -D8
+if calamares -D8 ; then
+  true "$0: INFO: Calamares success."
+else
+  true "$0: ERROR: Calamares failure."
+fi
 
 true "$0: END"
+sleep 86400
