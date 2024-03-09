@@ -6,29 +6,32 @@ true "$0: START"
 
 set -e
 
-true "$0: INFO: USER INFORMATION
+true "$0: **Important Information for Users**
 
-Default username:
-user
+**User Credentials:**
 
-Default password:
-changeme
+- **Default Username:** user
+- **Default Password:** changeme
 
-Do not premature close this window!
+**Please Keep This Window Open:**
 
-- If installation fails: The log will be needed for support requests.
-- If installation succeeds: You can most likely ignore this window and close it as soon as the installation has been completed.
+- **Installation Failure:** If the installation process encounters any issues, the information displayed in this window will be crucial for troubleshooting and support requests.
+- **Installation Success:** Once the installation is complete, this window might not be necessary anymore. However, it's advisable to wait until you're certain that the installation has successfully finished before closing it.
 
-How do I know if installation succeeded or failed?
+**Determining the Installation Outcome:**
 
-- If there is no error popup, installation probably succeeded.
-- The same is true if the installed system is bootable.
-- In case there is an error popup and the system is unbootable, installation failed.
+- **Success Indicators:**
+  - Absence of error messages.
+  - The system boots into the newly installed environment without issues.
+- **Failure Indicators:**
+  - Presence of error popups.
+  - The system is unbootable.
 
-credits:
+**Credits:**
 
-- The output inside this terminal has been developed by Kicksecure.
-- The graphical installer window is based on Calamares."
+- The information displayed in the terminal is a from Kicksecure.
+- The graphical installer interface is powered by Calamares.
+"
 
 ## calamares breaks when using libpam-tmpdir
 ## Therefore unsetting temporary files related environment variables.
