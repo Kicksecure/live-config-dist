@@ -1,3 +1,15 @@
+commit 735cba41f7bc3075fbac3098d826b0e8756396fb
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Mar 9 10:46:42 2024 -0500
+
+    add textual string "ISO" and version number to grub boot menu
+
+commit ea6b6ead3a1ce0380ba2e1c9299914eec54807a0
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Mar 9 15:26:08 2024 +0000
+
+    bumped changelog version
+
 commit 7f2c711122764ae3d9a49ff6d29f157dbfe154e6
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Mar 9 10:25:56 2024 -0500
