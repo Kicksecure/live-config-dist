@@ -1,3 +1,15 @@
+commit 0d70cf53c4243c48b44d549edd1fc2ac8acc80e5
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Mar 9 10:52:54 2024 -0500
+
+    grub
+
+commit b688333fafffd7655b04fd2272a08d71d22e7224
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Mar 9 15:49:21 2024 +0000
+
+    bumped changelog version
+
 commit f13497cc03839b25711def6105f2d86e93546076
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Mar 9 10:49:04 2024 -0500
