@@ -1,3 +1,21 @@
+commit 0c1238f3ba74ce9f0afc5c131b3a7fc704760e32
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Mar 18 09:40:30 2024 -0400
+
+    allow running the Calamares Installer without password
+
+commit 8ca45d2e9400fd8943d2ec27482d20a755d303b5
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Mar 18 09:39:24 2024 -0400
+
+    .
+
+commit fb99889bf07d7e5878cd142555c574d71da5188d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Mar 9 15:53:09 2024 +0000
+
+    bumped changelog version
+
 commit 0d70cf53c4243c48b44d549edd1fc2ac8acc80e5
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Mar 9 10:52:54 2024 -0500
