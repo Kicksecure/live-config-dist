@@ -1,3 +1,17 @@
+commit 9d25d89fb9628bf0f84c2877df3a754f0bdfabee
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Apr 1 07:28:14 2024 -0400
+
+    unencrypted /boot
+    
+    https://forums.kicksecure.com/t/iso-change-to-unencrypted-boot-if-using-full-disk-encryption/420
+
+commit 0f9d6c0bfcb2b786c26dd0dd774017f31b4453f1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Mar 18 14:01:18 2024 +0000
+
+    bumped changelog version
+
 commit 0c1238f3ba74ce9f0afc5c131b3a7fc704760e32
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Mar 18 09:40:30 2024 -0400
