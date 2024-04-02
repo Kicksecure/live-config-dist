@@ -1,3 +1,15 @@
+commit 0f6a660b96ca0a0dcebe9efe3aea51c1bebb5c96
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Apr 1 10:13:29 2024 -0400
+
+    unencrypted /boot
+
+commit df21d47e189097d0823056aa0d4a6b683433506d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Apr 1 11:48:46 2024 +0000
+
+    bumped changelog version
+
 commit 9d25d89fb9628bf0f84c2877df3a754f0bdfabee
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Apr 1 07:28:14 2024 -0400
