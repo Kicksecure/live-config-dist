@@ -1,3 +1,21 @@
+commit 48a543c6e054b3407dcac3ab15c2cc4df4da1eab
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Apr 7 04:02:19 2024 -0400
+
+    .
+
+commit d1eed217601de5d0fc0a1733fd7b6d9b0fee68ea
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Apr 7 04:01:02 2024 -0400
+
+    https://forums.kicksecure.com/t/add-iso-and-version-number-to-boot-menu-of-iso/417
+
+commit 829b009d77a3ac4585a3337360c67a28b2eae36e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Apr 2 09:48:09 2024 +0000
+
+    bumped changelog version
+
 commit 0f6a660b96ca0a0dcebe9efe3aea51c1bebb5c96
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Apr 1 10:13:29 2024 -0400
