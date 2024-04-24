@@ -1,3 +1,51 @@
+commit b1e4481256bf9e6e998da1ffae67a2f4a61a309b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 24 16:52:29 2024 -0400
+
+    make diff-helper work if package has been installed
+
+commit 6a22341878c098b09e4e385a774af91381be9116
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 24 15:24:59 2024 -0400
+
+    different Xfce background image for ISO
+    
+    config-package-dev displace /etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml
+
+commit b421b44fc676fa97a548ca99844721a23170270a
+Merge: cb16b5f 50e70b6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 24 15:14:08 2024 -0400
+
+    Merge remote-tracking branch 'grass/wallpaper-placeholder'
+
+commit 50e70b67eaded153d32f6ef6c79cc9e560abf8b6
+Author: grass <grass@danwin1210.de>
+Date:   Wed Apr 24 13:07:11 2024 +0000
+
+    Fix icon path not being recognized
+
+commit 2d1dfd8f7579b05cee538fc3ec4007904f0d6a93
+Author: grass <grass@danwin1210.de>
+Date:   Wed Apr 24 12:45:09 2024 +0000
+
+    Use lock icon for Calamares installer
+    
+    Whonix image removed as it isn't referenced. On icon-pack-dist, Whonix
+    icons were also added and can be referenced later on.
+
+commit d01c6ed1a84533a174f2529580d55dbbb01e6616
+Author: grass <grass@danwin1210.de>
+Date:   Wed Apr 24 12:28:42 2024 +0000
+
+    Add Xfce wallpaper placeholder
+
+commit cb16b5f41bf2e3a38e81d22fb52083a9d36513af
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Apr 7 08:02:42 2024 +0000
+
+    bumped changelog version
+
 commit 48a543c6e054b3407dcac3ab15c2cc4df4da1eab
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Apr 7 04:02:19 2024 -0400
