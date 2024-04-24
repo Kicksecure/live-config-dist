@@ -1,0 +1,5 @@
+## Copyright (C) 2024 - 2024 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## The whole point of the package.
+live-config-dist: package-contains-file-in-etc-skel [etc/skel/*]

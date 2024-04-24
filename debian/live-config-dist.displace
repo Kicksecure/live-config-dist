@@ -6,3 +6,5 @@
 /etc/calamares/modules/bootloader.conf.dist
 /etc/calamares/settings.conf.dist
 /usr/bin/add-calamares-desktop-icon.dist
+
+/etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml.dist
