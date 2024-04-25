@@ -1,3 +1,35 @@
+commit 35b0d77a37cd8d2675c2da2ada401e6e900b59ec
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Apr 25 09:09:03 2024 -0400
+
+    copyright
+
+commit e99c3806748182034eccc68ade98a49f89cfcd69
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Apr 25 09:02:39 2024 -0400
+
+    add firmware menu entry to grub ISO boot menu on EFI systems
+
+commit 1fb15df463a565bd586026b4c76aeef25e7cf0f0
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Apr 25 08:26:23 2024 -0400
+
+    change Live ISO background image
+    
+    Due to different monitor names file
+    /etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml
+    cannot list them all.
+    Avoid the confusing Xfce logo, default image by hiding Xfce's default
+    background image file.
+    
+    config-package-dev hide /usr/share/backgrounds/xfce/xfce-shapes.svg
+
+commit 0033965ccda579ec4ce27ffb7b1f136d53d382b8
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 24 21:51:59 2024 +0000
+
+    bumped changelog version
+
 commit b1e4481256bf9e6e998da1ffae67a2f4a61a309b
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Apr 24 16:52:29 2024 -0400
