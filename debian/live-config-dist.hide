@@ -5,3 +5,10 @@
 
 ## Sets favorite apps and disabled screen lock. We don't want that.
 /usr/share/glib-2.0/schemas/96_calamares-settings-debian.gschema.override
+
+## Due to different monitor names file
+## /etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml
+## cannot list them all.
+## Avoid the confusing Xfce logo, default image by hiding Xfce's default
+## background image file.
+/usr/share/backgrounds/xfce/xfce-shapes.svg
