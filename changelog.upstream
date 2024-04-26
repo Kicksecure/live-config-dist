@@ -1,3 +1,18 @@
+commit 9cb8ecd174e3c0002a28056776c9e91d54a1a2b7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Apr 25 20:35:52 2024 -0400
+
+    fix, no longer set efiBootloaderId: "debian"
+    
+    to avoid conflict with Debian installations on internal hard drive
+    when installing Kicksecure to an external hard drive
+
+commit d47ac6187c233a3766c2264171d92ff391699aad
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Apr 25 13:20:58 2024 +0000
+
+    bumped changelog version
+
 commit 35b0d77a37cd8d2675c2da2ada401e6e900b59ec
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Apr 25 09:09:03 2024 -0400
