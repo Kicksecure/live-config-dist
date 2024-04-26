@@ -43,7 +43,11 @@ efiBootMgr: "efibootmgr"
 # setting the option here, keep in mind that the name is sanitized
 # (problematic characters, see above, are replaced).
 #
-efiBootloaderId: "debian"
+## Not a good idea to set this to "debian'. The rationle was to do this for
+## better compatibility. But this will cause a conflict when Debian is
+## installed on the internal hard drive and the user is installing on an
+## external hard drive.
+#efiBootloaderId: "debian"
 
 # Optionally install a copy of the GRUB EFI bootloader as the EFI
 # fallback loader (either bootia32.efi or bootx64.efi depending on
