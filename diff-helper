@@ -43,6 +43,9 @@ find "$dir1" -type f | while read -r file; do
     if [ -f "./$file2" ]; then
         compare_files "$file" "${file2}"
     fi
+    if [ -f "./${file2}.dist" ]; then
+        compare_files "$file" "${file2}.dist"
+    fi
 done
 
 compare_files /usr/bin/add-calamares-desktop-icon usr/bin/add-calamares-desktop-icon.dist
