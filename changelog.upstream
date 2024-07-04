@@ -1,3 +1,31 @@
+commit d5710a2ea552a56d1f0f2c422a85da1e086e104b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jul 4 08:05:22 2024 -0400
+
+    remove `sources-media` module
+    
+    because this runs `apt-get update` which times out after 500 seconds if there is no network connection during the installer
+    
+    This is to speed up installation when no network has been set up.
+
+commit 23da119181e11e883edc03978a3b54d05ab894a1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jul 4 07:47:19 2024 -0400
+
+    diff-helper
+
+commit 20f65b08c871b6d995d6990171acd1ac07bc9202
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jul 4 07:43:46 2024 -0400
+
+    output
+
+commit 1ee772978da50f01abe54a77e6884786600363d8
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Apr 26 00:36:33 2024 +0000
+
+    bumped changelog version
+
 commit 9cb8ecd174e3c0002a28056776c9e91d54a1a2b7
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Apr 25 20:35:52 2024 -0400
