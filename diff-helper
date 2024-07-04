@@ -25,7 +25,7 @@ compare_files() {
 
 # Iterate over the files and directories within the base directory
 find "$dir1" -type f | while read -r file; do
-    true "-----"
+    true "------------------------------------------------------------"
     # Construct the corresponding file path in the second directory
     true "file: $file"
 
