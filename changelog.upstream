@@ -1,3 +1,17 @@
+commit c7f26298e1046f32421d9b2512dd01b500b6c777
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jul 5 10:42:25 2024 -0400
+
+    no longer hiding `/usr/share/backgrounds/xfce/xfce-shapes.svg` in live-config-dist
+    
+    doing that in desktop-config-dist instead
+
+commit ae6a8e762a8a061a6cef5c872fc813129c45271e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jul 5 14:15:14 2024 +0000
+
+    bumped changelog version
+
 commit 751d0ce4122548c3262e5d251609897d99e5549e
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Jul 4 08:23:53 2024 -0400
