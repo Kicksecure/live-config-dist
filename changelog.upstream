@@ -1,3 +1,15 @@
+commit 751d0ce4122548c3262e5d251609897d99e5549e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jul 4 08:23:53 2024 -0400
+
+    change grub boot menu text "ISO" -> "Live ISO"
+
+commit afe82cbe553cd2eb39f9a58015788de11b503c1e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jul 4 12:21:20 2024 +0000
+
+    bumped changelog version
+
 commit d5710a2ea552a56d1f0f2c422a85da1e086e104b
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Jul 4 08:05:22 2024 -0400
