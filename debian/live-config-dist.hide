@@ -11,4 +11,5 @@
 ## cannot list them all.
 ## Avoid the confusing Xfce logo, default image by hiding Xfce's default
 ## background image file.
-/usr/share/backgrounds/xfce/xfce-shapes.svg
+## Disabled here. Doing it in desktop-config-dist instead.
+#/usr/share/backgrounds/xfce/xfce-shapes.svg
