@@ -1,3 +1,9 @@
+live-config-dist (3:5.6-6) bookworm; urgency=medium
+
+  * New upstream version (local package).
+
+ -- Aaron Rainbolt <arraybolt3@ubuntu.com>  Tue, 16 Jul 2024 15:22:57 -0500
+
 live-config-dist (3:5.5-1) unstable; urgency=medium
 
   * New upstream version (local package).

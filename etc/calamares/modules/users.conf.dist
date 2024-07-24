@@ -6,3 +6,11 @@ defaultGroups:
 autologinGroup: autologin
 sudoersGroup: sudo
 setRootPassword: false
+
+presets:
+    fullName:
+        value: "User"
+        editable: false
+    loginName:
+        value: "user"
+        editable: false
