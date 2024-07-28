@@ -1,3 +1,23 @@
+commit a07035d4bc78454b311ab94caedb9d497c574238
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Jul 28 19:14:31 2024 -0400
+
+    passwordless
+
+commit a08bfeaff9ad9b1cf55c0f68f3bb5abc7fab5f9b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Jul 28 18:29:22 2024 -0400
+
+    removed autologin
+    
+    because now in usability-misc
+
+commit de0ea854e21f56c3b79110809f3dc1be7eb8b726
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jul 5 14:46:54 2024 +0000
+
+    bumped changelog version
+
 commit c7f26298e1046f32421d9b2512dd01b500b6c777
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Jul 5 10:42:25 2024 -0400
