@@ -1,3 +1,15 @@
+commit 5bb9f25a306a6f93c5266faf81cfbcd0c43d2cda
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jul 31 08:19:48 2024 -0400
+
+    rm_conffile
+
+commit f59e159839a0338a372a1f7b893f08ae607753f4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Jul 28 23:20:25 2024 +0000
+
+    bumped changelog version
+
 commit a07035d4bc78454b311ab94caedb9d497c574238
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Jul 28 19:14:31 2024 -0400
