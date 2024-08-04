@@ -39,7 +39,6 @@ sequence:
   - locale
   - keyboard
   - localecfg
-  - displaymanager
   - bootloader-config
   - grubcfg
   - bootloader
