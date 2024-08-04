@@ -1,3 +1,9 @@
+live-config-dist (3:5.8-1) UNRELEASED; urgency=medium
+
+  * New upstream version (local package).
+
+ -- Aaron Rainbolt <arraybolt3@ubuntu.com>  Sat, 03 Aug 2024 20:35:33 -0500
+
 live-config-dist (3:5.7-1) unstable; urgency=medium
 
   * New upstream version (local package).
