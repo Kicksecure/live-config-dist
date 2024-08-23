@@ -39,9 +39,9 @@ sequence:
   - locale
   - keyboard
   - localecfg
-  - bootloader-config
-  - grubcfg
   - bootloader
+  - grubcfg
+  - bootloader-config
   - packages
   - shellprocess@fixconkeys_part1
   - shellprocess@fixconkeys_part2
