@@ -15,13 +15,13 @@ strings:
     releaseNotesUrl:     https://www.kicksecure.com/wiki/Changelog
 
 images:
-    #productLogo:         "logo.png"
-    productIcon:         "logo.png"
+    productLogo:         "logo.png"
+    productIcon:         "icon.png"
     productWelcome:      "welcome.png"
 
 slideshow:               "show.qml"
 
 style:
-   sidebarBackground:    "#2c3133"
-   sidebarText:          "#FFFFFF"
-   sidebarTextSelect:    "#4d7079"
+   SidebarBackground:    "#2c3133"
+   SidebarText:          "#FFFFFF"
+   SidebarTextSelect:    "#4d7079"

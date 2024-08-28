@@ -1,0 +1,38 @@
+#!/bin/bash
+
+set -x
+
+CHROOT=$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc##g")
+
+# Install luks utilities if needed.
+# Also, set secure permissions for the initramfs if we're configuring
+# full-disk-encryption. The initramfs is re-generated later in the
+# installation process so we only set the permissions snippet without
+# regenerating the initramfs right now:
+if [ "$(mount | grep $CHROOT" " | cut -c -16)" = "/dev/mapper/luks" ]; then
+    echo "UMASK=0077" > $CHROOT/etc/initramfs-tools/conf.d/initramfs-permissions
+    chroot $CHROOT apt-get -y install cryptsetup-initramfs cryptsetup keyutils
+fi
+
+echo "Running bootloader-config..."
+
+if [ -d /sys/firmware/efi/efivars ]; then
+    echo " * Installing grub-efi (uefi)..."
+    # TODO: Debian trixie
+    # Debian Live ISO comes with a local APT repository in
+    # /run/live/medium/pool which also contains "grub-efi".
+    # Kicksecure ISO however does not have "grub-efi" installed by default.
+    # It neither has a local repository. Non-ideal. Might break mixed-mode
+    # EFI (64-bit CPU with 32-bit EFI code) or other architecture support.
+    # This will be fixed once Kicksecure is built using live-build. For the
+    # moment this has been changed to install grub-efi-amd64-bin (which is
+    # already installed and thus won't cause apt to error out).
+    DEBIAN_FRONTEND=noninteractive chroot $CHROOT apt-get -y install grub-efi-amd64-bin
+else
+    echo " * install grub... (bios)"
+    DEBIAN_FRONTEND=noninteractive chroot $CHROOT apt-get -y install grub-pc
+fi
+
+# Re-enable os-prober:
+sed -i "s/#GRUB_DISABLE_OS_PROBER=false/# OS_PROBER re-enabled by Debian Calamares installation:\nGRUB_DISABLE_OS_PROBER=false/g" $CHROOT/etc/default/grub
+chroot $CHROOT /usr/sbin/update-grub
