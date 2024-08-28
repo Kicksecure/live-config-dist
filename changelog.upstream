@@ -1,3 +1,62 @@
+commit 2c1083cc760a0d88d897cd698f1c2ba520c49a38
+Merge: a844cba 297ed58
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Aug 28 05:54:35 2024 -0400
+
+    Merge remote-tracking branch 'github-kicksecure/master'
+
+commit 297ed5804037cfc7041c8fd9dce645284d9257ed
+Merge: a844cba 2e7cb00
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Aug 28 05:34:05 2024 -0400
+
+    Merge pull request #5 from ArrayBolt3/master
+    
+    Improve localization, disk encryption, and a few other things
+
+commit 2e7cb0016bc9960b471065a16cfa38c99fac3513
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Thu Aug 22 22:49:17 2024 -0500
+
+    Fix misconfigurations resulting in installation failure
+
+commit 0d68b2ae7c9f3fd6506cbee0bcf8e0251386337e
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sat Aug 3 21:46:04 2024 -0500
+
+    Add bootloader-config override with set -x enabled
+
+commit 5ea38fe816869b861a3da9b0b087c970b5510e2e
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sat Aug 3 20:43:36 2024 -0500
+
+    Remove swapfile options, use LUKS2 for encryption
+
+commit f039a98e13e7325e34db7321c10bb009922187eb
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sat Aug 3 20:38:43 2024 -0500
+
+    Remove vestigal changes.
+
+commit 0c9bf3dd96a9c0a87d13ad57b944e5437b33fadb
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sat Aug 3 20:35:59 2024 -0500
+
+    Add changelog entry
+
+commit 8abb5208a7d455b6dfb5e0344e587658f2bb8a57
+Merge: 0e941f7 a844cba
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sat Aug 3 20:35:22 2024 -0500
+
+    Merge branch 'master' of github.com:ArrayBolt3/live-config-dist
+
+commit a844cba3ac253866162c9867280261db711559b7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Jul 31 12:21:06 2024 +0000
+
+    bumped changelog version
+
 commit 5bb9f25a306a6f93c5266faf81cfbcd0c43d2cda
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Jul 31 08:19:48 2024 -0400
@@ -23,6 +82,12 @@ Date:   Sun Jul 28 18:29:22 2024 -0400
     removed autologin
     
     because now in usability-misc
+
+commit 0e941f73bf6a1c04f28159a222489cea6113f31e
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Tue Jul 23 19:26:42 2024 -0500
+
+    improve localization and disk encryption
 
 commit de0ea854e21f56c3b79110809f3dc1be7eb8b726
 Author: Patrick Schleizer <adrelanos@whonix.org>
