@@ -14,6 +14,9 @@ Rules-Requires-Root: no
 
 Package: live-config-dist
 Architecture: all
+## rsync:
+## calamares: Missing dependency: rsync
+## https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1080188
 Depends: helper-scripts, pkexec, rsync, libglib2.0-bin, xdg-user-dirs,
  ${misc:Depends}
 Description: calamares-settings-kicksecure and maybe calamares-settings-whonix
