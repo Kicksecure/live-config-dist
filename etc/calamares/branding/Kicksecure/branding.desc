@@ -10,9 +10,6 @@ strings:
     versionedName:       Kicksecure 17
     shortVersionedName:  Kicksecure 17
     bootloaderEntryName: Kicksecure
-    productUrl:          https://www.kicksecure.com
-    supportUrl:          https://www.kicksecure.com/wiki/Support
-    releaseNotesUrl:     https://www.kicksecure.com/wiki/Changelog
 
 images:
     productLogo:         "logo.png"
