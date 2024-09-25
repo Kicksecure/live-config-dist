@@ -1,3 +1,22 @@
+commit 4a30bd9ef98d61b9242c46099bda18307b96e8df
+Merge: f2537f6 ab8a7e1
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Sep 24 22:07:32 2024 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/master'
+
+commit ab8a7e1829f7050882385488a67e9a316a9270fd
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Tue Sep 24 20:56:26 2024 -0500
+
+    Use a fullscreen Calamares window by default
+
+commit f2537f65b53284025183544f4e0aff94cf1a73bf
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Sep 11 16:00:58 2024 +0000
+
+    bumped changelog version
+
 commit 021e90b80c2d87d791ef14556297e9487dfd51bf
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Wed Sep 11 04:52:33 2024 -0400
