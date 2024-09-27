@@ -1,3 +1,22 @@
+commit 3795a7249b9775471a88d42a1d21585f0bd5da49
+Merge: 0d0ebb1 410c62e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Sep 26 22:28:32 2024 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/master'
+
+commit 410c62e664e7d1387e7c013867242838ff2cb912
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Wed Sep 25 17:42:07 2024 -0500
+
+    Make formatting less arbitrary, enable preCheckEncryption
+
+commit 0d0ebb19d012baea678fc4ccf7c564ec88dc0517
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Sep 25 04:06:24 2024 +0000
+
+    bumped changelog version
+
 commit 4a30bd9ef98d61b9242c46099bda18307b96e8df
 Merge: f2537f6 ab8a7e1
 Author: Patrick Schleizer <adrelanos@whonix.org>
