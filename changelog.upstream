@@ -1,3 +1,22 @@
+commit f80234e20b0b4d82f58cb0d5fae9a48296694226
+Merge: c04efc0 fe3eb5d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Oct 8 07:24:21 2024 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/master'
+
+commit fe3eb5da1a8a2c464026941c572e61de90d3e6e6
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Oct 6 17:15:25 2024 -0500
+
+    fixconkeys_part1: Only take into account the first loaded keyboard layout
+
+commit c04efc087ec9e0dc08a5f7c10fc6b6f5924647f9
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Sep 27 02:28:44 2024 +0000
+
+    bumped changelog version
+
 commit 3795a7249b9775471a88d42a1d21585f0bd5da49
 Merge: 0d0ebb1 410c62e
 Author: Patrick Schleizer <adrelanos@whonix.org>
