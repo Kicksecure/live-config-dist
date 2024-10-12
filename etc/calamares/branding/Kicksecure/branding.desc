@@ -2,6 +2,7 @@
 componentName:   Kicksecure
 windowExpanding: fullscreen
 welcomeStyleCalamares: true
+welcomeExpandingLogo: false
 
 strings:
     productName:         Kicksecure
