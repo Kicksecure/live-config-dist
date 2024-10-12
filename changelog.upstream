@@ -1,3 +1,22 @@
+commit 08992f70f72d10a8007405ee288c808be9d26be0
+Merge: 7bd84b1 15eb4be
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Oct 12 00:52:35 2024 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/master'
+
+commit 15eb4be99fd5d933c3067c982a9a6ad3f4d06d23
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Wed Oct 9 14:25:25 2024 -0500
+
+    Shrink welcome image and don't scale it up
+
+commit 7bd84b11a1a8032e6206f4bde5e6b2c7d95882ff
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Oct 8 11:24:34 2024 +0000
+
+    bumped changelog version
+
 commit f80234e20b0b4d82f58cb0d5fae9a48296694226
 Merge: c04efc0 fe3eb5d
 Author: Patrick Schleizer <adrelanos@whonix.org>
