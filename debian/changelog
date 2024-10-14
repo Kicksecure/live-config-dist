@@ -1,3 +1,9 @@
+live-config-dist (3:6.6-1~local2) unstable; urgency=medium
+
+  * Test build for live-build image
+
+ -- Aaron Rainbolt <arraybolt3@ubuntu.com>  Sun, 13 Oct 2024 15:27:04 -0500
+
 live-config-dist (3:6.5-1) unstable; urgency=medium
 
   * New upstream version (local package).
