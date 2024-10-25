@@ -12,9 +12,6 @@ instances:
 - id: fixconkeys_part2
   module: shellprocess
   config: shellprocess_fixconkeys_part2.conf
-- id: useradd
-  module: shellprocess
-  config: shellprocess_useradd.conf
 
 sequence:
 # Phase 1 - prepare.
@@ -52,8 +49,6 @@ sequence:
   - luksbootkeyfile
   - dracutlukscfg
   - sources-media-unmount
-  - sources-final
-  - shellprocess@useradd
   - umount
 
 # Phase 3 - postinstall.
