@@ -1,3 +1,22 @@
+commit 2c57b3fa98bca3211520dca4b74f1a2d13131f4e
+Merge: 34978dd b1d9959
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Oct 26 03:42:22 2024 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/btrfs-support'
+
+commit b1d9959208243c3b4101f273241740f765f14708
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Fri Oct 25 15:28:33 2024 -0500
+
+    Offer BTRFS as a usable filesystem
+
+commit 34978dd3de38becfcfaea5bb07715afa7be1da25
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Oct 12 04:56:39 2024 +0000
+
+    bumped changelog version
+
 commit 08992f70f72d10a8007405ee288c808be9d26be0
 Merge: 7bd84b1 15eb4be
 Author: Patrick Schleizer <adrelanos@whonix.org>
