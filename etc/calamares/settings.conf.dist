@@ -35,18 +35,20 @@ sequence:
   - partition
   - mount
   - unpackfs
+  - sources-media
   - fstab
   - locale
   - keyboard
   - localecfg
+  - bootloader-config
   - bootloader
   - grubcfg
-  - bootloader-config
   - packages
   - shellprocess@fixconkeys_part1
   - shellprocess@fixconkeys_part2
   - luksbootkeyfile
   - dracutlukscfg
+  - sources-media-unmount
   - umount
 
 # Phase 3 - postinstall.
