@@ -1,3 +1,23 @@
+commit 60bc2275142bb68aef817b0a2cc345676d3d5e9a
+Merge: 8eb522f 5b87447
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 10 07:27:25 2024 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/live-build'
+
+commit 8eb522f48f80322aa5f3ccd4ce5ba231c2ccfa4a
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Oct 30 09:42:44 2024 +0000
+
+    bumped changelog version
+
+commit 5b87447ed6b9edb0ca76f5883ba1fc3e06e5f45b
+Merge: edb93e3 2c57b3f
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Oct 27 20:19:02 2024 -0500
+
+    Merge branch 'master' into arraybolt3/live-build
+
 commit 2c57b3fa98bca3211520dca4b74f1a2d13131f4e
 Merge: 34978dd b1d9959
 Author: Patrick Schleizer <adrelanos@whonix.org>
@@ -10,6 +30,18 @@ Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
 Date:   Fri Oct 25 15:28:33 2024 -0500
 
     Offer BTRFS as a usable filesystem
+
+commit edb93e3d9bba8bf9e73990b6b9b3c8fbfb08ac48
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Fri Oct 25 12:17:09 2024 -0500
+
+    Polish live-build configuration for live-config-dist
+
+commit 192929b3c1f34df9711b56451d5bbf6a08899efd
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Oct 13 22:38:52 2024 -0500
+
+    Current state of reconfiguration for live-build
 
 commit 34978dd3de38becfcfaea5bb07715afa7be1da25
 Author: Patrick Schleizer <adrelanos@whonix.org>
