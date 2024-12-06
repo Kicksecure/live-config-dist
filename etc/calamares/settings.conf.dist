@@ -35,7 +35,8 @@ sequence:
   - partition
   - mount
   - unpackfs
-  - sources-media
+  # Disabled because debian-installer is disabled.
+  # - sources-media
   - fstab
   - locale
   - keyboard
@@ -48,7 +49,8 @@ sequence:
   - shellprocess@fixconkeys_part2
   - luksbootkeyfile
   - dracutlukscfg
-  - sources-media-unmount
+  # Disabled because debian-installer is disabled.
+  # - sources-media-unmount
   - umount
 
 # Phase 3 - postinstall.
