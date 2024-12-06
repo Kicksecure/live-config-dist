@@ -1,3 +1,22 @@
+commit 4688944e9ee60c13962cb6649601970a7eea8f09
+Merge: 4968a68 cea4577
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Dec 6 10:41:31 2024 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/d-i-disable'
+
+commit cea45770d3af4e5821b46b94750356fe06bd4d66
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Thu Dec 5 19:09:37 2024 -0600
+
+    Comment out problematic bits for disabling debian-installer
+
+commit 4968a68755488e6dd9e00ce951d21c33c7996703
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Nov 10 12:37:26 2024 +0000
+
+    bumped changelog version
+
 commit 60bc2275142bb68aef817b0a2cc345676d3d5e9a
 Merge: 8eb522f 5b87447
 Author: Patrick Schleizer <adrelanos@whonix.org>
