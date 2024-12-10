@@ -1,3 +1,22 @@
+commit 50f7b9d45dd1bda69b5735e8c5fe5a91a40991e9
+Merge: 7c972b6 0b7d188
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Dec 10 14:03:44 2024 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/master'
+
+commit 0b7d1886e43bac4c3dede7acf540fffc33e93a0f
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Tue Dec 10 12:59:34 2024 -0600
+
+    Disable BTFFS, needs further development to work correctly with grub-live
+
+commit 7c972b6ff8f77a4830d0bb5f4e5b5ead9aa8db75
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Dec 6 15:41:44 2024 +0000
+
+    bumped changelog version
+
 commit 4688944e9ee60c13962cb6649601970a7eea8f09
 Merge: 4968a68 cea4577
 Author: Patrick Schleizer <adrelanos@whonix.org>
