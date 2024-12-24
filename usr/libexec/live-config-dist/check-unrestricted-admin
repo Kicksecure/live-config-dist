@@ -1,0 +1,21 @@
+#!/bin/bash
+
+## Copyright (C) 2024 - 2024 ENCRYPTED SUPPORT LP <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+set -o errexit
+set -o nounset
+set -o errtrace
+set -o pipefail
+
+kernel_cmdline="$(cat /proc/cmdline)"
+export TMPDIR='/tmp'
+
+if [[ "${kernel_cmdline}" =~ 'boot-role=unrestricted-admin' ]]; then
+   if ! [[ "${kernel_cmdline}" =~ 'rd.live.image' ]]; then
+      echo 'ERROR: Cannot boot in unrestricted admin mode unless on a live ISO!'
+      exit 1;
+   fi
+
+   dummy-dependency --purge --yes user-sysmaint-split
+fi
