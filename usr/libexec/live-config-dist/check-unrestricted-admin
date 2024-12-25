@@ -9,7 +9,6 @@ set -o errtrace
 set -o pipefail
 
 kernel_cmdline="$(cat /proc/cmdline)"
-export TMPDIR='/tmp'
 
 if [[ "${kernel_cmdline}" =~ 'boot-role=unrestricted-admin' ]]; then
    if ! [[ "${kernel_cmdline}" =~ 'rd.live.image' ]]; then
