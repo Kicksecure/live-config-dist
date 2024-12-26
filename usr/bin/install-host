@@ -11,7 +11,8 @@ true "$0: START"
 set -e
 
 kernel_cmdline="$(cat /proc/cmdline)"
-if ! [[ "${kernel_cmdline}" =~ 'boot-role=sysmaint' ]]; then
+if ! [[ "${kernel_cmdline}" =~ 'boot-role=sysmaint' ]] \
+  && ! [[ "${kernel_cmdline}" =~ 'boot-role=unrestricted-admin' ]]; then
    true "$0: **Boot Using \"Install system\" Boot Option To Proceed**
 
 You are currently booted into live mode, which does not provide root access. To install the system, reboot and select \"Install system\" at the boot menu.
