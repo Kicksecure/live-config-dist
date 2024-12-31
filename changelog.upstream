@@ -1,3 +1,34 @@
+commit a82502c590cd39f4655400eb04381168db9d54db
+Merge: 1743302 2de117b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Dec 31 02:33:05 2024 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/sysmaint'
+
+commit 2de117b24219097a5c8d0fa3376429281306e7f9
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Mon Dec 30 19:08:09 2024 -0600
+
+    Make install-host compatible with classic permissions model, and take into account a sysmaint mode edge case
+
+commit f6aa4ef08f3541fd13eaa0edbfbcf9bbf0836c88
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Thu Dec 26 12:49:52 2024 -0600
+
+    Fix installation in unrestricted admin mode
+
+commit 91363e12162381f957b3f427f36bd1b95a318767
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Thu Dec 26 00:37:02 2024 -0600
+
+    Improve UX when launching installer from sysmaint-enabled ISO in live mode
+
+commit 174330223e657a207ea948e7721548d3f5ddcfa3
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Dec 26 04:11:41 2024 +0000
+
+    bumped changelog version
+
 commit 1a738bf21071af60e06437b92f884bf1bbdbcb95
 Merge: 2977442 3687515
 Author: Patrick Schleizer <adrelanos@whonix.org>
