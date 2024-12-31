@@ -11,11 +11,25 @@ true "$0: START"
 set -e
 
 kernel_cmdline="$(cat /proc/cmdline)"
-if ! [[ "${kernel_cmdline}" =~ 'boot-role=sysmaint' ]] \
-  && ! [[ "${kernel_cmdline}" =~ 'boot-role=unrestricted-admin' ]]; then
-   true "$0: **Boot Using \"Install system\" Boot Option To Proceed**
+if getent passwd sysmaint >/dev/null; then
+   if ! [[ "${kernel_cmdline}" =~ 'boot-role=sysmaint' ]] \
+      && ! [[ "${kernel_cmdline}" =~ 'boot-role=unrestricted-admin' ]]; then
+      true "$0: **Boot Using \"Install system\" Boot Option To Proceed**
 
 You are currently booted into live mode, which does not provide root access. To install the system, reboot and select \"Install system\" at the boot menu.
+"
+
+      true "$0: END"
+      true "Feel free to close this window."
+      sleep 86400
+      exit 0
+   fi
+fi
+
+if ! [ -x '/usr/bin/pkexec' ] || ! [ -x '/usr/bin/sudo' ]; then
+   true "$0: **Unable To Elevate To Root**
+
+The pkexec or sudo command is not executable by the current user. Installation cannot proceed. You may need to log in as user 'sysmaint' to resolve this.
 "
 
    true "$0: END"
