@@ -56,6 +56,9 @@ sequence:
   - luksbootkeyfile
   - dracutlukscfg
   - shellprocess@grub_fallback
+  # TODO: Debian trixie. Maybe can be avoided thanks to:
+  #       https://github.com/calamares/calamares/pull/2445
+  #       Probably in calamares v3.3.15 and above.
   - shellprocess@fix_grub_d_name
   # Disabled because debian-installer is disabled.
   # - sources-media-unmount
