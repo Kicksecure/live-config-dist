@@ -1,3 +1,28 @@
+commit 6df6c92c3f8b741de9b356674a1d628e6f2e9a90
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Mar 24 11:06:23 2025 -0400
+
+    comment
+
+commit 2d70c08d93f3f83f25cb5705e6c570e16aff8139
+Merge: 4a63389 c97e8eb
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Mar 24 11:04:18 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/grubcfg'
+
+commit c97e8ebd2a604b5b538e7cad3738c2d7c1848ef3
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Mar 23 14:35:33 2025 -0500
+
+    Instruct Calamares to save GRUB configuration into /etc/default/grub.d
+
+commit 4a63389f479c308ba31518b132c9658dd75fae39
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 30 12:57:26 2025 +0000
+
+    bumped changelog version
+
 commit 39448a88ae279cbf7a0d7b11300964b13eefe59c
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Jan 30 07:44:33 2025 -0500
