@@ -19,7 +19,7 @@ echo "Running bootloader-config..."
 if [ -d /sys/firmware/efi/efivars ]; then
     echo " * Installing grub-efi (uefi)..."
     DEBIAN_FRONTEND=noninteractive chroot $CHROOT apt-get -y install grub-efi
-## Commented out because debian-installer is disabled.    
+## Commented out because debian-installer is disabled.
 # else
 #     echo " * install grub... (bios)"
 #     DEBIAN_FRONTEND=noninteractive chroot $CHROOT apt-get -y install grub-pc
