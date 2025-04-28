@@ -29,7 +29,7 @@ fi
 if ! [ -x '/usr/bin/pkexec' ] || ! [ -x '/usr/bin/sudo' ]; then
    printf '%s\n' "$0: ERROR: **Unable To Elevate To Root**
 
-The pkexec or sudo command is not executable by the current user. Installation cannot proceed. You may need to log in as user 'sysmaint' to resolve this.
+The 'pkexec' or 'sudo' command is not executable by the current account. Installation cannot proceed. You may need to log in as account 'sysmaint' to resolve this.
 "
 
    printf '%s\n' "$0: END"
