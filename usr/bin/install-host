@@ -93,7 +93,7 @@ export QT_AUTO_SCREEN_SCALE_FACTOR=1
 sudo --non-interactive install-host-root
 
 ## Access control to run calamares as root for xwayland
-xhost +si:localuser:root
+xhost +si:localuser:root >/dev/null
 
 ## Calamares has no native Wayland support yet.
 ## Requires X11 or XWayland.
@@ -103,7 +103,7 @@ xhost +si:localuser:root
 ## Not easy to pass extra options here. Doing so inside the wrapper.
 pkexec install-host-calamares-wrapper
 
-xhost -si:localuser:root
+xhost -si:localuser:root >/dev/null
 
 printf '%s\n' "$0: END"
 printf '%s\n' "Feel free to close this window."
