@@ -16,7 +16,7 @@ if getent passwd sysmaint >/dev/null; then
       && ! [[ "${kernel_cmdline}" =~ 'boot-role=unrestricted-admin' ]]; then
       printf '%s\n' "$0: ERROR: **Boot Using \"Install system\" Boot Option To Proceed**
 
-You are currently booted into live mode, which does not provide administrative ('root') access. To install the system, reboot and select \"Install system\" at the boot menu.
+You are currently booted into 'LIVE Mode | USER Session', which does not provide administrative ('root') access. To install the system, reboot and select \"Install system\" at the boot menu.
 "
 
       printf '%s\n' "$0: END"
