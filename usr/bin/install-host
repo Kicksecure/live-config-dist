@@ -6,7 +6,7 @@
 
 set -x
 
-true "$0: START"
+printf '%s\n' "$0: START"
 
 set -e
 
@@ -14,31 +14,31 @@ kernel_cmdline="$(cat /proc/cmdline)"
 if getent passwd sysmaint >/dev/null; then
    if ! [[ "${kernel_cmdline}" =~ 'boot-role=sysmaint' ]] \
       && ! [[ "${kernel_cmdline}" =~ 'boot-role=unrestricted-admin' ]]; then
-      true "$0: **Boot Using \"Install system\" Boot Option To Proceed**
+      printf '%s\n' "$0: **Boot Using \"Install system\" Boot Option To Proceed**
 
 You are currently booted into live mode, which does not provide root access. To install the system, reboot and select \"Install system\" at the boot menu.
 "
 
-      true "$0: END"
-      true "Feel free to close this window."
+      printf '%s\n' "$0: END"
+      printf '%s\n' "Feel free to close this window."
       sleep 86400
       exit 0
    fi
 fi
 
 if ! [ -x '/usr/bin/pkexec' ] || ! [ -x '/usr/bin/sudo' ]; then
-   true "$0: **Unable To Elevate To Root**
+   printf '%s\n' "$0: **Unable To Elevate To Root**
 
 The pkexec or sudo command is not executable by the current user. Installation cannot proceed. You may need to log in as user 'sysmaint' to resolve this.
 "
 
-   true "$0: END"
-   true "Feel free to close this window."
+   printf '%s\n' "$0: END"
+   printf '%s\n' "Feel free to close this window."
    sleep 86400
    exit 0
 fi
 
-true "$0: **Important Information for Users**
+printf '%s\n' "$0: **Important Information for Users**
 
 **User Credentials:**
 
@@ -68,11 +68,11 @@ true "$0: **Important Information for Users**
 sleep 3
 
 error_handler() {
-  true "##############################"
-  true "## ERROR detected!"
-  true "## BASH_COMMAND: $BASH_COMMAND"
-  true "## Please report this bug!"
-  true "##############################"
+  printf '%s\n' "##############################"
+  printf '%s\n' "## ERROR detected!"
+  printf '%s\n' "## BASH_COMMAND: $BASH_COMMAND"
+  printf '%s\n' "## Please report this bug!"
+  printf '%s\n' "##############################"
   sleep 86400
   exit 1
 }
@@ -105,7 +105,7 @@ pkexec install-host-calamares-wrapper
 
 xhost -si:localuser:root
 
-true "$0: END"
-true "Feel free to close this window."
+printf '%s\n' "$0: END"
+printf '%s\n' "Feel free to close this window."
 
 sleep 86400
