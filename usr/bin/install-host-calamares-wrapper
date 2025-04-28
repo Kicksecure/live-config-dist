@@ -9,6 +9,7 @@ set -e
 ## calamares breaks when using libpam-tmpdir
 ## Therefore unsetting temporary files related environment variables.
 ## https://github.com/calamares/calamares/issues/2269
+## TODO: Debian trixie - This can most likely be removed.
 unset TMP
 unset TMPDIR
 unset TEMP
