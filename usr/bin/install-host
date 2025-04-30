@@ -14,9 +14,9 @@ kernel_cmdline="$(cat /proc/cmdline)"
 if getent passwd sysmaint >/dev/null; then
    if ! [[ "${kernel_cmdline}" =~ 'boot-role=sysmaint' ]] \
       && ! [[ "${kernel_cmdline}" =~ 'boot-role=unrestricted-admin' ]]; then
-      printf '%s\n' "$0: ERROR: **Boot Using \"Install system\" Boot Option To Proceed**
+      printf '%s\n' "$0: ERROR: **Boot Using \"LIVE Mode | SYSMAINT Session\" Boot Option To Proceed**
 
-You are currently booted into 'LIVE Mode | USER Session', which does not provide administrative ('root') access. To install the system, reboot and select \"Install system\" at the boot menu.
+You are currently booted into 'LIVE Mode | USER Session', which does not provide administrative ('root') access. To install the system, reboot and select \"LIVE Mode | SYSMAINT Session\" at the boot menu.
 "
 
       printf '%s\n' "$0: END"
@@ -61,7 +61,7 @@ printf '%s\n' "$0: INFO: **Important Information for Users**
 
 **Credits:**
 
-- The information displayed in the terminal is a from Kicksecure.
+- The information displayed in the terminal is from Kicksecure.
 - The graphical installer interface is powered by Calamares.
 "
 
