@@ -1,3 +1,22 @@
+commit b0de60e6abcadf9a55ecb2781db45a3a4ae3c00a
+Merge: 010b984 6ecc870
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 30 00:44:07 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/wording'
+
+commit 6ecc870421bc5ed34a23dfe1de0a2c7a1f60d4dc
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Tue Apr 29 22:00:12 2025 -0500
+
+    Wording and boot menu name fixes
+
+commit 010b9844020c45ce18d944b20ecf3373b398456b
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Apr 28 10:39:24 2025 +0000
+
+    bumped changelog version
+
 commit 88cd51b5346ad3b0ea3e3acc269396c822246f11
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Apr 28 06:37:10 2025 -0400
