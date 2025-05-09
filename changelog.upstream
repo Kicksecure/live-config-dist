@@ -1,3 +1,22 @@
+commit 368e8a28646ba5a35b1ae1f961aad2d38e1e0747
+Merge: 5e10958 3ad90d4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri May 9 07:44:41 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/locale'
+
+commit 3ad90d412f7ecc8d68c20704ec1baaae5999ebd4
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Thu May 8 20:53:20 2025 -0500
+
+    Use a better way of setting the console keyboard layout
+
+commit 5e109588c2c0f4649dffb8173ff4eba03463b292
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Apr 30 04:45:24 2025 +0000
+
+    bumped changelog version
+
 commit b0de60e6abcadf9a55ecb2781db45a3a4ae3c00a
 Merge: 010b984 6ecc870
 Author: Patrick Schleizer <adrelanos@whonix.org>
