@@ -6,6 +6,9 @@
 modules-search: [ local, /usr/lib/calamares/modules ]
 
 instances:
+- id: livecheck_report_install_start
+  module: shellprocess
+  config: shellprocess_livecheck_report_install_start.conf
 - id: fixconkeys_part1
   module: shellprocess
   config: shellprocess_fixconkeys_part1.conf
@@ -18,6 +21,9 @@ instances:
 - id: fix_grub_d_name
   module: shellprocess
   config: shellprocess_fix_grub_d_name.conf
+- id: livecheck_report_install_done
+  module: shellprocess
+  config: shellprocess_livecheck_report_install_done.conf
 
 sequence:
 # Phase 1 - prepare.
@@ -38,6 +44,7 @@ sequence:
 # view module jobs should be enqueued. Job modules are
 # also allowed.
 - exec:
+  - shellprocess@livecheck_report_install_start
   - partition
   - mount
   - unpackfs
@@ -63,6 +70,7 @@ sequence:
   # Disabled because debian-installer is disabled.
   # - sources-media-unmount
   - umount
+  - shellprocess@livecheck_report_install_done
 
 # Phase 3 - postinstall.
 # View modules are shown as UI pages, jobs from job modules are
