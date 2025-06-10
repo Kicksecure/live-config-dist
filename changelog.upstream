@@ -1,3 +1,22 @@
+commit 565ecbe5514f777773a519f2a9e2960661711d11
+Merge: 41cf63c 7de0979
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jun 10 06:31:49 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/btrfs'
+
+commit 7de0979c969db588c4244e23989088c4cb8f1d66
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Jun 8 19:23:40 2025 -0500
+
+    Bring back BTRFS support
+
+commit 41cf63c3ed9a4433fab6335dfe39e9420df9b579
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Jun 6 20:54:40 2025 +0000
+
+    bumped changelog version
+
 commit 1a531bda5240d865a02b98215887fb3f52dbc18b
 Merge: 3338c06 5a6d221
 Author: Patrick Schleizer <adrelanos@whonix.org>
