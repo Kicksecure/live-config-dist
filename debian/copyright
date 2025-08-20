@@ -4,7 +4,7 @@ Files: *
 Copyright: 2012 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 License: AGPL-3+
 
-Files: usr/sbin/bootloader-config.dist
+Files: usr/share/calamares/helpers/calamares-bootloader-config.dist
 Copyright: 2016-2023, Jonathan Carter <jcc@debian.org>
            2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 License: AGPL-3+

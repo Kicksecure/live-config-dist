@@ -1,16 +1,16 @@
 ---
 componentName:   Kicksecure
-windowExpanding: fullscreen
 welcomeStyleCalamares: true
 welcomeExpandingLogo: false
+windowExpanding: fullscreen
 
 strings:
     productName:         Kicksecure
     shortProductName:    Kicksecure
-    version:             17 (bookworm)
-    shortVersion:        17
-    versionedName:       Kicksecure 17
-    shortVersionedName:  Kicksecure 17
+    version:             18 (trixie)
+    shortVersion:        18
+    versionedName:       Kicksecure 18
+    shortVersionedName:  Kicksecure 18
     bootloaderEntryName: Kicksecure
 
 images:
@@ -24,3 +24,5 @@ style:
    SidebarBackground:    "#2c3133"
    SidebarText:          "#FFFFFF"
    SidebarTextSelect:    "#4d7079"
+
+slideshowAPI: 2

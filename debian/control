@@ -18,7 +18,7 @@ Architecture: all
 ## calamares: Missing dependency: rsync
 ## https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1080188
 Depends: helper-scripts, pkexec, rsync, libglib2.0-bin, xdg-user-dirs,
- ${misc:Depends}
+ qml6-module-qtquick-window, ${misc:Depends}
 Description: calamares-settings-kicksecure and maybe calamares-settings-whonix
  Installed in Host ISO Live.
  .
