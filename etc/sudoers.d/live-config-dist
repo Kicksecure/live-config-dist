@@ -1,5 +1,8 @@
 ## Copyright (C) 2020 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-%sudo ALL=NOPASSWD: /usr/bin/calamares
 %sudo ALL=NOPASSWD: /usr/bin/install-host-root
+
+## Necessary to allow passing through environment variables to Calamares. This
+## allows Calamares to show a GUI window under Wayland.
+%sudo ALL=(ALL) NOPASSWD:SETENV: /usr/bin/install-host-calamares-wrapper
