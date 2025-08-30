@@ -82,7 +82,7 @@ trap "error_handler" ERR
 sudo --non-interactive install-host-root
 
 ## Not easy to pass extra options here. Doing so inside the wrapper.
-pkexec install-host-calamares-wrapper
+sudo --non-interactive --preserve-env install-host-calamares-wrapper
 
 printf '%s\n' "$0: END"
 printf '%s\n' "Feel free to close this window."
