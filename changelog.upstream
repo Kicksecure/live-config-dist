@@ -1,3 +1,22 @@
+commit b475bacce989d28ce0406b41b49e3745afc03b47
+Merge: 359cf10 866e9fe
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Aug 30 07:57:53 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit 866e9fe2b2665790b4f0794e664047aba4a8057e
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Wed Aug 27 22:32:03 2025 -0500
+
+    Fix Calamares launch under Wayland
+
+commit 359cf10f945625f6d58e3ed6db5da4f7a043b4ea
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Aug 27 19:27:05 2025 +0000
+
+    bumped changelog version
+
 commit 6bbf3a35889bedd8b5aee0e2425e3f8fdad95f0a
 Merge: 79229fd 7f26d7e
 Author: Patrick Schleizer <adrelanos@whonix.org>
