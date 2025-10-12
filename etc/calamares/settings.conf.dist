@@ -9,12 +9,12 @@ instances:
 - id: livecheck_report_install_start
   module: shellprocess
   config: shellprocess_livecheck_report_install_start.conf
-- id: fixconkeys_part1
+- id: fixkblayout_part1
   module: shellprocess
-  config: shellprocess_fixconkeys_part1.conf
-- id: fixconkeys_part2
+  config: shellprocess_fixkblayout_part1.conf
+- id: fixkblayout_part2
   module: shellprocess
-  config: shellprocess_fixconkeys_part2.conf
+  config: shellprocess_fixkblayout_part2.conf
 - id: grub_fallback
   module: shellprocess
   config: shellprocess_grub_fallback.conf
@@ -57,9 +57,9 @@ sequence:
   - bootloader-config
   - bootloader
   - grubcfg
+  - shellprocess@fixkblayout_part1
+  - shellprocess@fixkblayout_part2
   - packages
-  - shellprocess@fixconkeys_part1
-  - shellprocess@fixconkeys_part2
   - luksbootkeyfile
   - dracutlukscfg
   - shellprocess@grub_fallback

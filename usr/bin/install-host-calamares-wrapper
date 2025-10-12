@@ -17,6 +17,9 @@ unset TEMPDIR
 
 export DEBDEBUG=1
 
+## Force use of X11/Xwayland so the keyboard layout settings work.
+export QT_QPA_PLATFORM=xcb
+
 calamares -D8
 
 true "$0: END"
