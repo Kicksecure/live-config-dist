@@ -81,8 +81,13 @@ trap "error_handler" ERR
 
 sudo --non-interactive install-host-root
 
+export DISPLAY=:0
+xhost +si:localuser:root >/dev/null
+
 ## Not easy to pass extra options here. Doing so inside the wrapper.
 sudo --non-interactive --preserve-env install-host-calamares-wrapper
+
+xhost -si:localuser:root >/dev/null
 
 printf '%s\n' "$0: END"
 printf '%s\n' "Feel free to close this window."

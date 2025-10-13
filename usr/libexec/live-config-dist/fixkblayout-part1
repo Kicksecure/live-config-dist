@@ -1,0 +1,36 @@
+#!/bin/bash
+
+## Copyright (C) 2025 - 2025 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## "$1" = path to installed system root directory
+
+set -o errexit
+set -o nounset
+set -o errtrace
+set -o pipefail
+
+setxkbmap_output="$(setxkbmap -query)"
+kb_layout="$(awk '/layout/{ print $2 }' <<< "${setxkbmap_output}")"
+kb_variant="$(awk '/variant/{ print $2 }' <<< "${setxkbmap_output}")"
+kb_options="$(awk '/options/{ print $2 }' <<< "${setxkbmap_output}")"
+
+printf '%s\n' "XKBLAYOUT=\"${kb_layout}\"" > /dev/shm/fixkb-layout
+printf '%s\n' "XKBVARIANT=\"${kb_variant}\"" >> /dev/shm/fixkb-layout
+printf '%s\n' "XKBOPTIONS=\"${kb_options}\"" >> /dev/shm/fixkb-layout
+
+# We have to set the keymap both for the system as a whole and for the greeter
+# in particular, since the greeter doesn't (and can't) use the system's
+# fallback configuration for security reasons.
+for env_file in \
+  "$1"/etc/xdg/labwc/environment \
+  "$1"/etc/greetd/labwc-config/environment; do
+  set-labwc-keymap \
+    --persist \
+    --no-reload \
+    --config "${env_file}" \
+    -- \
+    "${kb_layout}" "${kb_variant}" "${kb_options}"
+done
+
+mount --bind /dev/shm "$1"/dev/shm
