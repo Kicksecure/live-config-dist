@@ -1,3 +1,28 @@
+commit 895f11df5f4ebef94a33bcb9bb8ed89d2faf1df2
+Merge: 2d80ca2 6398740
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Oct 13 09:22:21 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit 6398740a144530527332d4e6fd5c17566fa4df0c
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Oct 12 00:31:24 2025 -0500
+
+    Set keyboard layout for the greeter too
+
+commit 707d4b23858458a36557f6ecc8137c09b2dd239a
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sat Oct 11 23:10:02 2025 -0500
+
+    Enhance keyboard layout helper code to work with labwc and work with XKB variants and options
+
+commit 2d80ca29a09ac8d6d2f05c03facc98dbb9ef4353
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Sep 19 16:14:56 2025 +0000
+
+    bumped changelog version
+
 commit ca476ffec8718881d5fb51fe601291f5600f5c3c
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Sep 18 10:07:49 2025 -0400
