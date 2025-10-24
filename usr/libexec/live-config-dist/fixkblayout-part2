@@ -8,20 +8,11 @@ set -o nounset
 set -o errtrace
 set -o pipefail
 
-readarray -t kb_conf_lines < /etc/default/keyboard
+readarray -t new_kb_lines < /dev/shm/fixkb-layout || true
+if [ "${#new_kb_lines[@]}" != '3' ]; then
+  printf '%s\n' "$0: ERROR: Absent or corrupt keyboard layout information in '/dev/shm/fixkb-layout'!"
+  exit 1
+fi
 
-for idx in "${!kb_conf_lines[@]}"; do
-  line="${kb_conf_lines[idx]}"
-  if [[ "${line}" =~ ^'XKBLAYOUT=' ]] \
-    || [[ "${line}" =~ ^'XKBVARIANT=' ]] \
-    || [[ "${line}" =~ ^'XKBOPTIONS=' ]]; then
-    unset "kb_conf_lines[${idx}]"
-  fi
-done
-
-readarray -t new_kb_lines < /dev/shm/fixkb-layout
-
-printf '%s\n' "${kb_conf_lines[@]}" "${new_kb_lines[@]}" > /etc/default/keyboard
-
-setupcon --save-only
+set-system-keymap "${new_kb_lines[0]}" "${new_kb_lines[1]}" "${new_kb_lines[2]}"
 dracut --regenerate-all --force
