@@ -1,3 +1,22 @@
+commit df778bd6c7bb2b783ee53d52acc790566ffe4f0b
+Merge: 3dc6a22 4c3e62c
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 26 06:06:36 2025 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit 4c3e62c78bd6013a74bb571bbf5d2c33e4b13c77
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Fri Oct 24 16:35:16 2025 -0500
+
+    Port to using set-system-keymap from helper-scripts
+
+commit 3dc6a220a7d95a08d676793f29cfe250a72a7cd5
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Oct 13 13:50:56 2025 +0000
+
+    bumped changelog version
+
 commit 895f11df5f4ebef94a33bcb9bb8ed89d2faf1df2
 Merge: 2d80ca2 6398740
 Author: Patrick Schleizer <adrelanos@whonix.org>
