@@ -8,12 +8,17 @@ set -o nounset
 set -o errtrace
 set -o pipefail
 
-kernel_cmdline="$(cat /proc/cmdline)"
+kernel_cmdline=''
+if [ -f /proc/cmdline ]; then
+  kernel_cmdline="$(cat -- /proc/cmdline)"
+elif [ -f /proc/1/cmdline ]; then
+  kernel_cmdline="$(cat -- /proc/1/cmdline)"
+fi
 
 if [[ "${kernel_cmdline}" =~ 'boot-role=unrestricted-admin' ]]; then
    if ! [[ "${kernel_cmdline}" =~ 'rd.live.image' ]]; then
       echo 'ERROR: Cannot boot in unrestricted admin mode unless on a live ISO!'
-      exit 1;
+      exit 1
    fi
 
    dummy-dependency --purge --yes user-sysmaint-split
