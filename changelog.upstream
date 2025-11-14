@@ -1,3 +1,22 @@
+commit 8b372c71d5893b2637fae03d0231c3378ec43754
+Merge: e010fed 3e07d57
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Nov 14 01:43:32 2025 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit 3e07d57960f3c07936563adde38a53ed22c4da96
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Thu Nov 13 23:11:39 2025 -0600
+
+    Double the length of most timeouts to accomodate slow install destination media
+
+commit e010fede7c75ceb677bee67f3f7f2503742fccc7
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 26 12:29:33 2025 +0000
+
+    bumped changelog version
+
 commit 024e5319ded6da68d26cfe68b993ff1fadc034b0
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Oct 26 08:05:31 2025 -0400
