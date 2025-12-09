@@ -14,5 +14,7 @@ if [ "${#new_kb_lines[@]}" != '3' ]; then
   exit 1
 fi
 
-set-system-keymap "${new_kb_lines[0]}" "${new_kb_lines[1]}" "${new_kb_lines[2]}"
+## Use '--no-update-grub' because regenerating the GRUB configuration file is handled elsewhere.
+set-system-keymap --no-update-grub "${new_kb_lines[0]}" "${new_kb_lines[1]}" "${new_kb_lines[2]}"
+
 dracut --regenerate-all --force
