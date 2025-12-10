@@ -56,9 +56,9 @@ sequence:
   - localecfg
   - bootloader-config
   - bootloader
-  - grubcfg
   - shellprocess@fixkblayout_part1
   - shellprocess@fixkblayout_part2
+  - grubcfg
   - packages
   - luksbootkeyfile
   - dracutlukscfg
