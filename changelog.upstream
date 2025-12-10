@@ -1,3 +1,22 @@
+commit cfe711c54ebd0553976e8a6c384aa136fe61fa65
+Merge: 79fe52b 260ce03
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Dec 10 07:37:57 2025 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit 260ce0389d3205c8c9e88dfd1821dc69de071d01
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Tue Dec 9 21:53:06 2025 -0600
+
+    Move grubcfg module position, avoid calling dracut unnecessarily, rename set-keyboard-layout.sh --no-update-grub -> --no-live-changes
+
+commit 79fe52b6e2ef9c5b7e016b6a61edb8aef708e22e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Dec 9 14:27:54 2025 +0000
+
+    bumped changelog version
+
 commit bf9037da16b34736230d8d82e9079c73cc7c774c
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue Dec 9 09:24:18 2025 -0500
