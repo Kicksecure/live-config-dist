@@ -15,7 +15,8 @@ if [ "${#new_kb_lines[@]}" != '3' ]; then
 fi
 
 ## Use '--no-live-changes' because regenerating the GRUB configuration file is done after this.
-set-system-keymap --no-live-changes "${new_kb_lines[0]}" "${new_kb_lines[1]}" "${new_kb_lines[2]}"
+## Use '--force' to avoid a confirmation prompt on encrypted systems.
+set-system-keymap --no-live-changes --force -- "${new_kb_lines[0]}" "${new_kb_lines[1]}" "${new_kb_lines[2]}"
 
 ## Not needed here, we regenerate the Dracut configuration after this.
 #dracut --regenerate-all --force
