@@ -1,3 +1,22 @@
+commit a61ac5052ac5ae94bb0a8539c8e5f88037bcdb00
+Merge: 2ee8cbb d636017
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Dec 29 02:38:31 2025 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit d636017b701aabf6762d24ba65dd56a0cae0045d
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Sun Dec 28 12:41:01 2025 -0600
+
+    Adjust keymap helper script to keep working with encrypted installations
+
+commit 2ee8cbbb38e29910842d6113e202fa87adf5a6e5
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Wed Dec 10 15:09:56 2025 +0000
+
+    bumped changelog version
+
 commit cfe711c54ebd0553976e8a6c384aa136fe61fa65
 Merge: 79fe52b 260ce03
 Author: Patrick Schleizer <adrelanos@whonix.org>
