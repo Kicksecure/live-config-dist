@@ -1,3 +1,22 @@
+commit 0778aa288c75765f16f5956896cd417846a42a35
+Merge: f87f03e 5754cfc
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Jan 3 08:02:57 2026 -0500
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit 5754cfc0e26d77df1e078c895dd2172854baa5fa
+Author: Aaron Rainbolt <arraybolt3@ubuntu.com>
+Date:   Fri Jan 2 12:52:36 2026 -0600
+
+    Add privleap actions for unprivileged browser (un)installation, inhibit privleapd restart when triggered
+
+commit f87f03e4ff955c91642f6454633073ad634d0504
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Jan 1 15:40:57 2026 +0000
+
+    bumped changelog version
+
 commit a61ac5052ac5ae94bb0a8539c8e5f88037bcdb00
 Merge: 2ee8cbb d636017
 Author: Patrick Schleizer <adrelanos@whonix.org>
