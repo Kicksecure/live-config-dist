@@ -8,6 +8,11 @@ Before=privleapd.service
 Conflicts=shutdown.target
 Before=shutdown.target
 DefaultDependencies=no
+## Only meaningful when browser-choice ships the live-mode privleap config it
+## copies. On a minimal live image without browser-choice the source is absent,
+## so skip cleanly (a cp of a missing file would fail the unit and degrade the
+## system-ready state) rather than fail.
+ConditionPathExists=/usr/share/browser-choice/live-config/browser-choice-live.conf
 
 [Service]
 Type=oneshot
