@@ -34,14 +34,12 @@ while read -r line ; do
   if [ "${line}" = "" ]; then
     continue
   fi
-  b=$(printf '%s\n' "${line}" | awk '{print $2}')
-  c=$(printf '%s\n' "${b}" | grep "/tmp")
-  d=$(printf '%s\n' "${c}" | grep "/calamares")
-  if [ "${d}" = "" ]; then
+  mnt=$(printf '%s\n' "${line}" | awk '{print $2}')
+  if [[ "${mnt}" != *"/tmp"* || "${mnt}" != *"/calamares"* ]]; then
     continue
   fi
-  printf '%s\n' "umount ${d}"
-  umount "${d}"
+  printf '%s\n' "umount ${mnt}"
+  umount "${mnt}"
 done <<< "${reverse_proc_mounts}"
 
 printf '%s\n' "$0: DONE"
