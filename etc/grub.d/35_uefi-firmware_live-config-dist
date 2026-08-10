@@ -17,9 +17,8 @@
 ## SC2154 "referenced but not assigned": grub-mkconfig EXPORTS these before
 ## running its generators -- GRUB_DEVICE and friends in its export lists,
 ## pkgdatadir at its line 37. They come from the caller's environment, which
-## shellcheck cannot see. Verified against /usr/sbin/grub-mkconfig, not assumed:
-## the two it does NOT export, GRUB_DISABLE_LINUX_UUID and
-## GRUB_DISABLE_LINUX_PARTUUID, are defaulted in the code instead.
+## shellcheck cannot see. GRUB_DISABLE_LINUX_UUID and GRUB_DISABLE_LINUX_PARTUUID
+## likewise come from grub-mkconfig's export list, defaulted to true there.
 ##
 ## SC1091 "not following": the sourced paths are resolved at RUN time against
 ## the caller's working directory, so there is no static path for shellcheck to
@@ -28,15 +27,16 @@
 ## style-ok: no-strict
 ##
 ## POSIX 'sh', so R-010's six-directive preamble cannot apply: pipefail,
-## errtrace, inherit_errexit and shift_verbose are BASH-ONLY. 'set -eu' is
-## everything POSIX sh can express, and it buys the two that matter -- an
-## unhandled failure and an unset variable both stop the script instead of
+## errtrace, inherit_errexit and shift_verbose are BASH-ONLY. errexit and
+## nounset are the only two POSIX sh can express, and they buy what matters --
+## an unhandled failure and an unset variable both stop the script instead of
 ## generating a wrong boot entry.
 ##
 ## The shebang stays '/bin/sh' deliberately. grub-mkconfig executes these, and
 ## putting bash on the boot-config path to satisfy a style rule would be a real
 ## behavioural change for a cosmetic win.
-set -eu
+set -o errexit
+set -o nounset
 
 # grub-mkconfig helper script.
 # Copyright (C) 2020  Free Software Foundation, Inc.
@@ -70,12 +70,12 @@ export TEXTDOMAINDIR="${datarootdir}/locale"
 ## own line 27, taking this generator with it and dropping the UEFI Firmware
 ## Settings boot entry.
 ##
-## Measured, not assumed: with 'set -eu' and no guard, running this under the
-## environment grub-mkconfig actually provides fails with
+## Measured, not assumed: with errexit and nounset and no guard, running this
+## under the environment grub-mkconfig actually provides fails with
 ##   grub-mkconfig_lib: 27: grub_probe: parameter not set
-set +u
+set +o nounset
 . "${pkgdatadir}/grub-mkconfig_lib"
-set -u
+set -o nounset
 
 LABEL="UEFI Firmware Settings"
 
