@@ -1,3 +1,230 @@
+commit e6be79d8fe2500f94e27b8f8f15d4fb93b3c36b5
+Merge: 06ae224 9fb6027
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Aug 24 02:00:28 2026 -0400
+
+    Merge remote-tracking branch 'refs/remotes/org-ai-assisted/ai'
+
+commit 9fb6027452ca9f1c6e2d370862a5e72c377e518a
+Author: claude (dev272 e8b76afb-795c-4739-8ebd-023de854021e) <noreply@anthropic.com>
+Date:   Fri Aug 21 04:53:32 2026 -0400
+
+    live-config-dist: drop narrative/history comments from grub generators
+
+    - Remove the verbose shellcheck-disable rationale and style-ok prose (and
+      any GRUB_DISTRIBUTOR / EMPTY-default history narrative); keep the
+      functional '# shellcheck disable=' lines and '## style-ok:' markers.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 69afddf3c8f482450f25d354781c1dee38839939
+Author: claude (dev182 e09ec5cf-4ebf-4e1b-88e5-55fbac6ef1d3) <noreply@anthropic.com>
+Date:   Mon Aug 10 13:58:59 2026 -0400
+
+    35_uefi-firmware: correct SC2154 note, use long-form set options
+
+    grub-mkconfig exports GRUB_DISABLE_LINUX_UUID and
+    GRUB_DISABLE_LINUX_PARTUUID from its own export list like GRUB_DEVICE;
+    the prior note wrongly claimed they are not exported. State their
+    actual origin so the shellcheck-disable rationale is accurate.
+
+    Also spell errexit and nounset in long '-o' form, as the pre-push
+    static gate (R-013) requires even under POSIX sh; dash accepts them.
+    The style-ok: no-strict waiver stays, since the full bash preamble
+    still cannot apply.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 4962d683fc6c068d84fb81e9e55dc6d516b42323
+Author: claude (dev182 e09ec5cf-4ebf-4e1b-88e5-55fbac6ef1d3) <noreply@anthropic.com>
+Date:   Mon Aug 10 13:56:19 2026 -0400
+
+    calamares-umount: match mount paths without grep pipelines
+
+    grep exits non-zero on no match, so a mount line lacking /tmp or
+    /calamares tripped errexit and killed the loop before reaching the
+    real Calamares mounts. Filter with bash pattern matching instead,
+    which needs no subprocess and cannot fail the script.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 3547b4b414315798c7839bb395b2aa7a5a03b997
+Author: claude (dev163 38f9745c-aed1-4fb4-b6ae-9899f20f8de2) <noreply@anthropic.com>
+Date:   Sat Aug 8 04:55:55 2026 -0400
+
+    CI: enrol in the pre-push static gate
+
+    This repo had no GitHub Actions workflow at all, so nothing verified its PRs on
+    the server side -- the only gate was ci-repro run locally.
+
+    The workflow file is the canonical consumer template, copied verbatim from
+    developer-meta-files/consumer-templates/.github/workflows/. It is managed: once
+    present, dm-packaging-helper-script's pkg_update_consumer_workflows keeps it in
+    sync, so it must not be hand-edited here.
+
+    Enrolment is deliberately a SEPARATE act from propagation: that function uses
+    pkg_update_if_exists, which only updates a workflow that already exists, and
+    pkg_install_dependabot_yml skips any repo with no .github/workflows/ directory.
+    Neither creates the first one. Hence this commit.
+
+    Scope: the repos this session actually changed and that ship shell code -- not
+    every repo lacking CI. Enrolling a repo consumes shared org-wide Actions
+    concurrency (20 jobs, the real limit; public repos are not minute-billed), so it
+    is worth spending where there is signal.
+
+    Verified BEFORE enrolling: 'ci-repro.sh --worktree' passes for this repo, so the
+    gate arrives green rather than turning someone's PR red on arrival.
+
+    NOTE, so it is not a surprise: creating .github/workflows/ makes this repo
+    eligible for the canonical .github/dependabot.yml on the next propagation pass,
+    which pkg_install_dependabot_yml installs into any repo that uses Actions.
+
+commit e6bded6c47240fef858c0057b3690c63f379c442
+Author: claude (dev163 38f9745c-aed1-4fb4-b6ae-9899f20f8de2) <noreply@anthropic.com>
+Date:   Sat Aug 8 04:11:47 2026 -0400
+
+    grub.d generators: POSIX-sh strict mode ('set -eu')
+
+    R-010's six-directive preamble cannot apply here: pipefail, errtrace,
+    inherit_errexit and shift_verbose are BASH-ONLY. 'set -eu' is everything POSIX
+    sh can express, and it buys the two that matter -- an unhandled failure and an
+    unset variable both stop the script instead of generating a wrong boot entry.
+
+    The '#!/bin/sh' shebangs stay. grub-mkconfig executes these; putting bash on the
+    boot-config path to satisfy a style rule would be a real behavioural change for
+    a cosmetic win. Each file carries a 'style-ok: no-strict' waiver naming the four
+    directives POSIX sh cannot express.
+
+    Two REAL aborts 'set -u' would have introduced, found by running them
+    ---------------------------------------------------------------------
+
+    Both would have produced a broken boot menu, and neither is visible by reading:
+
+    - 35_uefi-firmware sources GRUB's OWN grub-mkconfig_lib, which reads
+      '$grub_probe'. grub-mkconfig sets that as a plain shell variable and NEVER
+      exports it, and generators run as separate processes -- so under 'set -u' the
+      library aborted on its own line 27, taking the UEFI Firmware Settings entry
+      with it. nounset is off around that source only, the same treatment as the
+      Xsession.d snippets and the user drop-ins earlier in this pass: upstream code
+      is not ours to hold to our preamble.
+
+    - 45_debugging reads GRUB_DISABLE_LINUX_UUID and GRUB_DISABLE_LINUX_PARTUUID,
+      which are NOT in grub-mkconfig's export lists. Defaulted. It runs only inside
+      a chroot build, which is exactly where it would have aborted.
+
+    30_serial_console.cfg is NOT given 'set -eu'
+    ---------------------------------------------
+
+    It lives in /etc/default/grub.d/, which grub-mkconfig SOURCES ('. "${x}"' at its
+    line 165), so a 'set' there would rewrite grub-mkconfig's OWN shell for the rest
+    of its run. Its executable bit is misleading; nothing execs it. It gets the
+    no-strict waiver instead, and its three 'echo' diagnostics became printf.
+
+    Waivers, each with its reason in the file
+    ------------------------------------------
+
+    - allow-echo: the 'echo' calls EMIT the grub configuration. They are the output
+      format, several are multi-line continuations whose exact bytes become the boot
+      menu, and rewriting them to printf would churn boot entries for no gain.
+    - SC2034: variables like make_boot_entry are consumed by ANOTHER script, set
+      under 'set -o allexport' and read by 10_00_linux_dist.
+    - SC3043 ('local' is undefined in POSIX sh): true of the standard, not of any
+      shell these run under. Dropping 'local' would make those variables GLOBAL
+      inside a boot generator -- a real regression for a theoretical portability win.
+    - SC2154: grub-mkconfig exports GRUB_DEVICE and friends, and pkgdatadir at its
+      line 37. Verified against /usr/sbin/grub-mkconfig, not assumed -- which is how
+      the two it does NOT export were found and defaulted in code instead.
+    - SC1091: sourced paths resolved at RUN time against the caller's directory.
+
+    Testing
+    -------
+
+    Gate exit 0 in an ISOLATED checkout, all five packages.
+
+    Each generator run under 'sh' with the environment grub-mkconfig actually
+    provides (its own export lists), plus an ischroot stub for the chroot path:
+
+      6 generators, no unset aborts
+
+    And the check that matters for a boot generator -- the EMITTED configuration,
+    byte for byte:
+
+      IDENTICAL  10_05_linux_main                    (85 bytes)
+      IDENTICAL  35_uefi-firmware_live-config-dist   (128 bytes)
+      IDENTICAL  45_debugging                        (457 bytes)
+      NOT-EXERCISED  10_20_linux_live, 10_55_linux_main_advanced, 10_60_linux_live_advanced
+
+    The three NOT-EXERCISED are reported as such, not as passes: they emit nothing
+    in this environment because they exit early, and 'identical empty output' is not
+    evidence. Covering them needs a live-boot fixture.
+
+    Canaries: removing the 'set +u' guard reproduces
+      grub-mkconfig_lib: 27: grub_probe: parameter not set
+    and removing the 45_debugging defaults reproduces
+      45_debugging: 52: GRUB_DISABLE_LINUX_UUID: parameter not set
+
+    Three test defects on the way, each one a case that proved nothing:
+    - 45_debugging exits unless in a chroot, so the loop reported 'ok' for a script
+      it had not run past line 31. An ischroot stub goes on PATH now, and the case
+      fails unless the dump is actually reached.
+    - the first stub used a shell function plus 'export -f' -- a BASHISM, and the
+      script runs under 'sh' as a separate process, so it never took effect and the
+      canary passed with the fix removed.
+    - 'identical' was reported for generators emitting 0 bytes.
+
+    One thing the terminal hid: the emitted-output diff looked identical until it
+    was re-read with 'sandbox run --raw'. The display sanitizer had replaced the
+    '<' in '<unset>', making a real difference invisible. That is why 45_debugging
+    defaults to EMPTY rather than a '<unset>' marker -- the marker changed the
+    emitted text, and on a boot generator byte-identical output is worth more than
+    a nicer debug string.
+
+commit eeb1ef41c76d5519f1e3a7b1c14aa298b07c3d3c
+Author: claude (dev163 38f9745c-aed1-4fb4-b6ae-9899f20f8de2) <noreply@anthropic.com>
+Date:   Fri Aug 7 08:31:44 2026 -0400
+
+    live-config-dist: R-010 strict for 4 standalone scripts
+
+    Four of the eight are deliberately NOT included -- see below.
+
+    add-calamares-desktop-icon.dist: the five separate '>>' appends that
+    wrote the .desktop file became one printf with one redirect (SC2129).
+    Proven byte-identical before committing, not assumed.
+
+    Also documented rather than fixed, in that same file: it computes
+    DESKTOP="$(xdg-user-dir DESKTOP)" -- the user's real Desktop directory,
+    localized or relocated -- and then hardcodes ~/Desktop in every write, so
+    the icon lands in the wrong place on such systems. Using the variable would
+    change where the icon is created, which is a behaviour change beyond a
+    strict-mode pass, so it carries a reasoned SC2034 waiver instead.
+
+    calamares-umount keeps a no-tmp-hardcode waiver: its '/tmp' is a PATTERN
+    matched against mount output to find Calamares' mounts, not a temporary
+    path this script creates.
+
+    DEFERRED, because errexit changes their failure behaviour in ways I cannot
+    verify outside a real live ISO:
+    - install-host-root: 'mv /etc/fstab /etc/fstab.orig.calamares' now aborts
+      the script when it fails instead of continuing. As root it succeeds, so
+      the change only appears on the failure path -- but this runs during OS
+      installation and mutates /etc/fstab.
+    - diff-helper and calamares-bootloader-config.dist: same shape, both now
+      abort on inputs that were previously skipped silently.
+    - etc/grub.d/35_uefi-firmware: needs grub-mkconfig's exported environment
+      (pkgdatadir, datarootdir, grub-mkconfig_lib) and cannot run standalone.
+
+    Verified in an ISOLATED checkout (ci-repro.sh), gate exit 0. Sandbox
+    differential vs the pre-change scripts, output AND exit code: 4 cases, all
+    identical.
+
+    Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
+
+commit 06ae22410b20275c153bfdefdfed8662e0e7e579
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Jul 28 13:18:25 2026 +0000
+
+    bumped changelog version
+
 commit 3a9f8346787b97fc2e75e3760d35b103c34bb88d
 Merge: fac78b6 1441432
 Author: Patrick Schleizer <adrelanos@whonix.org>
