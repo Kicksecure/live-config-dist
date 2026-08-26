@@ -33,6 +33,7 @@ sequence:
 - show:
   - welcome
   - locale
+  - netprivacy
   - keyboard
   - partition
   - summary
