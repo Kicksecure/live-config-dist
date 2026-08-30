@@ -1,5 +1,8 @@
 #!/bin/bash
 
+## Copyright (C) 2024 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
 set -x
 
 true "$0: START"

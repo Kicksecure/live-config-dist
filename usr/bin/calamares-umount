@@ -1,5 +1,8 @@
 #!/bin/bash
 
+## Copyright (C) 2024 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
 ## When calamares errors out, it does not umount temporary mounts in the /tmp
 ## folder. It might be possible to configure that but keeping the mounts around
 ## can be useful to test-wise chroot into these for debugging purposes.
@@ -17,9 +20,7 @@ set -o errtrace
 shopt -s inherit_errexit
 shopt -s shift_verbose
 
-## The '/tmp' below is a PATTERN matched against mount output to find
-## Calamares' mounts, not a temporary path this script creates.
-## style-ok: no-tmp-hardcode
+## style-ok: no-tmp-hardcode - /tmp is part of a pattern match.
 
 printf '%s\n' "$0: START"
 

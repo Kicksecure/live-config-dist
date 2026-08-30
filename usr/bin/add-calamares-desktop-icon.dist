@@ -1,6 +1,10 @@
 #!/bin/bash
-# Creates an "Install Whonix" or "Install Kicksecure" icon on the live session tested with:
-# Xfce, LXDE, LXqt, Gnome, KDE, Mate, Cinnamon
+
+## Copyright (C) 2020 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## Creates an "Install Whonix" or "Install Kicksecure" icon on the live session tested with:
+## Xfce, LXDE, LXqt, Gnome, KDE, Mate, Cinnamon
 
 set -x
 
@@ -13,19 +17,12 @@ set -o errtrace
 shopt -s inherit_errexit
 shopt -s shift_verbose
 
-# We query xdg-user-dir because the Desktop directory has different
-# names for different languages
-## LATENT BUG, not fixed here: this resolves the user's real Desktop
-## directory (localized or relocated via xdg-user-dirs) but every write
-## below hardcodes ~/Desktop, so the icon lands in the wrong place on such
-## systems. Using it would change where the icon is created, which is a
-## behaviour change beyond a strict-mode pass.
-# shellcheck disable=SC2034
+## We query xdg-user-dir because the Desktop directory has different
+## names for different languages
 DESKTOP=$(xdg-user-dir DESKTOP)
 
-# Create ~/Desktop just in case this runs before the xdg folder
-# creation script.
-mkdir --parents ~/Desktop
+## Just in case this runs before the xdg folder creation script.
+mkdir --parents "${DESKTOP}"
 
 if test -f /usr/share/kicksecure/marker ; then
    project_name="Kicksecure"
@@ -35,29 +32,26 @@ else
    project_name="unknown-fork"
 fi
 
-# Among the Debian desktop environments, LXDE is the only one
-# that behaves completely different.
+## Among the Debian desktop environments, LXDE is the only one
+## that behaves completely different.
 if [ -f /usr/bin/lxsession ]; then
-    ## One printf, one redirect: byte-identical output to the five separate
-    ## appends it replaces, and no repeated truncate/append races (SC2129).
-    printf '%s\n' \
-        "[Desktop Entry]" \
-        "Type=Link" \
-        "Name=Install ${project_name}" \
-        "Icon=install-${project_name}" \
-        "URL=/usr/share/applications/install-host.desktop" \
-        > ~/Desktop/install-host.desktop
+    printf '%s\n' "[Desktop Entry]
+Type=Link
+Name=Install ${project_name}
+Icon=install-${project_name}
+URL=/usr/share/applications/install-host.desktop" \
+        > "${DESKTOP}"/install-host.desktop
 else
-    cp /usr/share/applications/install-host.desktop ~/Desktop
-    # Xfce needs this executable otherwise it complains, everything
-    # else doesn't seem to care either way.
-    chmod +x ~/Desktop/install-host.desktop
+    cp /usr/share/applications/install-host.desktop "${DESKTOP}"
+    ## Xfce needs this executable otherwise it complains, everything
+    ## else doesn't seem to care either way.
+    chmod +x "${DESKTOP}"/install-host.desktop
 fi
 
 ## Avoid Xfce "Untrusted application launcher"
 ## https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1037299
 ## https://forum.xfce.org/viewtopic.php?id=16357
-f=~/Desktop/install-host.desktop
+f="${DESKTOP}"/install-host.desktop
 gio set -t string "${f}" metadata::xfce-exe-checksum "$(sha256sum "${f}" | awk '{print $1}')"
 
 true "$0: END"
