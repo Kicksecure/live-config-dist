@@ -1,10 +1,9 @@
 #!/bin/sh
 
-# shellcheck disable=SC2034,SC3043,SC1091,SC2154
+## style-ok: no-strict - must parallel grub-mkconfig 30_uefi-firmware as much
+## as possible.
 
-## style-ok: no-strict
-set -o errexit
-set -o nounset
+## TODO: This needs updated to reflect 30_uefi-firmware in Trixie.
 
 # grub-mkconfig helper script.
 # Copyright (C) 2020  Free Software Foundation, Inc.
@@ -29,21 +28,7 @@ datarootdir="/usr/share"
 export TEXTDOMAIN=grub
 export TEXTDOMAINDIR="${datarootdir}/locale"
 
-## nounset OFF around this source, and only around it.
-##
-## grub-mkconfig_lib is GRUB's OWN upstream library and is not written for
-## nounset. It reads '${grub_probe}', which grub-mkconfig sets as a plain shell
-## variable and NEVER exports -- and generators run as separate processes, so
-## they do not inherit it. Under 'set -u' the library therefore aborts on its
-## own line 27, taking this generator with it and dropping the UEFI Firmware
-## Settings boot entry.
-##
-## Measured, not assumed: with errexit and nounset and no guard, running this
-## under the environment grub-mkconfig actually provides fails with
-##   grub-mkconfig_lib: 27: grub_probe: parameter not set
-set +o nounset
-. "${pkgdatadir}/grub-mkconfig_lib"
-set -o nounset
+. "$pkgdatadir/grub-mkconfig_lib"
 
 LABEL="UEFI Firmware Settings"
 
@@ -51,7 +36,7 @@ gettext_printf "Adding boot menu entry for UEFI Firmware Settings ...\n" >&2
 
 cat << EOF
 if [ "\$grub_platform" = "efi" ]; then
-	menuentry '${LABEL}' \$menuentry_id_option 'uefi-firmware' {
+	menuentry '$LABEL' \$menuentry_id_option 'uefi-firmware' {
 		fwsetup
 	}
 fi

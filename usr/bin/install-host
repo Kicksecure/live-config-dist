@@ -1,5 +1,8 @@
 #!/bin/bash
 
+## Copyright (C) 2020 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
 ###
 ## Wrapper for running calamares on live media
 ###
