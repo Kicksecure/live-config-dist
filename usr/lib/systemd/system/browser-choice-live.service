@@ -17,7 +17,7 @@ ConditionPathExists=/usr/share/browser-choice/live-config/browser-choice-live.co
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/usr/bin/cp /usr/share/browser-choice/live-config/browser-choice-live.conf /etc/privleap/conf.d/
+ExecStart=/usr/bin/cp /usr/share/browser-choice/live-config/browser-choice-live.conf /usr/lib/privleap/conf.d/
 
 [Install]
 WantedBy=multi-user.target
