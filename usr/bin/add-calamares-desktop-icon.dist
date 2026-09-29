@@ -46,6 +46,8 @@ else
     ## Xfce needs this executable otherwise it complains, everything
     ## else doesn't seem to care either way.
     chmod +x "${DESKTOP}"/install-host.desktop
+    ## LXQt additionally needs it marked as trusted.
+    gio set --type='string' "${DESKTOP}/install-host.desktop" 'metadata::trust' 'true'
 fi
 
 ## Avoid Xfce "Untrusted application launcher"
