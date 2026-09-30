@@ -1,3 +1,41 @@
+commit 5c214a92b344be914b95e3a4d37a128abfa0ce2a
+Merge: 88c12cc dca01df
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Sep 29 02:15:43 2026 -0400
+
+    Merge remote-tracking branch 'refs/remotes/ArrayBolt3/arraybolt3/trixie'
+
+commit dca01df5f6d3c184aafd5456cab918d812918154
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Mon Sep 28 22:56:59 2026 -0400
+
+    Enable the use of an on-ISO repo, bring back PC bootloader installation
+
+commit 88c12cc8c7f44a41c9f8c0f6c1f1a6b1e0fae532
+Merge: c889e23 75f2d9e
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Sep 28 01:59:32 2026 -0400
+
+    Merge remote-tracking branch 'refs/remotes/ArrayBolt3/arraybolt3/trixie'
+
+commit 75f2d9e4cbff9e2930099f62fdd193d14d75dd25
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Mon Sep 28 01:01:27 2026 -0400
+
+    Unbreak ISO instalation, note however that the fallback EFI bootloader does not work right yet
+
+commit 8f5b3e22cd37cdef12da8803021c403192450cad
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Sun Sep 27 21:53:52 2026 -0400
+
+    Mark install-host desktop file as trusted for LXQt
+
+commit c889e23225079f5e380498540dc087c927526229
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Sep 15 11:55:55 2026 +0000
+
+    bumped changelog version
+
 commit d134d17c9c48e78a6354a9e20e28cf784b968591
 Merge: e34fd93 e603b14
 Author: Patrick Schleizer <adrelanos@whonix.org>
