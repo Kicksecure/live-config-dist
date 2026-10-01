@@ -5,6 +5,3 @@
 live-config-dist: package-contains-file-in-etc-skel [etc/skel/*]
 
 live-config-dist: systemd-service-file-refers-to-unusual-wantedby-target basic.target [usr/lib/systemd/system/check-unrestricted-admin.service]
-
-## Not of concern, just a way of managing cdrom.sources without manual scripting.
-live-config-dist: package-installs-apt-sources

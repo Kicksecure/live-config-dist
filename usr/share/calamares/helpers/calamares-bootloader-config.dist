@@ -2,25 +2,21 @@
 
 set -x
 
-CHROOT=$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc##g")
+apt_update_from_cdrom_sources() {
+    apt-get -o Dir::Etc::sourceparts='/usr/share/live-config-dist/sources.list.d' update
+}
 
-# Install luks utilities if needed.
-# Also, set secure permissions for the initramfs if we're configuring
-# full-disk-encryption. The initramfs is re-generated later in the
-# installation process so we only set the permissions snippet without
-# regenerating the initramfs right now:
-if [ "$(mount | grep $CHROOT" " | cut -c -16)" = "/dev/mapper/luks" ]; then
-    echo "UMASK=0077" > $CHROOT/etc/initramfs-tools/conf.d/initramfs-permissions
-    chroot $CHROOT apt-get -y install cryptsetup-initramfs cryptsetup keyutils
-fi
+CHROOT=$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc##g")
 
 echo "Running bootloader-config..."
 
 if [ -d /sys/firmware/efi/efivars ]; then
     echo " * Installing grub-efi (uefi)..."
+    apt_update_from_cdrom_sources
     DEBIAN_FRONTEND=noninteractive chroot $CHROOT apt-get -y install grub-efi
 elif [ "$(dpkg --print-architecture)" = 'amd64' ]; then
     echo " * install grub... (bios)"
+    apt_update_from_cdrom_sources
     DEBIAN_FRONTEND=noninteractive chroot $CHROOT apt-get -y install grub-pc
 fi
 

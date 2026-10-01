@@ -5,6 +5,7 @@
 /etc/calamares/modules/users.conf.dist
 /etc/calamares/modules/unpackfs.conf.dist
 /etc/calamares/modules/bootloader.conf.dist
+/etc/calamares/modules/mount.conf.dist
 /etc/calamares/settings.conf.dist
 /usr/bin/add-calamares-desktop-icon.dist
 /usr/sbin/bootloader-config.dist
