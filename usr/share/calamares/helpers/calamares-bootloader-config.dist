@@ -3,7 +3,7 @@
 set -x
 
 apt_update_from_cdrom_sources() {
-    apt-get -o Dir::Etc::sourceparts='/usr/share/live-config-dist/sources.list.d' update
+    chroot $CHROOT apt-get -o Dir::Etc::sourceparts='/usr/share/live-config-dist/sources.list.d' update
 }
 
 CHROOT=$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc##g")
