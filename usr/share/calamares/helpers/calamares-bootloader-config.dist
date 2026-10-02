@@ -2,9 +2,7 @@
 
 set -x
 
-apt_update_from_cdrom_sources() {
-    chroot $CHROOT apt-get -o Dir::Etc::sourceparts='/usr/share/live-config-dist/sources.list.d' update
-}
+live_sources_param_list=( -o Dir::Etc::sourceparts='/usr/share/live-config-dist/sources.list.d' )
 
 CHROOT=$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc##g")
 
@@ -12,12 +10,12 @@ echo "Running bootloader-config..."
 
 if [ -d /sys/firmware/efi/efivars ]; then
     echo " * Installing grub-efi (uefi)..."
-    apt_update_from_cdrom_sources
-    DEBIAN_FRONTEND=noninteractive chroot $CHROOT apt-get -y install grub-efi
+    chroot $CHROOT apt-get "${live_sources_param_list[@]}" update
+    DEBIAN_FRONTEND=noninteractive chroot $CHROOT apt-get "${live_sources_param_list[@]}" -y install grub-efi
 elif [ "$(dpkg --print-architecture)" = 'amd64' ]; then
     echo " * install grub... (bios)"
-    apt_update_from_cdrom_sources
-    DEBIAN_FRONTEND=noninteractive chroot $CHROOT apt-get -y install grub-pc
+    chroot $CHROOT apt-get "${live_sources_param_list[@]}" update
+    DEBIAN_FRONTEND=noninteractive chroot $CHROOT apt-get "${live_sources_param_list[@]}" -y install grub-pc
 fi
 
 # Re-enable os-prober:
