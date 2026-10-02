@@ -59,10 +59,10 @@ sequence:
   - shellprocess@fixkblayout_part1
   - shellprocess@fixkblayout_part2
   - grubcfg
-  - packages
   - luksbootkeyfile
   - dracutlukscfg
   - shellprocess@grub_fallback
+  - packages
   # TODO: Debian forky. Maybe can be avoided thanks to:
   #       https://github.com/calamares/calamares/pull/2445
   #       Probably in calamares v3.3.15 and above.
