@@ -1,3 +1,19 @@
+commit 41d23dd1247948ecee0e56aed1a8e4e7b95d0f03
+Author: claude (dev835 cc0002ca-040b-48b1-8b7d-f4daae0945d4) <noreply@anthropic.com>
+Date:   Sat Oct 3 02:38:14 2026 -0400
+
+    grub-fallback-install: guard dpkg-reconfigure on BIOS
+
+    - dpkg-reconfigure on an absent grub-efi-${arch} (BIOS install: grub-pc/grub-cloud) exits non-zero and aborts the Calamares install; move it inside the pkg_installed guard so the fallback-EFI step no-ops
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 20549ec34ab4f11dc9fe48cbc197bc39c6dc52e0
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 2 08:30:04 2026 +0000
+
+    bumped changelog version
+
 commit 576ed30d09020cb1278035747c66af1b4b616642
 Merge: d936545 f273528
 Author: Patrick Schleizer <adrelanos@whonix.org>
