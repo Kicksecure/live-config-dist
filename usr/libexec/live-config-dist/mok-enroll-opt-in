@@ -21,17 +21,29 @@ shopt -s inherit_errexit
 shopt -s shift_verbose
 export LC_ALL=C
 
+## Record the decision on the TARGET (the Calamares session log lives only in the
+## live installer session, so without this an install cannot be audited afterwards).
+mok_log() {
+   printf '%s %s\n' "$(date -u +%FT%TZ 2>/dev/null || true)" "$*" \
+      >> /var/log/mok-enroll-opt-in.log 2>/dev/null || true
+}
+mok_log "invoked: MOK_ENROLL=[${MOK_ENROLL:-UNSET}] efi=$([ -d /sys/firmware/efi ] && printf yes || printf no)"
+
 if [ -z "${MOK_ENROLL:-}" ]; then
+   mok_log "skip: MOK_ENROLL unset"
    printf '%s\n' "$0: MOK_ENROLL unset; skipping Secure Boot MOK setup (default)."
    exit 0
 fi
 
 if [ ! -d /sys/firmware/efi ]; then
+   mok_log "skip: not EFI"
    printf '%s\n' "$0: not an EFI/UEFI install; Secure Boot MOK is not applicable; skipping."
    exit 0
 fi
 
+mok_log "run: creating MOK + signing DKMS modules"
 printf '%s\n' "$0: MOK_ENROLL set and EFI detected; creating MOK and signing DKMS modules."
 shim-signed-mok-setup
 rebuild-dkms-modules
+mok_log "done: mok.pub $([ -f /var/lib/dkms/mok.pub ] && printf present || printf MISSING)"
 printf '%s\n' "$0: done; public cert for enrollment is at /var/lib/dkms/mok.pub."
