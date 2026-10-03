@@ -27,7 +27,11 @@ mok_log() {
    printf '%s %s\n' "$(date -u +%FT%TZ 2>/dev/null || true)" "$*" \
       >> /var/log/mok-enroll-opt-in.log 2>/dev/null || true
 }
-mok_log "invoked: MOK_ENROLL=[${MOK_ENROLL:-UNSET}] efi=$([ -d /sys/firmware/efi ] && printf yes || printf no)"
+efi_state='no'
+if [ -d /sys/firmware/efi ]; then
+   efi_state='yes'
+fi
+mok_log "invoked: MOK_ENROLL=[${MOK_ENROLL:-UNSET}] efi=${efi_state}"
 
 if [ -z "${MOK_ENROLL:-}" ]; then
    mok_log "skip: MOK_ENROLL unset"
@@ -52,5 +56,9 @@ rebuild-dkms-modules
 mkdir --parents -- /var/lib/legacy-dist/do_once
 touch -- /var/lib/legacy-dist/do_once/mok-ok
 
-mok_log "done: mok.pub $([ -f /var/lib/dkms/mok.pub ] && printf present || printf MISSING) mok-ok-marker set"
+mok_pub_state='MISSING'
+if [ -f /var/lib/dkms/mok.pub ]; then
+   mok_pub_state='present'
+fi
+mok_log "done: mok.pub ${mok_pub_state}, mok-ok marker set"
 printf '%s\n' "$0: done; public cert for enrollment is at /var/lib/dkms/mok.pub."
