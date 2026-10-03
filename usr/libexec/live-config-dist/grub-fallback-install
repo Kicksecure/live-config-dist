@@ -15,7 +15,10 @@ export LC_ALL=C
 source /usr/libexec/helper-scripts/package_installed_check.sh
 
 system_arch="$(dpkg --print-architecture)"
+## grub-efi-${arch} is absent on a BIOS install (grub-pc/grub-cloud there). Both the
+## debconf seed and dpkg-reconfigure must no-op when it is absent: dpkg-reconfigure on a
+## non-installed package exits non-zero and aborts the Calamares install.
 if pkg_installed "grub-efi-${system_arch}"; then
    printf '%s\n' "grub-efi-${system_arch} grub2/force_efi_extra_removable boolean true" | debconf-set-selections
+   dpkg-reconfigure --frontend=noninteractive "grub-efi-${system_arch}"
 fi
-dpkg-reconfigure --frontend=noninteractive "grub-efi-${system_arch}"
