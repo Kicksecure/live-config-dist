@@ -45,5 +45,12 @@ mok_log "run: creating MOK + signing DKMS modules"
 printf '%s\n' "$0: MOK_ENROLL set and EFI detected; creating MOK and signing DKMS modules."
 shim-signed-mok-setup
 rebuild-dkms-modules
-mok_log "done: mok.pub $([ -f /var/lib/dkms/mok.pub ] && printf present || printf MISSING)"
+
+## Declare this MOK legitimate (a deliberately generated per-machine key, not a
+## vulnerable image-builtin one) so legacy-dist's first-boot scrub and systemcheck's
+## check-image-builtin-mok leave it in place for host-side / shim-manage-mok enrollment.
+mkdir --parents -- /var/lib/legacy-dist/do_once
+touch -- /var/lib/legacy-dist/do_once/mok-ok
+
+mok_log "done: mok.pub $([ -f /var/lib/dkms/mok.pub ] && printf present || printf MISSING) mok-ok-marker set"
 printf '%s\n' "$0: done; public cert for enrollment is at /var/lib/dkms/mok.pub."
