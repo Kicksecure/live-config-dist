@@ -45,10 +45,13 @@ if [ ! -d /sys/firmware/efi ]; then
    exit 0
 fi
 
-mok_log "run: creating MOK + signing DKMS modules"
-printf '%s\n' "$0: MOK_ENROLL set and EFI detected; creating MOK and signing DKMS modules."
+mok_log "run: creating MOK + signing DKMS and VirtualBox GA modules"
+printf '%s\n' "$0: MOK_ENROLL set and EFI detected; creating MOK and signing out-of-tree modules."
 shim-signed-mok-setup
 rebuild-dkms-modules
+## Sign the Oracle VirtualBox Guest Additions modules too (not DKMS, so the line
+## above does not cover them); no-op when the GA is not installed.
+rebuild-vbox-ga-modules
 
 ## Declare this MOK legitimate (a deliberately generated per-machine key, not a
 ## vulnerable image-builtin one) so legacy-dist's first-boot scrub and systemcheck's
