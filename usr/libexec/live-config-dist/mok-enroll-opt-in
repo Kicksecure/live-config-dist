@@ -1,0 +1,37 @@
+#!/bin/bash
+
+## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## Opt-in Secure Boot MOK setup during a Calamares install, OFF by default.
+## Enabled only when the MOK_ENROLL environment variable is set (propagated from
+## install-host via 'sudo --preserve-env' and preserved across the chroot). Then,
+## and only on an EFI/UEFI install, it creates the per-machine MOK and signs the
+## DKMS modules (e.g. tirdad) so the public cert at /var/lib/dkms/mok.pub can be
+## enrolled afterwards: a test harness via 'VBoxManage modifynvram enrollmok', or a
+## user via 'shim-manage-mok --enroll'. It deliberately does NOT run
+## 'mokutil --import' -- that queues the interactive MokManager prompt at the next
+## boot. Unset (the default) -> no key, no prompt, reproducible image.
+
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
+export LC_ALL=C
+
+if [ -z "${MOK_ENROLL:-}" ]; then
+   printf '%s\n' "$0: MOK_ENROLL unset; skipping Secure Boot MOK setup (default)."
+   exit 0
+fi
+
+if [ ! -d /sys/firmware/efi ]; then
+   printf '%s\n' "$0: not an EFI/UEFI install; Secure Boot MOK is not applicable; skipping."
+   exit 0
+fi
+
+printf '%s\n' "$0: MOK_ENROLL set and EFI detected; creating MOK and signing DKMS modules."
+shim-signed-mok-setup
+rebuild-dkms-modules
+printf '%s\n' "$0: done; public cert for enrollment is at /var/lib/dkms/mok.pub."

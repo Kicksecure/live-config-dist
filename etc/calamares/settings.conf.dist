@@ -21,6 +21,9 @@ instances:
 - id: fix_grub_d_name
   module: shellprocess
   config: shellprocess_fix_grub_d_name.conf
+- id: mok_enroll
+  module: shellprocess
+  config: shellprocess_mok_enroll.conf
 - id: livecheck_report_install_done
   module: shellprocess
   config: shellprocess_livecheck_report_install_done.conf
@@ -67,6 +70,9 @@ sequence:
   #       https://github.com/calamares/calamares/pull/2445
   #       Probably in calamares v3.3.15 and above.
   - shellprocess@fix_grub_d_name
+  # Opt-in (MOK_ENROLL env var) + EFI-only Secure Boot MOK setup + DKMS module
+  # signing; no-op by default. Before dracut so a module/initramfs change is picked up.
+  - shellprocess@mok_enroll
   # Disabled because debian-installer is disabled.
   # - sources-media-unmount
   - dracut
