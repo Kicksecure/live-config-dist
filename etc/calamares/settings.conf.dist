@@ -65,14 +65,17 @@ sequence:
   - luksbootkeyfile
   - dracutlukscfg
   - shellprocess@grub_fallback
+  # Opt-in (MOK_ENROLL env var) + EFI-only Secure Boot MOK setup + DKMS module
+  # signing; no-op by default. MUST run BEFORE 'packages' (which removes
+  # live-config-dist, so /usr/libexec/live-config-dist/mok-enroll-opt-in is gone
+  # afterwards) and before dracut (so the signed module + initramfs change is
+  # picked up).
+  - shellprocess@mok_enroll
   - packages
   # TODO: Debian forky. Maybe can be avoided thanks to:
   #       https://github.com/calamares/calamares/pull/2445
   #       Probably in calamares v3.3.15 and above.
   - shellprocess@fix_grub_d_name
-  # Opt-in (MOK_ENROLL env var) + EFI-only Secure Boot MOK setup + DKMS module
-  # signing; no-op by default. Before dracut so a module/initramfs change is picked up.
-  - shellprocess@mok_enroll
   # Disabled because debian-installer is disabled.
   # - sources-media-unmount
   - dracut
