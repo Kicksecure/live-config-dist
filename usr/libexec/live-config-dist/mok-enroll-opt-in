@@ -21,14 +21,12 @@ if ! source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/check_runtime.
    exit 1
 fi
 
-## Log, EFI-sysfs, do_once marker and dkms public-cert paths are top-level globals
-## carrying the literal production defaults, so a unit test that sources this file
-## can redirect them to a temp tree. No env indirection: production is byte-identical.
+## Log, EFI-sysfs and dkms public-cert paths are top-level globals carrying the
+## literal production defaults, so a unit test that sources this file can redirect
+## them to a temp tree. No env indirection: production is byte-identical.
 mok_enroll_log_file='/var/log/mok-enroll-opt-in.log'
 efi_sysfs_dir='/sys/firmware/efi'
-legacy_dist_do_once_dir='/var/lib/legacy-dist/do_once'
 dkms_mok_public_file='/var/lib/dkms/mok.pub'
-dkms_mok_private_file='/var/lib/dkms/mok.key'
 
 ## Record the decision on the TARGET (the Calamares session log lives only in the
 ## live installer session, so without this an install cannot be audited afterwards).
@@ -55,47 +53,19 @@ mok_enroll_opt_in() {
       return 0
    fi
 
-   ## On a FRESH install any pre-existing DKMS keypair is image-builtin and
-   ## untrusted -- exactly the shared-key class check-image-builtin-mok scrubs.
-   ## shim-signed-mok-setup REUSES such a pair (both files present) instead of
-   ## regenerating, so capture its reuse condition BEFORE running it: only a key
-   ## that did NOT already exist here is a freshly generated per-machine key.
-   mok_key_reused='no'
-   if [ -f "${dkms_mok_public_file}" ] && [ -f "${dkms_mok_private_file}" ]; then
-      mok_key_reused='yes'
-   fi
-
-   mok_log "run: creating MOK + signing DKMS and VirtualBox GA modules (key_reused=${mok_key_reused})"
+   mok_log "run: creating MOK + signing DKMS modules"
    printf '%s\n' "$0: MOK_ENROLL set and EFI detected; creating MOK and signing out-of-tree modules."
    shim-signed-mok-setup
    rebuild-dkms-modules
-   ## Sign the Oracle VirtualBox Guest Additions modules too (not DKMS, so the line
-   ## above does not cover them); no-op when the GA is not installed.
-   rebuild-vbox-ga-modules
-
-   if [ "${mok_key_reused}" = 'yes' ]; then
-      ## A reused key is NOT freshly generated here: on a fresh install it is the
-      ## image-builtin shared key. Blessing it would make legacy-dist's scrub and
-      ## systemcheck's check-image-builtin-mok skip it, leaving a shared private key
-      ## trusted. Leave it UNMARKED so the scrub removes it.
-      ## FOLLOW-UP (dev865): shim-signed-mok-setup could scrub-then-GENERATE a fresh
-      ## per-machine key in this enroll path so the opt-in still yields a usable MOK.
-      mok_log "skip mok-ok: reused a pre-existing DKMS key (not freshly generated); leaving it for the scrub"
-      printf '%s\n' "$0: reused a pre-existing DKMS key; NOT marking it legitimate (image-builtin keys are scrubbed)."
-   else
-      ## Freshly generated per-machine key: declare it legitimate so legacy-dist's
-      ## first-boot scrub and systemcheck's check-image-builtin-mok leave it in place
-      ## for host-side / shim-manage-mok enrollment.
-      mkdir --parents -- "${legacy_dist_do_once_dir}"
-      touch -- "${legacy_dist_do_once_dir}/mok-ok"
-      mok_log "mok-ok set: freshly generated per-machine key blessed"
-   fi
+   ## Oracle VirtualBox Guest Additions modules (not DKMS) are rebuilt+signed by
+   ## vbox-guest-installer and by the GA's own vboxadd boot setup, so there is no
+   ## separate GA signing step here.
 
    mok_pub_state='MISSING'
    if [ -f "${dkms_mok_public_file}" ]; then
       mok_pub_state='present'
    fi
-   mok_log "done: mok.pub ${mok_pub_state}, key_reused=${mok_key_reused}"
+   mok_log "done: mok.pub ${mok_pub_state}"
    printf '%s\n' "$0: done; public cert for enrollment is at ${dkms_mok_public_file}."
 }
 
