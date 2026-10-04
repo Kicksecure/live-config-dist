@@ -1,3 +1,56 @@
+commit 41d23dd1247948ecee0e56aed1a8e4e7b95d0f03
+Author: claude (dev835 cc0002ca-040b-48b1-8b7d-f4daae0945d4) <noreply@anthropic.com>
+Date:   Sat Oct 3 02:38:14 2026 -0400
+
+    grub-fallback-install: guard dpkg-reconfigure on BIOS
+
+    - dpkg-reconfigure on an absent grub-efi-${arch} (BIOS install: grub-pc/grub-cloud) exits non-zero and aborts the Calamares install; move it inside the pkg_installed guard so the fallback-EFI step no-ops
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 20549ec34ab4f11dc9fe48cbc197bc39c6dc52e0
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 2 08:30:04 2026 +0000
+
+    bumped changelog version
+
+commit 576ed30d09020cb1278035747c66af1b4b616642
+Merge: d936545 f273528
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 2 04:14:33 2026 -0400
+
+    Merge remote-tracking branch 'refs/remotes/ArrayBolt3/arraybolt3/trixie'
+
+commit f273528c889c49910c1f3a02e4c2fb16b6b05da9
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Thu Oct 1 20:09:52 2026 -0400
+
+    fix
+
+commit 7be94c055798939101d560b56db4cf1c9f19264e
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Thu Oct 1 19:22:52 2026 -0400
+
+    fix
+
+commit 8e3afb9d52410a7ad4cf8eb02d5058b926acf899
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Thu Oct 1 01:26:03 2026 -0400
+
+    fix
+
+commit 3aae688f3ecc31ea8eb6d2e5b0bcb2a07a863c21
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Wed Sep 30 23:50:23 2026 -0400
+
+    Attempt to fix use of the on-ISO apt repo
+
+commit d9365456fbe04b0c817ec0f84374a1a08ed00c4d
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Tue Sep 29 08:06:00 2026 +0000
+
+    bumped changelog version
+
 commit 5c214a92b344be914b95e3a4d37a128abfa0ce2a
 Merge: 88c12cc dca01df
 Author: Patrick Schleizer <adrelanos@whonix.org>
