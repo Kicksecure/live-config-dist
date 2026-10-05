@@ -3,6 +3,11 @@
 
 %sudo ALL=NOPASSWD: /usr/bin/install-host-root
 
+## Preserve the opt-in Secure Boot MOK flag across the sudo boundary so the
+## Calamares shellprocess module sees it. --preserve-env alone is subject to
+## sudo's env filtering; an explicit env_keep is the reliable channel.
+Defaults env_keep += "MOK_ENROLL"
+
 ## Necessary to allow passing through environment variables to Calamares. This
 ## allows Calamares to show a GUI window under Wayland.
 %sudo ALL=(ALL) NOPASSWD:SETENV: /usr/bin/install-host-calamares-wrapper

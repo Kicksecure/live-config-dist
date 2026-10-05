@@ -21,6 +21,9 @@ instances:
 - id: fix_grub_d_name
   module: shellprocess
   config: shellprocess_fix_grub_d_name.conf
+- id: mok_enroll
+  module: shellprocess
+  config: shellprocess_mok_enroll.conf
 - id: livecheck_report_install_done
   module: shellprocess
   config: shellprocess_livecheck_report_install_done.conf
@@ -62,6 +65,12 @@ sequence:
   - luksbootkeyfile
   - dracutlukscfg
   - shellprocess@grub_fallback
+  # Opt-in (MOK_ENROLL env var) + EFI-only Secure Boot MOK setup + DKMS module
+  # signing; no-op by default. MUST run BEFORE 'packages' (which removes
+  # live-config-dist, so /usr/libexec/live-config-dist/mok-enroll-opt-in is gone
+  # afterwards) and before dracut (so the signed module + initramfs change is
+  # picked up).
+  - shellprocess@mok_enroll
   - packages
   # TODO: Debian forky. Maybe can be avoided thanks to:
   #       https://github.com/calamares/calamares/pull/2445
