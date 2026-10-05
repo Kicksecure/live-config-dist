@@ -16,6 +16,7 @@ set -o pipefail
 set -o errtrace
 shopt -s inherit_errexit
 shopt -s shift_verbose
+export LC_ALL=C
 
 ## We query xdg-user-dir because the Desktop directory has different
 ## names for different languages
@@ -55,5 +56,13 @@ fi
 ## https://forum.xfce.org/viewtopic.php?id=16357
 f="${DESKTOP}"/install-host.desktop
 gio set -t string "${f}" metadata::xfce-exe-checksum "$(sha256sum "${f}" | awk '{print $1}')"
+
+## A gvfs metadata write emits no inotify event on the file itself, so a file
+## manager that already scanned the Desktop keeps its cached "untrusted"
+## FileInfo and still prompts on launch despite metadata::trust (LXQt) /
+## metadata::xfce-exe-checksum (Xfce) being set. touch bumps the mtime, which
+## does fire inotify, forcing a re-read of the fresh metadata. Matches upstream
+## calamares-settings-debian.
+touch -- "${f}"
 
 true "$0: END"
