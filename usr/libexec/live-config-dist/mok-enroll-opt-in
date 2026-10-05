@@ -16,7 +16,8 @@
 ## provides was_executed; a failed load must abort LOUDLY in every invocation mode
 ## (a 'bash <script>' call ignores the shebang -e), never silently skip main().
 # shellcheck source=../../../../helper-scripts/usr/libexec/helper-scripts/check_runtime.bsh
-if ! source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/check_runtime.bsh; then
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/check_runtime.bsh || true
+if ! declare -F was_executed >/dev/null; then
    printf '%s\n' "$0: ERROR: cannot source check_runtime.bsh (set HELPER_SCRIPTS_PATH)" >&2
    exit 1
 fi
