@@ -3,61 +3,50 @@
 ## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
-## Opt-in Secure Boot MOK setup during a Calamares install, OFF by default.
-## Enabled only when the MOK_ENROLL environment variable is set (propagated from
-## install-host via 'sudo --preserve-env' and preserved across the chroot). Then,
-## and only on an EFI/UEFI install, it creates the per-machine MOK and signs the
-## DKMS modules (e.g. tirdad) so the public cert at /var/lib/dkms/mok.pub can be
-## enrolled afterwards: a test harness via 'VBoxManage modifynvram enrollmok', or a
-## user via 'shim-manage-mok --enroll'. It deliberately does NOT run
-## 'mokutil --import' -- that queues the interactive MokManager prompt at the next
-## boot. Unset (the default) -> no key, no prompt, reproducible image.
+## Opt-in Secure Boot MOK setup during a Calamares install. This is disabled by
+## default, and only does anything on UEFI systems.. It deliberately does not
+## run 'mokutil --import'.
 
-## provides was_executed; a failed load must abort LOUDLY in every invocation mode
-## (a 'bash <script>' call ignores the shebang -e), never silently skip main().
+## provides was_executed
 # shellcheck source=../../../../helper-scripts/usr/libexec/helper-scripts/check_runtime.bsh
 if ! source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/check_runtime.bsh; then
-   printf '%s\n' "$0: ERROR: cannot source check_runtime.bsh (set HELPER_SCRIPTS_PATH)" >&2
+   printf '%s\n' "$0: ERROR: cannot source check_runtime.bsh!" >&2
    exit 1
 fi
 
-## Log, EFI-sysfs and dkms public-cert paths are top-level globals carrying the
-## literal production defaults, so a unit test that sources this file can redirect
-## them to a temp tree. No env indirection: production is byte-identical.
 mok_enroll_log_file='/var/log/mok-enroll-opt-in.log'
 efi_sysfs_dir='/sys/firmware/efi'
 dkms_mok_public_file='/var/lib/dkms/mok.pub'
 
-## Record the decision on the TARGET (the Calamares session log lives only in the
-## live installer session, so without this an install cannot be audited afterwards).
 mok_log() {
-   printf '%s %s\n' "$(date -u +%FT%TZ 2>/dev/null || true)" "$*" \
+   printf '%s\n' "$(date -u +%FT%TZ 2>/dev/null || true) $*" \
       >> "${mok_enroll_log_file}" 2>/dev/null || true
 }
+
 mok_enroll_opt_in() {
-   efi_state='no'
+   is_efi_system='false'
    if [ -d "${efi_sysfs_dir}" ]; then
-      efi_state='yes'
+      is_efi_system='true'
    fi
-   mok_log "invoked: MOK_ENROLL=[${MOK_ENROLL:-UNSET}] efi=${efi_state}"
+   mok_log "invoked: MOK_ENROLL=[${MOK_ENROLL:-UNSET}] is_efi_system=${is_efi_system}"
 
    if [ -z "${MOK_ENROLL:-}" ]; then
       mok_log "skip: MOK_ENROLL unset"
-      printf '%s\n' "$0: MOK_ENROLL unset; skipping Secure Boot MOK setup (default)."
+      printf '%s\n' "$0: MOK_ENROLL unset; skipping Secure Boot MOK setup."
       return 0
    fi
 
    if [ ! -d "${efi_sysfs_dir}" ]; then
       mok_log "skip: not EFI"
-      printf '%s\n' "$0: not an EFI/UEFI install; Secure Boot MOK is not applicable; skipping."
+      printf '%s\n' "$0: not an EFI/UEFI install, Secure Boot MOK is not applicable. Skipping."
       return 0
    fi
 
-   mok_log "run: creating MOK + signing DKMS modules"
+   mok_log "run: creating MOK + signing modules"
    printf '%s\n' "$0: MOK_ENROLL set and EFI detected; creating MOK and signing out-of-tree modules."
    shim-signed-mok-setup
    rebuild-dkms-modules
-   ## Oracle VirtualBox Guest Additions modules (not DKMS) are rebuilt+signed by
+   ## Oracle VirtualBox Guest Additions modules are rebuilt+signed by
    ## vbox-guest-installer and by the GA's own vboxadd boot setup, so there is no
    ## separate GA signing step here.
 
@@ -78,7 +67,7 @@ main() {
    shopt -s shift_verbose
    export LC_ALL=C
 
-   mok_enroll_opt_in "$@"
+   mok_enroll_opt_in
 }
 
 if was_executed "${BASH_SOURCE[0]}"; then
