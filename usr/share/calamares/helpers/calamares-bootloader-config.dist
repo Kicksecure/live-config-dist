@@ -10,12 +10,12 @@ echo "Running bootloader-config..."
 
 if [ -d /sys/firmware/efi/efivars ]; then
     echo " * Installing grub-efi (uefi)..."
-    chroot $CHROOT apt-get "${live_sources_param_list[@]}" update
-    DEBIAN_FRONTEND=noninteractive chroot $CHROOT apt-get "${live_sources_param_list[@]}" -y install grub-efi
+    chroot $CHROOT apt-get-noninteractive "${live_sources_param_list[@]}" update
+    chroot $CHROOT apt-get-noninteractive "${live_sources_param_list[@]}" -y install grub-efi
 elif [ "$(dpkg --print-architecture)" = 'amd64' ]; then
     echo " * install grub... (bios)"
-    chroot $CHROOT apt-get "${live_sources_param_list[@]}" update
-    DEBIAN_FRONTEND=noninteractive chroot $CHROOT apt-get "${live_sources_param_list[@]}" -y install grub-pc
+    chroot $CHROOT apt-get-noninteractive "${live_sources_param_list[@]}" update
+    chroot $CHROOT apt-get-noninteractive "${live_sources_param_list[@]}" -y install grub-pc
 fi
 
 # Re-enable os-prober:

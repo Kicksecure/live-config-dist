@@ -1,3 +1,15 @@
+commit 3501f8bc887500264852d6838ff1da5fd3cc0ac4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Oct 5 11:44:44 2026 -0400
+
+    fix
+
+commit 813bf1d33bde8e8d77632870c838f683bc73f7ed
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sat Oct 3 18:32:07 2026 +0000
+
+    bumped changelog version
+
 commit 41d23dd1247948ecee0e56aed1a8e4e7b95d0f03
 Author: claude (dev835 cc0002ca-040b-48b1-8b7d-f4daae0945d4) <noreply@anthropic.com>
 Date:   Sat Oct 3 02:38:14 2026 -0400
