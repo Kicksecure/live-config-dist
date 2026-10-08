@@ -1,3 +1,19 @@
+commit f5e9a4b4479a067df06bd2a62a0f8f61eabd9a07
+Author: claude <noreply@anthropic.com>
+Date:   Thu Oct 8 14:01:45 2026 -0400
+
+    grub-fallback-install: seed grub-pc/install_devices on BIOS
+
+    BIOS Calamares install aborted at the live-package purge: grub-pc's first reconfigure had no install device (Calamares installs grub-pc + runs grub-install but never records the debconf selection) and died 'You must correct your GRUB install devices'. Seed it with the install disk(s) grub-probe resolves, then reconfigure -- symmetric with the grub-efi branch.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit aebb281f86497a6f703ee24c4967d616896a24e6
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Mon Oct 5 15:46:44 2026 +0000
+
+    bumped changelog version
+
 commit 3501f8bc887500264852d6838ff1da5fd3cc0ac4
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Mon Oct 5 11:44:44 2026 -0400
