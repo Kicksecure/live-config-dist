@@ -21,4 +21,20 @@ system_arch="$(dpkg --print-architecture)"
 if pkg_installed "grub-efi-${system_arch}"; then
    printf '%s\n' "grub-efi-${system_arch} grub2/force_efi_extra_removable boolean true" | debconf-set-selections
    dpkg-reconfigure --frontend=noninteractive "grub-efi-${system_arch}"
+elif pkg_installed grub-pc; then
+   ## BIOS: Calamares installs grub-pc but never records grub-pc/install_devices, so its first
+   ## reconfigure (triggered when Calamares purges the live packages) aborts "You must correct
+   ## your GRUB install devices" and fails the install. Seed it, then reconfigure -- symmetric
+   ## with the grub-efi branch. EFI has no such prompt.
+
+   ## Own line, not a pipe: errexit catches a grub-probe failure here (in a pipe the
+   ## substitution takes the filter's zero exit and silently seeds an empty device).
+   grub_pc_disks="$(grub-probe --target=disk /boot/grub)"
+
+   ## One disk per line -> one comma-separated multiselect value (bash join, no external
+   ## filter). $() stripped the trailing newline, so a single disk stays bare.
+   install_devices="${grub_pc_disks//$'\n'/, }"
+
+   printf '%s\n' "grub-pc grub-pc/install_devices multiselect ${install_devices}" | debconf-set-selections
+   dpkg-reconfigure --frontend=noninteractive grub-pc
 fi
