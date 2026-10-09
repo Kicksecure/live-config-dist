@@ -17,7 +17,7 @@ source /usr/libexec/helper-scripts/package_installed_check.sh
 system_arch="$(dpkg --print-architecture)"
 if pkg_installed "grub-efi-${system_arch}"; then
    printf '%s\n' "grub-efi-${system_arch} grub2/force_efi_extra_removable boolean true" | debconf-set-selections
-   dpkg-reconfigure --frontend=noninteractive "grub-efi-${system_arch}"
+   dpkg-reconfigure-noninteractive "grub-efi-${system_arch}"
 elif pkg_installed grub-pc; then
    ## Calamares doesn't configure debconf to know where GRUB is installed, so
    ## we do that here.
