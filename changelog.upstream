@@ -1,3 +1,35 @@
+commit 16c62d1e4d04477e869feb7124428a7406d3c6b4
+Merge: 00b8689 0697ea4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 9 04:12:21 2026 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit 0697ea492cc7b3fd4b5ae89a4e8722ac7083d491
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Thu Oct 8 23:55:46 2026 -0400
+
+    Use dpkg-reconfigure-noninteractive wrapper in finish-grub-setup
+
+commit 9ab7436228debb841910ec8025f67e86ef6f56c2
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Thu Oct 8 20:01:34 2026 -0400
+
+    Comments, rename grub-fallback-install to finish-grub-setup since its scope has been expanded
+
+commit 37c85e1e10dd2594e1719be0882daf1ce1e84687
+Merge: 7f3e023 00b8689
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Thu Oct 8 19:43:33 2026 -0400
+
+    Merge branch 'master' into arraybolt3/trixie
+
+commit 00b86895b6489328b9e94b8c23e3b60f4a1e9430
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Thu Oct 8 21:36:35 2026 +0000
+
+    bumped changelog version
+
 commit f5e9a4b4479a067df06bd2a62a0f8f61eabd9a07
 Author: claude <noreply@anthropic.com>
 Date:   Thu Oct 8 14:01:45 2026 -0400
@@ -7,6 +39,26 @@ Date:   Thu Oct 8 14:01:45 2026 -0400
     BIOS Calamares install aborted at the live-package purge: grub-pc's first reconfigure had no install device (Calamares installs grub-pc + runs grub-install but never records the debconf selection) and died 'You must correct your GRUB install devices'. Seed it with the install disk(s) grub-probe resolves, then reconfigure -- symmetric with the grub-efi branch.
 
     Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 7f3e023265aeb1b1328489dae7cce0b736ac6b6c
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Mon Oct 5 21:07:21 2026 -0400
+
+    Polish
+
+commit cabf33586cd92c3e41238429ebb63cb50224311e
+Merge: f710cd6 e265172
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Mon Oct 5 21:04:42 2026 -0400
+
+    Merge branch 'ai' into arraybolt3/trixie
+
+commit f710cd6d27f298b2ab86cb9e2631ce4b90a7abce
+Merge: bc0a931 aebb281
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Mon Oct 5 20:00:51 2026 -0400
+
+    Merge branch 'master' into arraybolt3/trixie
 
 commit aebb281f86497a6f703ee24c4967d616896a24e6
 Author: Patrick Schleizer <adrelanos@whonix.org>
@@ -20,6 +72,151 @@ Date:   Mon Oct 5 11:44:44 2026 -0400
 
     fix
 
+commit e265172bfd749266ea62aa61446ef9b47cf9cc82
+Author: claude <noreply@anthropic.com>
+Date:   Mon Oct 5 11:19:46 2026 -0400
+
+    Guard check_runtime source on was_executed postcondition
+
+    - `source ... || true` + `declare -F was_executed` asserts the lib loaded, not
+      that source returned 0
+    - closes silent-green hole: a truncated check_runtime.bsh can source 0 yet never
+      define was_executed
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 4a9c669cd4333463cef44c4d87c5aaae90a734c5
+Author: claude (dev926 e828828c-ea6d-41e5-923a-9110e3823e1b) <noreply@anthropic.com>
+Date:   Mon Oct 5 10:52:33 2026 -0400
+
+    Restore touch so LXQt/Xfce re-read trust metadata
+
+    - gvfs metadata writes fire no inotify; without a stat bump pcmanfm-qt
+      keeps its cached untrusted FileInfo and still prompts despite
+      metadata::trust. touch restores the upstream behavior dropped in the
+      .dist rework.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit bc0a9315b10f0eaf2fedcac329c57234e0d8c3b0
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Sun Oct 4 23:40:48 2026 -0400
+
+    Polish
+
+commit 349e4c0e883e8a7a5ce4a1056e17fc34c4b46b35
+Merge: bf70cee 084b7ec
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Sun Oct 4 23:05:43 2026 -0400
+
+    Merge branch 'ai' into arraybolt3/trixie
+
+commit 084b7ec7f1d26773adaa6e85c2801766bd1f2f19
+Author: claude <noreply@anthropic.com>
+Date:   Sun Oct 4 05:41:44 2026 -0400
+
+    mok-enroll-opt-in: drop GA call + mok-ok marker
+
+    - arraybolt3/trixie remaster removed rebuild-vbox-ga-modules (redundant with
+      vbox-guest-installer); drop the now-dangling call (enroll aborted at it)
+    - check-image-builtin-mok no longer honors mok-ok; drop the orphaned write
+    - GA modules are signed by vbox-guest-installer / boot-time vboxadd
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit b9478d87ea890f45daf8047a5a1709ac8c268a05
+Merge: a3d6aac bf70cee
+Author: assisted-by-ai <assisted-by-ai@users.noreply.github.com>
+Date:   Sun Oct 4 03:48:43 2026 -0400
+
+    Merge arraybolt3/trixie into ai (remaster)
+
+commit a3d6aaccc78d2f44400dfbbd0b22945cebca81e7
+Merge: c1db9b8 813bf1d
+Author: claude (dev881 6cec2e84-fd33-4f97-9513-c1ef5102b10b) <noreply@anthropic.com>
+Date:   Sun Oct 4 03:29:09 2026 -0400
+
+    Merge remote-tracking branch 'github-kicksecure/master' into ai
+
+    # Conflicts:
+    #       debian/changelog
+
+commit bf70cee2d389ae4ddc1d4a402641be6b2ab4ee67
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Sat Oct 3 22:56:58 2026 -0400
+
+    comment
+
+commit c1db9b8f1f82d466239e002716b6b97fb6f1e2ba
+Author: claude <noreply@anthropic.com>
+Date:   Sat Oct 3 19:19:33 2026 -0400
+
+    mok-enroll-opt-in: bless mok-ok only if generated
+
+    - SECURITY: bless the mok-ok legitimacy marker ONLY when the DKMS keypair was
+      freshly GENERATED here, never when shim-signed-mok-setup reused a pre-existing
+      one. On a fresh install a pre-existing keypair is the image-builtin shared key;
+      blessing it made legacy-dist's scrub + check-image-builtin-mok skip it. A
+      reused key is now left unmarked for the scrub.
+    - fail loud if check_runtime.bsh cannot load (was: silent exit 0 under bash)
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit c1b618388da167cd2e16d07c100f42671734e464
+Author: claude <noreply@anthropic.com>
+Date:   Sat Oct 3 18:42:46 2026 -0400
+
+    Make mok-enroll-opt-in source-able for unit tests
+
+    - was_executed guard + strict-in-main; body wrapped in mok_enroll_opt_in()
+    - path literals -> top-level globals a sourcing test redirects
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 19b1070250ef4bbf7219f2fa12128afda98e6bf8
+Author: claude <noreply@anthropic.com>
+Date:   Sat Oct 3 18:14:28 2026 -0400
+
+    mok-enroll-opt-in: also sign the VirtualBox GA modules
+
+    - call rebuild-vbox-ga-modules after rebuild-dkms-modules so the Oracle GA
+      (non-DKMS) is signed with the same per-machine MOK and loads under SB
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 5fcf97212d1b57b2faef8cd4a745cc5cbd1db31a
+Author: claude <noreply@anthropic.com>
+Date:   Sat Oct 3 16:46:35 2026 -0400
+
+    mok-enroll-opt-in: idiomatic log state (no inline printf conditionals)
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 62c6e2be1283998aa1fec18f44f6371fc8975cb0
+Author: claude <noreply@anthropic.com>
+Date:   Sat Oct 3 16:43:42 2026 -0400
+
+    mok-enroll-opt-in: mark the generated MOK legitimate (mok-ok)
+
+    - after creating the per-machine MOK, drop /var/lib/legacy-dist/do_once/mok-ok
+      so legacy-dist's first-boot scrub and systemcheck leave it in place for
+      host-side / shim-manage-mok enrollment
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 2fd182c0cb540e1377f0b7f615ed4ee7790468bd
+Author: claude <noreply@anthropic.com>
+Date:   Sat Oct 3 14:48:08 2026 -0400
+
+    Preserve MOK_ENROLL across sudo + log the module decision
+
+    - sudoers: env_keep += MOK_ENROLL so the opt-in flag reaches the Calamares
+      shellprocess (bare --preserve-env was not carrying it reliably)
+    - mok-enroll-opt-in: log decision to /var/log/mok-enroll-opt-in.log on the
+      target (the Calamares session log lives only in the live session)
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
 commit 813bf1d33bde8e8d77632870c838f683bc73f7ed
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sat Oct 3 18:32:07 2026 +0000
@@ -27,6 +224,57 @@ Date:   Sat Oct 3 18:32:07 2026 +0000
     bumped changelog version
 
 commit 41d23dd1247948ecee0e56aed1a8e4e7b95d0f03
+Author: claude (dev835 cc0002ca-040b-48b1-8b7d-f4daae0945d4) <noreply@anthropic.com>
+Date:   Sat Oct 3 02:38:14 2026 -0400
+
+    grub-fallback-install: guard dpkg-reconfigure on BIOS
+
+    - dpkg-reconfigure on an absent grub-efi-${arch} (BIOS install: grub-pc/grub-cloud) exits non-zero and aborts the Calamares install; move it inside the pkg_installed guard so the fallback-EFI step no-ops
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit e748f33c16cd5c8e79b5a342143af1d203062171
+Author: claude <noreply@anthropic.com>
+Date:   Sat Oct 3 13:25:02 2026 -0400
+
+    Calamares: run mok_enroll before packages removal
+
+    - the packages module purges live-config-dist, so mok_enroll placed after
+      it failed with exit 127 (mok-enroll-opt-in gone); still before dracut so
+      the signed module + initramfs change is picked up
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit e07b1a0ced7b435d86cde0d86f4626daf471e265
+Author: claude <noreply@anthropic.com>
+Date:   Sat Oct 3 10:53:25 2026 -0400
+
+    live-config-dist 3:10.7-1
+
+    - version bump so the MOK_ENROLL Calamares change ships; a same-version package
+      left the old settings.conf conffile in place
+
+    Changelog-manual-ok: genmkfile deb-chl-bumpup-major bump for the MOK_ENROLL feature
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit d8250b3744337a48e8d8093b18f3ac30f1ec4dc4
+Author: claude <noreply@anthropic.com>
+Date:   Sat Oct 3 08:04:38 2026 -0400
+
+    Calamares: opt-in Secure Boot MOK setup via MOK_ENROLL
+
+    - gated on MOK_ENROLL env + EFI; default no-op keeps the image reproducible and
+      raises no MokManager prompt for ordinary installs
+    - creates the per-machine MOK and signs DKMS modules (tirdad) so the public cert
+      is enrollable; deliberately no mokutil --import (that queues the interactive
+      MokManager screen at reboot)
+    - lets a Secure Boot test harness (VBoxManage modifynvram enrollmok) or a user
+      (shim-manage-mok --enroll) make tirdad load under Secure Boot
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit d8836171fdd6936f70642a976a1d5d86b2ffa6a9
 Author: claude (dev835 cc0002ca-040b-48b1-8b7d-f4daae0945d4) <noreply@anthropic.com>
 Date:   Sat Oct 3 02:38:14 2026 -0400
 
@@ -48,6 +296,13 @@ Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Oct 2 04:14:33 2026 -0400
 
     Merge remote-tracking branch 'refs/remotes/ArrayBolt3/arraybolt3/trixie'
+
+commit 853149d9a58e0eb24732c6be120d123955f34d8b
+Merge: 05867a5 f273528
+Author: assisted-by-ai <assisted-by-ai@users.noreply.github.com>
+Date:   Fri Oct 2 03:14:44 2026 -0400
+
+    Merge arraybolt3/trixie into ai (remaster)
 
 commit f273528c889c49910c1f3a02e4c2fb16b6b05da9
 Author: Aaron Rainbolt <arraybolt3@gmail.com>
@@ -73,11 +328,25 @@ Date:   Wed Sep 30 23:50:23 2026 -0400
 
     Attempt to fix use of the on-ISO apt repo
 
+commit 05867a53bad68a557c6cf93c1da59e7ae6208744
+Merge: fd29658 d936545
+Author: assisted-by-ai <assisted-by-ai@users.noreply.github.com>
+Date:   Wed Sep 30 15:29:47 2026 -0400
+
+    Merge master into ai (remaster)
+
 commit d9365456fbe04b0c817ec0f84374a1a08ed00c4d
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue Sep 29 08:06:00 2026 +0000
 
     bumped changelog version
+
+commit fd29658274cf14d5340fd81d73c9b6976c44376e
+Merge: 54f7bb9 dca01df
+Author: assisted-by-ai <assisted-by-ai@users.noreply.github.com>
+Date:   Tue Sep 29 03:54:56 2026 -0400
+
+    Merge arraybolt3/trixie into ai (remaster)
 
 commit 5c214a92b344be914b95e3a4d37a128abfa0ce2a
 Merge: 88c12cc dca01df
@@ -111,6 +380,13 @@ Date:   Sun Sep 27 21:53:52 2026 -0400
 
     Mark install-host desktop file as trusted for LXQt
 
+commit 54f7bb9feb921609c65694e7f799032be5262bc4
+Merge: 6e36d93 c889e23
+Author: assisted-by-ai <assisted-by-ai@users.noreply.github.com>
+Date:   Tue Sep 15 12:51:32 2026 -0400
+
+    Merge master into ai (remaster)
+
 commit c889e23225079f5e380498540dc087c927526229
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Tue Sep 15 11:55:55 2026 +0000
@@ -129,6 +405,13 @@ Author: Aaron Rainbolt <arraybolt3@gmail.com>
 Date:   Sun Sep 13 18:46:18 2026 -0400
 
     Move privleap configuration to non-conffile location
+
+commit 6e36d935a45f88f607f37a4b1c5f1107fb16c4bf
+Merge: 9fb6027 e34fd93
+Author: claude <noreply@anthropic.com>
+Date:   Tue Sep 8 13:12:14 2026 -0400
+
+    Merge branch 'master' into ai
 
 commit e34fd937d84f928206df5ccd7295e511f4475b38
 Author: Patrick Schleizer <adrelanos@whonix.org>
