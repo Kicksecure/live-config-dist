@@ -19,9 +19,9 @@ system_arch="$(dpkg --print-architecture)"
 grub_pc_dpkg_query_output="$(dpkg-query --show --showformat='${Status}' "grub-pc" 2>&1)" || true
 grub_efi_dpkg_query_output="$(dpkg-query --show --showformat='${Status}' "grub-efi-${system_arch}" 2>&1)" || true
 
-printf '%s\n' "DEBUG: system_arch: '${system_arch}'"
-printf '%s\n' "DEBUG: grub-pc grub_pc_dpkg_query_output: '${grub_pc_dpkg_query_output}'"
-printf '%s\n' "DEBUG: grub-efi-${system_arch} grub_efi_dpkg_query_output: '${grub_efi_dpkg_query_output}'"
+printf '%s\n' "$0: DEBUG: system_arch: '${system_arch}'"
+printf '%s\n' "$0: DEBUG: grub-pc grub_pc_dpkg_query_output: '${grub_pc_dpkg_query_output}'"
+printf '%s\n' "$0: DEBUG: grub-efi-${system_arch} grub_efi_dpkg_query_output: '${grub_efi_dpkg_query_output}'"
 
 if pkg_installed "grub-efi-${system_arch}"; then
    printf '%s\n' "grub-efi-${system_arch} grub2/force_efi_extra_removable boolean true" | debconf-set-selections
