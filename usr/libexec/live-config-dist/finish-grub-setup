@@ -25,5 +25,5 @@ elif pkg_installed grub-pc; then
    ## grub-probe can output multiple disks.
    install_devices="${grub_pc_disks//$'\n'/, }"
    printf '%s\n' "grub-pc grub-pc/install_devices multiselect ${install_devices}" | debconf-set-selections
-   dpkg-reconfigure --frontend=noninteractive grub-pc
+   dpkg-reconfigure-noninteractive grub-pc
 fi
