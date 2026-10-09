@@ -16,6 +16,7 @@ set -o pipefail
 set -o errtrace
 shopt -s inherit_errexit
 shopt -s shift_verbose
+export LC_ALL=C
 
 ## We query xdg-user-dir because the Desktop directory has different
 ## names for different languages
@@ -55,5 +56,8 @@ fi
 ## https://forum.xfce.org/viewtopic.php?id=16357
 f="${DESKTOP}"/install-host.desktop
 gio set -t string "${f}" metadata::xfce-exe-checksum "$(sha256sum "${f}" | awk '{print $1}')"
+
+## Trigger inotify so that desktop environments notice the trust change.
+touch -- "${f}"
 
 true "$0: END"

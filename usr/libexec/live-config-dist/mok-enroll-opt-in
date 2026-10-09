@@ -1,0 +1,76 @@
+#!/bin/bash -e
+
+## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## Opt-in Secure Boot MOK setup during a Calamares install. This is disabled by
+## default, and only does anything on UEFI systems.. It deliberately does not
+## run 'mokutil --import'.
+
+## provides was_executed
+# shellcheck source=../../../../helper-scripts/usr/libexec/helper-scripts/check_runtime.bsh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/check_runtime.bsh || true
+if ! declare -F was_executed >/dev/null; then
+   printf '%s\n' "$0: ERROR: cannot source check_runtime.bsh!" >&2
+   exit 1
+fi
+
+mok_enroll_log_file='/var/log/mok-enroll-opt-in.log'
+efi_sysfs_dir='/sys/firmware/efi'
+dkms_mok_public_file='/var/lib/dkms/mok.pub'
+
+mok_log() {
+   printf '%s\n' "$(date -u +%FT%TZ 2>/dev/null || true) $*" \
+      >> "${mok_enroll_log_file}" 2>/dev/null || true
+}
+
+mok_enroll_opt_in() {
+   is_efi_system='false'
+   if [ -d "${efi_sysfs_dir}" ]; then
+      is_efi_system='true'
+   fi
+   mok_log "invoked: MOK_ENROLL=[${MOK_ENROLL:-UNSET}] is_efi_system=${is_efi_system}"
+
+   if [ -z "${MOK_ENROLL:-}" ]; then
+      mok_log "skip: MOK_ENROLL unset"
+      printf '%s\n' "$0: MOK_ENROLL unset; skipping Secure Boot MOK setup."
+      return 0
+   fi
+
+   if [ ! -d "${efi_sysfs_dir}" ]; then
+      mok_log "skip: not EFI"
+      printf '%s\n' "$0: not an EFI/UEFI install, Secure Boot MOK is not applicable. Skipping."
+      return 0
+   fi
+
+   mok_log "run: creating MOK + signing modules"
+   printf '%s\n' "$0: MOK_ENROLL set and EFI detected; creating MOK and signing out-of-tree modules."
+   shim-signed-mok-setup
+   rebuild-dkms-modules
+   ## Oracle VirtualBox Guest Additions modules are rebuilt+signed by
+   ## vbox-guest-installer and by the GA's own vboxadd boot setup, so there is no
+   ## separate GA signing step here.
+
+   mok_pub_state='MISSING'
+   if [ -f "${dkms_mok_public_file}" ]; then
+      mok_pub_state='present'
+   fi
+   mok_log "done: mok.pub ${mok_pub_state}"
+   printf '%s\n' "$0: done; public cert for enrollment is at ${dkms_mok_public_file}."
+}
+
+main() {
+   set -o errexit
+   set -o nounset
+   set -o pipefail
+   set -o errtrace
+   shopt -s inherit_errexit
+   shopt -s shift_verbose
+   export LC_ALL=C
+
+   mok_enroll_opt_in
+}
+
+if was_executed "${BASH_SOURCE[0]}"; then
+   main "$@"
+fi

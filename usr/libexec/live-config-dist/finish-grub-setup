@@ -1,0 +1,29 @@
+#!/bin/bash
+
+## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
+export LC_ALL=C
+
+# shellcheck source=../../../../helper-scripts/usr/libexec/helper-scripts/package_installed_check.sh
+source /usr/libexec/helper-scripts/package_installed_check.sh
+
+system_arch="$(dpkg --print-architecture)"
+if pkg_installed "grub-efi-${system_arch}"; then
+   printf '%s\n' "grub-efi-${system_arch} grub2/force_efi_extra_removable boolean true" | debconf-set-selections
+   dpkg-reconfigure --frontend=noninteractive "grub-efi-${system_arch}"
+elif pkg_installed grub-pc; then
+   ## Calamares doesn't configure debconf to know where GRUB is installed, so
+   ## we do that here.
+   grub_pc_disks="$(grub-probe --target=disk /boot/grub)"
+   ## grub-probe can output multiple disks.
+   install_devices="${grub_pc_disks//$'\n'/, }"
+   printf '%s\n' "grub-pc grub-pc/install_devices multiselect ${install_devices}" | debconf-set-selections
+   dpkg-reconfigure-noninteractive grub-pc
+fi

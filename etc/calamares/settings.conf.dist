@@ -15,12 +15,15 @@ instances:
 - id: fixkblayout_part2
   module: shellprocess
   config: shellprocess_fixkblayout_part2.conf
-- id: grub_fallback
+- id: grub_setup
   module: shellprocess
-  config: shellprocess_grub_fallback.conf
+  config: shellprocess_grub_setup.conf
 - id: fix_grub_d_name
   module: shellprocess
   config: shellprocess_fix_grub_d_name.conf
+- id: mok_enroll
+  module: shellprocess
+  config: shellprocess_mok_enroll.conf
 - id: livecheck_report_install_done
   module: shellprocess
   config: shellprocess_livecheck_report_install_done.conf
@@ -61,7 +64,8 @@ sequence:
   - grubcfg
   - luksbootkeyfile
   - dracutlukscfg
-  - shellprocess@grub_fallback
+  - shellprocess@grub_setup
+  - shellprocess@mok_enroll
   - packages
   # TODO: Debian forky. Maybe can be avoided thanks to:
   #       https://github.com/calamares/calamares/pull/2445
