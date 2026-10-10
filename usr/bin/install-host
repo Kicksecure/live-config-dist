@@ -19,6 +19,9 @@ shopt -s inherit_errexit
 shopt -s shift_verbose
 export LC_ALL=C
 
+# shellcheck source=../../../helper-scripts/usr/libexec/helper-scripts/light_sleep.bsh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/light_sleep.bsh
+
 kernel_cmdline=''
 if [ -f /proc/cmdline ]; then
   kernel_cmdline="$(cat -- /proc/cmdline)"
@@ -54,8 +57,12 @@ fi
 ## loop wait rather than spin. The pkexec/sudo assert below stays the authoritative gate.
 if [[ "${kernel_cmdline}" == *'boot-role=unrestricted-admin'* ]]; then
    system_ready_waited=''
-   ## 36 iterations x up to ~5s per call ~= 180s ceiling.
-   for _ in $(seq 1 36); do
+   ## Up to 36 iterations: each = one leaprun readiness probe (blocks up to ~5s while the
+   ## system is still starting) plus light_sleep 1. ~180s+ ceiling. light_sleep guarantees a
+   ## per-iteration wait even if leaprun returns immediately (missing binary, rejected socket),
+   ## so the loop can neither busy-spin nor collapse the wait.
+   waited=0
+   while [ "${waited}" -lt 36 ]; do
       system_ready_result="$(leaprun system-ready-check 2>/dev/null || true)"
       if [ "${system_ready_result}" = 'running' ] || [ "${system_ready_result}" = 'degraded' ]; then
          break
@@ -64,6 +71,8 @@ if [[ "${kernel_cmdline}" == *'boot-role=unrestricted-admin'* ]]; then
          printf '%s\n' "$0: waiting for the system to finish starting before elevating..."
          system_ready_waited='yes'
       fi
+      light_sleep 1
+      waited=$(( waited + 1 ))
    done
 fi
 
