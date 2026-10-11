@@ -1,8 +1,240 @@
+commit 1bd7b0d54872b1414d2fe5542d723b9ecda30c44
+Merge: 3303564 de915e4
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 11 14:41:29 2026 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit de915e43b30e1be452c66290dcad22867e861da8
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Sun Oct 11 12:44:48 2026 -0400
+
+    Overhaul for better maintainability, add stable disk ID code for BIOS installations
+
+commit 755c6bccc3ae18b420bffe45c7c68b5fdd48fdc7
+Merge: 3303564 259babc
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Sun Oct 11 01:00:53 2026 -0400
+
+    Merge branch 'ai' into arraybolt3/trixie
+
+commit 259babca0515b036a866cbfd0a961bd91c4f0fd2
+Author: claude (dev1062 4bc70ca1-f4d4-409d-b0a6-bdb4e36413a1) <noreply@anthropic.com>
+Date:   Sat Oct 10 19:28:45 2026 -0400
+
+    install-host: gate readiness wait with light_sleep
+
+    - CodeRabbit: a fast-failing leaprun could busy-spin or collapse the ~180s wait; an explicit waited counter + light_sleep 1 per not-ready iteration guarantees the per-iteration wait.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit e28d236199438105145539b5e7f86657e62bef60
+Author: claude (dev1062 4bc70ca1-f4d4-409d-b0a6-bdb4e36413a1) <noreply@anthropic.com>
+Date:   Sat Oct 10 14:06:43 2026 -0400
+
+    finish-grub-setup: keep reconfigure error output
+
+    - errexit aborted AT the capture assignment on a non-zero dpkg-reconfigure, skipping the printf and swallowing the diagnostic (Calamares saw a bare 'exit code 1'); capture rc with '|| rc=$?', print, then act.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 6fc72fb71b6b8d12fd354f3a617ae00da5080b92
+Author: claude (dev1062 4bc70ca1-f4d4-409d-b0a6-bdb4e36413a1) <noreply@anthropic.com>
+Date:   Sat Oct 10 12:45:55 2026 -0400
+
+    Harden EFI grub setup against silent failures
+
+    - grub.d rename marked best-effort ('-'): grubcfg may create no file (no ESP / non-EFI) or already name it .cfg; a hard mv aborted the whole install.
+
+    - finish-grub-setup: grub-efi postinst swallows a failing grub-install (returns 0), so verify its failure marker and fail loud -- else a Secure-Boot-unbootable install reads as success.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit fb77b3ea62fc554be3f13a9d209f3b7b41be2f79
+Author: claude (dev1027 fe38af13-aa6f-4bba-a3fb-f5a1954ee017) <noreply@anthropic.com>
+Date:   Sat Oct 10 04:29:27 2026 -0400
+
+    Keep EFI-only finish-grub-setup; rename grub.d early
+
+    - Without it EFI/BOOT/BOOTX64.EFI was plain grubx64.efi, not the shim
+    - grubcfg's 00calamares lacked .cfg until the end, so grub-install never
+      saw GRUB_ENABLE_CRYPTODISK
+
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+commit 0d53d0d30fcbedfd98d4f57e7f4630a85e859dd9
+Author: claude (dev1027 fe38af13-aa6f-4bba-a3fb-f5a1954ee017) <noreply@anthropic.com>
+Date:   Fri Oct 9 17:09:01 2026 -0400
+
+    Run grub install after grubcfg; drop finish-grub-setup
+
+    - grub-install ran before grubcfg; only finish-grub-setup's reconfigure
+      saw the final /etc/default/grub (cryptodisk for /boot in LUKS)
+    - Seeding grub-efi's removable-path answer up front makes the script moot
+
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+commit f68baf2bd98c34346dbb4464941a489d54875063
+Author: claude (dev1027 fe38af13-aa6f-4bba-a3fb-f5a1954ee017) <noreply@anthropic.com>
+Date:   Fri Oct 9 17:02:29 2026 -0400
+
+    finish-grub-setup: drop the redundant grub-pc branch
+
+    - bootloader-config already seeds + installs grub-pc to the probed disk
+      (or aborts); this branch only repeated the same grub-install
+
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+commit c37bbb7ec1112ea4fda0e4b9852c08cf111c3b2c
+Author: claude (dev1027 fe38af13-aa6f-4bba-a3fb-f5a1954ee017) <noreply@anthropic.com>
+Date:   Fri Oct 9 16:28:23 2026 -0400
+
+    bootloader-config: state only verified seed facts
+
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+commit a8b924a35b0fec6be87e5403071b1235f0d8dd6e
+Author: claude (dev1027 fe38af13-aa6f-4bba-a3fb-f5a1954ee017) <noreply@anthropic.com>
+Date:   Fri Oct 9 11:51:57 2026 -0400
+
+    bootloader-config: reach the explicit error messages
+
+    - errexit killed the CHROOT and grub-probe assignments before their
+      explicit errors could print (review finding)
+
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+commit 701b2323b943e4ff33435ebb3543e01fbb0753ed
+Author: claude (dev1027 fe38af13-aa6f-4bba-a3fb-f5a1954ee017) <noreply@anthropic.com>
+Date:   Fri Oct 9 11:39:48 2026 -0400
+
+    grub setup: temporary debug logs into the target
+
+    - Calamares does not surface these jobs' output; a plain-chroot repro
+      installs grub-pc cleanly, so capture the live environment + state
+    - Logs: /var/log/live-config-dist/{bootloader-config,finish-grub-setup}.log
+
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+commit 6f602c9bd8a9f29dad0635eff743e04b98e96344
+Author: claude (dev1027 fe38af13-aa6f-4bba-a3fb-f5a1954ee017) <noreply@anthropic.com>
+Date:   Fri Oct 9 11:25:39 2026 -0400
+
+    bootloader-config: full strict mode
+
+    - Without errexit a failed apt-get install left grub-pc half-configured and
+      the install carried on, failing only at the later packages step
+
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+commit 575e5341ab4d6656763c30472132a94a5ac663e3
+Author: claude (dev1027 fe38af13-aa6f-4bba-a3fb-f5a1954ee017) <noreply@anthropic.com>
+Date:   Fri Oct 9 11:03:21 2026 -0400
+
+    bootloader-config: fail loud if /boot or device unknown
+
+    - Seeding an empty install_devices just reproduces the BIOS failure later
+    - Note why the helper runs after partition + mount (settings.conf order)
+
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+commit cde7f00b3eeefe4bce4c38333643d280a72b3f2c
+Author: claude (dev1027 fe38af13-aa6f-4bba-a3fb-f5a1954ee017) <noreply@anthropic.com>
+Date:   Fri Oct 9 10:53:04 2026 -0400
+
+    finish-grub-setup: restore grub package DEBUG output
+
+    - Needed to show whether the grub-pc branch runs after the seed fix
+
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+commit dc212363ed9727485870769e702f3721c517b307
+Author: claude <noreply@anthropic.com>
+Date:   Fri Oct 9 10:29:58 2026 -0400
+
+    check-unrestricted-admin: keep hardened style
+
+    - Strict mode and printf win over byte-parity with arraybolt3/trixie
+
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+commit c551211fa3fd3d1ee853c6eddd9cc6c827bcd29f
+Author: claude <noreply@anthropic.com>
+Date:   Fri Oct 9 10:29:58 2026 -0400
+
+    check-unrestricted-admin: match arraybolt3/trixie
+
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+commit 0af6e90eef7e7583aef2e01976ae8d56bb873cc5
+Author: claude <noreply@anthropic.com>
+Date:   Fri Oct 9 10:29:57 2026 -0400
+
+    Seed grub-pc install device before BIOS install
+
+    - Unseeded, grub-pc postinst leaves it unconfigured; later configure aborts
+    - Probe /boot: on encrypted installs / is the LUKS mapper, not embeddable
+
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+commit 0e3a2eb37b3d0217586719853a94c3cedff5e056
+Author: claude <noreply@anthropic.com>
+Date:   Fri Oct 9 10:29:56 2026 -0400
+
+    install-host: lift system-ready wait cap to ~180s
+
+    - 6x5s=30s regressed the prior 180s wait; a slow-media purge exceeding 30s aborted the install prematurely (codex/agy/claude).
+
+    - restore a one-time 'waiting...' diagnostic for the kept-open installer terminal.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 7787c0895f15ee2821052374aff2eec429052660
+Author: claude <noreply@anthropic.com>
+Date:   Fri Oct 9 10:29:56 2026 -0400
+
+    install-host: await system-ready before elevating
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit ac375e7055419ab533d76c3e86ed64b3beae4924
+Merge: 9626949 3303564
+Author: assisted-by-ai <assisted-by-ai@users.noreply.github.com>
+Date:   Fri Oct 9 08:24:53 2026 -0400
+
+    Merge master into ai (remaster)
+
+commit 33035643a41ec6d9b7d6c29e13d26de71067ffce
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 9 08:17:55 2026 -0400
+
+    output
+
+commit bd26d903f651915a8de9830954816446d572ac95
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 9 12:03:37 2026 +0000
+
+    bumped changelog version
+
+commit 96269491152362938f5ab2b4c551127fd7a87a81
+Merge: 7ae7154 3502449
+Author: assisted-by-ai <assisted-by-ai@users.noreply.github.com>
+Date:   Fri Oct 9 07:58:17 2026 -0400
+
+    Merge master into ai (remaster)
+
 commit 350244972972c82b3d74b4f11254f565ab7afb4b
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Fri Oct 9 07:53:03 2026 -0400
 
     fix
+
+commit 7ae7154dff94f3c27bc078590ffaa7d15e6b2c0e
+Merge: b1b7910 fe7917c
+Author: assisted-by-ai <assisted-by-ai@users.noreply.github.com>
+Date:   Fri Oct 9 07:52:56 2026 -0400
+
+    Merge master into ai (remaster)
 
 commit fe7917c1d1ec7616e833ebc6c38b308bcce9333a
 Author: Patrick Schleizer <adrelanos@whonix.org>
@@ -41,6 +273,28 @@ Date:   Fri Oct 9 04:12:21 2026 -0400
 
     Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
 
+commit b1b791082676b36e64f2930906bcc2422dabed07
+Author: claude (dev1021 0067d809-38e5-40c7-b3d5-e4965d39b9f3) <noreply@anthropic.com>
+Date:   Fri Oct 9 03:34:48 2026 -0400
+
+    Drop obsolete grub-efi no-op comment
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit a34138b3f7b32733bdff0b6aa34e2cf834616c0d
+Merge: 74ed6fa 0697ea4
+Author: assisted-by-ai <assisted-by-ai@users.noreply.github.com>
+Date:   Fri Oct 9 03:33:43 2026 -0400
+
+    Merge arraybolt3/trixie into ai (remaster)
+
+commit 74ed6fa4cc24cc0a4d4758d689126601e8131cef
+Merge: 19cd737 00b8689
+Author: assisted-by-ai <assisted-by-ai@users.noreply.github.com>
+Date:   Fri Oct 9 03:33:43 2026 -0400
+
+    Merge master into ai (remaster)
+
 commit 0697ea492cc7b3fd4b5ae89a4e8722ac7083d491
 Author: Aaron Rainbolt <arraybolt3@gmail.com>
 Date:   Thu Oct 8 23:55:46 2026 -0400
@@ -60,6 +314,18 @@ Date:   Thu Oct 8 19:43:33 2026 -0400
 
     Merge branch 'master' into arraybolt3/trixie
 
+commit 19cd737ef69902a9575085547bf19bbc7de79af7
+Author: claude (dev965 bd6cda3d-8d7e-4bf1-a676-555bc6c98c7c) <noreply@anthropic.com>
+Date:   Thu Oct 8 17:38:41 2026 -0400
+
+    Complete half-configured grub-pc on BIOS install
+
+    - Calamares installs grub-pc with install_devices unset, leaving it
+      half-configured; dpkg-reconfigure refuses that state. Seed the device
+      then dpkg --configure to finish the pending postinst.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
 commit 00b86895b6489328b9e94b8c23e3b60f4a1e9430
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Thu Oct 8 21:36:35 2026 +0000
@@ -73,6 +339,80 @@ Date:   Thu Oct 8 14:01:45 2026 -0400
     grub-fallback-install: seed grub-pc/install_devices on BIOS
 
     BIOS Calamares install aborted at the live-package purge: grub-pc's first reconfigure had no install device (Calamares installs grub-pc + runs grub-install but never records the debconf selection) and died 'You must correct your GRUB install devices'. Seed it with the install disk(s) grub-probe resolves, then reconfigure -- symmetric with the grub-efi branch.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 39bd9ddbfca80148461e605ec2ffddbf08d45c00
+Author: claude <noreply@anthropic.com>
+Date:   Thu Oct 8 17:11:53 2026 -0400
+
+    check-unrestricted-admin: restore quoted =~ literals, disable SC2076
+
+    The escaped-regex form was a no-op change to appease SC2076; the quoted literal substring match is clearer. Silence SC2076 per-line instead.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 0cda1141f6ca645a369906b33066cce333b16814
+Author: claude <noreply@anthropic.com>
+Date:   Thu Oct 8 15:38:26 2026 -0400
+
+    install-host: wait for the unrestricted-admin unlock before erroring
+
+    The unlock (check-unrestricted-admin purging user-sysmaint-split -> permission-hardener restoring sudo/pkexec to 4755) runs a slow apt op that does not hard-gate the desktop, so install-host could launch mid-unlock and error 'Unable To Elevate' while sudo/pkexec were still 4750 root:sysmaint. Wait up to 180s for them to become executable. Confirmed by a live boot (boot-role=unrestricted-admin, service still 'activating'). Also completes the strict-mode preamble.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 376a0287cdf211bda1d1fbd23af0c96483635126
+Author: claude <noreply@anthropic.com>
+Date:   Thu Oct 8 15:14:32 2026 -0400
+
+    check-unrestricted-admin: drop the sudo/pkexec chmod band-aid
+
+    Root cause is not here (permission-hardener restore works given a clean env + the purge running); masking it with a forced chmod is wrong. Keep only the strict-mode/printf/regex cleanups.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 5a05237ddea3b6cda6634bc579378b072c706af1
+Author: claude <noreply@anthropic.com>
+Date:   Thu Oct 8 14:50:05 2026 -0400
+
+    check-unrestricted-admin: force sudo/pkexec exec in live unlock
+
+    Current-source builds still hit install-host 'Unable To Elevate': purging user-sysmaint-split should re-trigger permission-hardener to restore sudo/pkexec to 4755, but that restore is incomplete, leaving them non-exec by 'user' so Calamares never launches. Force 4755 directly in the live-ISO unrestricted-admin branch (where unprivileged root is the point); no installed system is affected. Also completes the strict-mode preamble + printf/regex style on the pre-existing lines.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 312d6bca9a970fee7c89550f589d112d892dd7c4
+Author: claude <noreply@anthropic.com>
+Date:   Thu Oct 8 14:01:45 2026 -0400
+
+    grub-fallback-install: seed grub-pc/install_devices on BIOS
+
+    BIOS Calamares install aborted at the live-package purge: grub-pc's first reconfigure had no install device (Calamares installs grub-pc + runs grub-install but never records the debconf selection) and died 'You must correct your GRUB install devices'. Seed it with the install disk(s) grub-probe resolves, then reconfigure -- symmetric with the grub-efi branch.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit b4a6f194e5502f0f880acd17a02fce6e90f7d2da
+Merge: e69e1db 7f3e023
+Author: assisted-by-ai <assisted-by-ai@users.noreply.github.com>
+Date:   Tue Oct 6 06:50:51 2026 -0400
+
+    Merge arraybolt3/trixie into ai (remaster)
+
+commit e69e1db7d2fef20bef47aea453e8503398d7eca2
+Merge: 98edb16 aebb281
+Author: assisted-by-ai <assisted-by-ai@users.noreply.github.com>
+Date:   Tue Oct 6 06:50:50 2026 -0400
+
+    Merge master into ai (remaster)
+
+commit 98edb162a8bf796e57a5d61f9abce39be824e288
+Author: claude (dev935 945d9324-a241-4361-acf0-f7c885b86706) <noreply@anthropic.com>
+Date:   Tue Oct 6 06:25:14 2026 -0400
+
+    Align changelog to upstream (absorb 10.8/10.9)
+
+    Changelog-manual-ok: realign ai changelog to upstream during remaster
 
     Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
 
