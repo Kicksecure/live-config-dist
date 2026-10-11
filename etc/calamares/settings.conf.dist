@@ -15,12 +15,9 @@ instances:
 - id: fixkblayout_part2
   module: shellprocess
   config: shellprocess_fixkblayout_part2.conf
-- id: grub_d_cfg_name
+- id: grub_fallback
   module: shellprocess
-  config: shellprocess_grub_d_cfg_name.conf
-- id: grub_setup
-  module: shellprocess
-  config: shellprocess_grub_setup.conf
+  config: shellprocess_grub_fallback.conf
 - id: fix_grub_d_name
   module: shellprocess
   config: shellprocess_fix_grub_d_name.conf
@@ -62,16 +59,10 @@ sequence:
   - localecfg
   - shellprocess@fixkblayout_part1
   - shellprocess@fixkblayout_part2
-  - grubcfg
-  - shellprocess@grub_d_cfg_name
-  ## After grubcfg + the .cfg rename (as in calamares-settings-debian): every
-  ## grub-install (grub-pc / grub-efi postinst, bootloader) then sees the final GRUB
-  ## settings, e.g. GRUB_ENABLE_CRYPTODISK for /boot inside LUKS.
   - bootloader-config
+  - grubcfg
   - bootloader
-  ## After bootloader: its EFI fallback copy is plain grubx64.efi; grub_setup's grub-efi
-  ## reconfigure (grub-install --force-extra-removable) puts the shim at EFI/BOOT.
-  - shellprocess@grub_setup
+  - shellprocess@grub_fallback
   - luksbootkeyfile
   - dracutlukscfg
   - shellprocess@mok_enroll
