@@ -15,9 +15,9 @@ instances:
 - id: fixkblayout_part2
   module: shellprocess
   config: shellprocess_fixkblayout_part2.conf
-- id: grub_setup
+- id: grub_fallback
   module: shellprocess
-  config: shellprocess_grub_setup.conf
+  config: shellprocess_grub_fallback.conf
 - id: fix_grub_d_name
   module: shellprocess
   config: shellprocess_fix_grub_d_name.conf
@@ -57,14 +57,14 @@ sequence:
   - locale
   - keyboard
   - localecfg
-  - bootloader-config
-  - bootloader
   - shellprocess@fixkblayout_part1
   - shellprocess@fixkblayout_part2
+  - bootloader-config
   - grubcfg
+  - bootloader
+  - shellprocess@grub_fallback
   - luksbootkeyfile
   - dracutlukscfg
-  - shellprocess@grub_setup
   - shellprocess@mok_enroll
   - packages
   # TODO: Debian forky. Maybe can be avoided thanks to:

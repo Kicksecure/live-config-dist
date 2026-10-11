@@ -1,23 +1,117 @@
 #!/bin/bash
 
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
+export LC_ALL=C
+
 set -x
+
+CHROOT="$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc##g")" || true
+if [ -z "${CHROOT}" ]; then
+  printf '%s\n' "ERROR: could not determine the Calamares target root!" >&2
+  exit 1
+fi
 
 live_sources_param_list=( -o Dir::Etc::sourceparts='/usr/share/live-config-dist/sources.list.d' )
 
-CHROOT=$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc##g")
+get_stable_disk_id() {
+  local orig_disk_id stable_disk_id stable_id_target
 
-echo "Running bootloader-config..."
+  orig_disk_id="${1:-}"
+  [ -n "${orig_disk_id}" ] || return 1
+
+  for stable_disk_id in /dev/disk/by-id/*; do
+    if ! [ -L "${stable_disk_id}" ]; then
+      continue
+    fi
+    stable_id_target="$(readlink --canonicalize -- "${stable_disk_id}")" || continue
+    if [ "${stable_id_target}" = "${orig_disk_id}" ]; then
+      printf '%s\n' "${stable_disk_id}"
+      return 0
+    fi
+  done
+  return 1
+}
+
+## Debugging.
+debug_log_dir="${CHROOT}/var/log/live-config-dist"
+mkdir --parents -- "${debug_log_dir}"
+exec > >(tee --append -- "${debug_log_dir}/bootloader-config.log") 2>&1
+debug_err_trap() {
+  local rc=$?
+  printf '%s\n' "DEBUG: FAILED rc=${rc} at line ${BASH_LINENO[0]}"
+}
+trap debug_err_trap ERR
+debug_grub_state() {
+  # shellcheck disable=SC2016
+  printf '%s\n' "DEBUG($1): grub-pc Status: '$(chroot "${CHROOT}" dpkg-query --show --showformat='${Status}' grub-pc 2>&1 || true)'"
+  printf '%s\n' "DEBUG($1): grub-pc debconf:"
+  chroot "${CHROOT}" debconf-show grub-pc 2>&1 || true
+}
+printf '%s\n' "DEBUG: id: '$(id)'"
+printf '%s\n' "DEBUG: TMPDIR='${TMPDIR:-<unset>}' TMP='${TMP:-<unset>}' TEMP='${TEMP:-<unset>}'"
+if [ -n "${TMPDIR:-}" ]; then
+  printf '%s\n' "DEBUG: TMPDIR exists in target: $(chroot "${CHROOT}" test -d "${TMPDIR}" && printf '%s' true || printf '%s' false)"
+fi
+printf '%s\n' "DEBUG: DEBIAN_FRONTEND='${DEBIAN_FRONTEND:-<unset>}' PATH='${PATH}'"
+printf '%s\n' "DEBUG: LANG='${LANG:-<unset>}' LC_ALL='${LC_ALL:-<unset>}'"
+printf '%s\n' "DEBUG: CHROOT='${CHROOT}'"
+printf '%s\n' "DEBUG: lsblk:"
+lsblk --output NAME,TYPE,FSTYPE,MOUNTPOINTS 2>&1 || true
+printf '%s\n' "DEBUG: 'grub-probe --target=disk /': '$(chroot "${CHROOT}" grub-probe --target=disk / 2>&1 || true)'"
+printf '%s\n' "DEBUG: 'grub-probe --target=disk /boot': '$(chroot "${CHROOT}" grub-probe --target=disk /boot 2>&1 || true)'"
+debug_grub_state before-install
+
+printf '%s\n' "Running bootloader-config..."
 
 if [ -d /sys/firmware/efi/efivars ]; then
-    echo " * Installing grub-efi (uefi)..."
-    chroot $CHROOT apt-get-noninteractive "${live_sources_param_list[@]}" update
-    chroot $CHROOT apt-get-noninteractive "${live_sources_param_list[@]}" -y install grub-efi
+  printf '%s\n' " * Installing grub-efi (uefi)..."
+  chroot "${CHROOT}" apt-get-noninteractive "${live_sources_param_list[@]}" update
+  chroot "${CHROOT}" apt-get-noninteractive "${live_sources_param_list[@]}" -y install grub-efi
 elif [ "$(dpkg --print-architecture)" = 'amd64' ]; then
-    echo " * install grub... (bios)"
-    chroot $CHROOT apt-get-noninteractive "${live_sources_param_list[@]}" update
-    chroot $CHROOT apt-get-noninteractive "${live_sources_param_list[@]}" -y install grub-pc
+  printf '%s\n' " * Installing grub-pc (bios)..."
+  chroot "${CHROOT}" apt-get-noninteractive "${live_sources_param_list[@]}" update
+  ## Seed grub-pc/install_devices before installing grub-pc, so the package
+  ## installs successfully.
+  if ! chroot "${CHROOT}" test -d /boot; then
+    printf '%s\n' "ERROR: '${CHROOT}/boot' missing!" >&2
+    exit 1
+  fi
+  if ! grub_pc_install_devices="$(chroot "${CHROOT}" grub-probe --target=disk /boot)"; then
+    printf '%s\n' "ERROR: grub-probe --target=disk '${CHROOT}/boot' failed!" >&2
+    exit 1
+  fi
+  if [ -z "${grub_pc_install_devices}" ]; then
+    printf '%s\n' "ERROR: grub-probe found no disk for '${CHROOT}/boot'!" >&2
+    exit 1
+  fi
+  ## grub-probe can output multiple disks. All devices must be resolved to a
+  ## stable ID.
+  grub_pc_install_device_debconf_str=""
+  while read -r grub_pc_install_dev_item; do
+    grub_pc_install_device_stable="$(get_stable_disk_id "${grub_pc_install_dev_item}")"
+    if [ -z "${grub_pc_install_device_debconf_str}" ]; then
+      grub_pc_install_device_debconf_str="${grub_pc_install_device_stable}"
+    else
+      grub_pc_install_device_debconf_str+=", ${grub_pc_install_device_stable}"
+    fi
+  done <<< "${grub_pc_install_devices}"
+  printf '%s\n' \
+    "grub-pc grub-pc/install_devices multiselect ${grub_pc_install_device_debconf_str}" \
+    'grub-pc grub-pc/install_devices_empty boolean false' \
+    'grub-pc grub-pc/install_devices_empty seen false' \
+    | chroot "${CHROOT}" debconf-set-selections
+  debug_grub_state after-seed
+  chroot "${CHROOT}" apt-get-noninteractive "${live_sources_param_list[@]}" -y install grub-pc
+  debug_grub_state after-grub-pc-install
 fi
 
-# Re-enable os-prober:
-sed -i "s/#GRUB_DISABLE_OS_PROBER=false/# OS_PROBER re-enabled by Debian Calamares installation:\nGRUB_DISABLE_OS_PROBER=false/g" $CHROOT/etc/default/grub
-chroot $CHROOT /usr/sbin/update-grub
+## Re-enable os-prober:
+sed -i "s/#GRUB_DISABLE_OS_PROBER=false/# OS_PROBER re-enabled by Debian Calamares installation:\nGRUB_DISABLE_OS_PROBER=false/g" "${CHROOT}/etc/default/grub"
+chroot "${CHROOT}" /usr/sbin/update-grub
+
+printf '%s\n' "DEBUG: End of script."
