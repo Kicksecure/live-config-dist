@@ -1,23 +1,109 @@
 #!/bin/bash
 
+## Full strict mode: without errexit a failing step (e.g. 'apt-get install grub-pc')
+## was silently ignored and the install carried on with grub-pc half-configured,
+## which only surfaced later (Calamares 'packages' step: "Package Manager error").
+## Anything half-configured must abort the install here instead.
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
+export LC_ALL=C
+
 set -x
 
 live_sources_param_list=( -o Dir::Etc::sourceparts='/usr/share/live-config-dist/sources.list.d' )
 
-CHROOT=$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc##g")
-
-echo "Running bootloader-config..."
-
-if [ -d /sys/firmware/efi/efivars ]; then
-    echo " * Installing grub-efi (uefi)..."
-    chroot $CHROOT apt-get-noninteractive "${live_sources_param_list[@]}" update
-    chroot $CHROOT apt-get-noninteractive "${live_sources_param_list[@]}" -y install grub-efi
-elif [ "$(dpkg --print-architecture)" = 'amd64' ]; then
-    echo " * install grub... (bios)"
-    chroot $CHROOT apt-get-noninteractive "${live_sources_param_list[@]}" update
-    chroot $CHROOT apt-get-noninteractive "${live_sources_param_list[@]}" -y install grub-pc
+## '|| true': no match must reach the explicit error below, not a silent errexit.
+CHROOT="$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc##g")" || true
+if [ -z "${CHROOT}" ]; then
+    printf '%s\n' "ERROR: could not determine the Calamares target root (no calamares proc mount)." >&2
+    exit 1
 fi
 
-# Re-enable os-prober:
-sed -i "s/#GRUB_DISABLE_OS_PROBER=false/# OS_PROBER re-enabled by Debian Calamares installation:\nGRUB_DISABLE_OS_PROBER=false/g" $CHROOT/etc/default/grub
-chroot $CHROOT /usr/sbin/update-grub
+## DEBUG (temporary, BIOS grub-pc investigation): Calamares does not surface this job's
+## output, so mirror everything (incl. the set -x trace) into the TARGET, where it
+## survives on the installed disk.
+debug_log_dir="${CHROOT}/var/log/live-config-dist"
+mkdir --parents -- "${debug_log_dir}"
+exec > >(tee --append -- "${debug_log_dir}/bootloader-config.log") 2>&1
+debug_err_trap() {
+    local rc=$?
+    printf '%s\n' "DEBUG: FAILED rc=${rc} at line ${BASH_LINENO[0]} (command: see the set -x trace above)"
+}
+trap debug_err_trap ERR
+debug_grub_state() {
+    ## '${Status}' is a dpkg-query format, not a shell expansion.
+    # shellcheck disable=SC2016
+    printf '%s\n' "DEBUG($1): grub-pc Status: '$(chroot "${CHROOT}" dpkg-query --show --showformat='${Status}' grub-pc 2>&1 || true)'"
+    printf '%s\n' "DEBUG($1): grub-pc debconf:"
+    chroot "${CHROOT}" debconf-show grub-pc 2>&1 || true
+}
+printf '%s\n' "DEBUG: id: '$(id)'"
+printf '%s\n' "DEBUG: TMPDIR='${TMPDIR:-<unset>}' TMP='${TMP:-<unset>}' TEMP='${TEMP:-<unset>}'"
+if [ -n "${TMPDIR:-}" ]; then
+    printf '%s\n' "DEBUG: TMPDIR exists in target: $(chroot "${CHROOT}" test -d "${TMPDIR}" && printf '%s' yes || printf '%s' NO)"
+fi
+printf '%s\n' "DEBUG: DEBIAN_FRONTEND='${DEBIAN_FRONTEND:-<unset>}' PATH='${PATH}'"
+printf '%s\n' "DEBUG: LANG='${LANG:-<unset>}' LC_ALL='${LC_ALL:-<unset>}'"
+printf '%s\n' "DEBUG: CHROOT='${CHROOT}'"
+printf '%s\n' "DEBUG: lsblk:"
+lsblk --output NAME,TYPE,FSTYPE,MOUNTPOINTS 2>&1 || true
+printf '%s\n' "DEBUG: grub-probe --target=disk /: '$(chroot "${CHROOT}" grub-probe --target=disk / 2>&1 || true)'"
+printf '%s\n' "DEBUG: grub-probe --target=disk /boot: '$(chroot "${CHROOT}" grub-probe --target=disk /boot 2>&1 || true)'"
+debug_grub_state before-install
+
+printf '%s\n' "Running bootloader-config..."
+
+if [ -d /sys/firmware/efi/efivars ]; then
+    printf '%s\n' " * Installing grub-efi (uefi)..."
+    chroot "${CHROOT}" apt-get-noninteractive "${live_sources_param_list[@]}" update
+    ## Seed so every later grub-efi upgrade keeps the shim at the removable-media path
+    ## EFI/BOOT/BOOTX64.EFI, which firmware without a usable NVRAM boot entry falls
+    ## back to. The fresh install itself gets it from finish-grub-setup (grub-efi's
+    ## postinst skips grub-install here because no core.efi exists yet).
+    target_arch="$(chroot "${CHROOT}" dpkg --print-architecture)"
+    printf '%s\n' "grub-efi-${target_arch} grub2/force_efi_extra_removable boolean true" | chroot "${CHROOT}" debconf-set-selections
+    chroot "${CHROOT}" apt-get-noninteractive "${live_sources_param_list[@]}" -y install grub-efi
+elif [ "$(dpkg --print-architecture)" = 'amd64' ]; then
+    printf '%s\n' " * install grub... (bios)"
+    chroot "${CHROOT}" apt-get-noninteractive "${live_sources_param_list[@]}" update
+    ## Seed grub-pc/install_devices BEFORE installing grub-pc, so its postinst installs
+    ## GRUB to the real boot disk (observed: "grub-install success for /dev/sda", grub-pc
+    ## 'install ok installed'). Unseeded BIOS installs failed in Calamares ("grub-pc is
+    ## broken or not fully installed"); a plain-chroot repro does NOT reproduce that, so
+    ## the unseeded mechanism is unverified (org-ai-assisted/grub-pc-seed-repro).
+    ## Probe /boot, not /: on an encrypted install / is the LUKS mapper device, which
+    ## grub-install cannot embed into (observed: "embedding is not possible" for
+    ## /dev/dm-0), while /boot resolves to the base disk. /boot/grub does not exist
+    ## yet; grub-probe comes from grub-common, already in the target.
+    ## Runs late enough: Calamares (live-config-dist settings.conf) runs every 'show'
+    ## page, incl. 'partition', before any 'exec' job; in 'exec', bootloader-config comes
+    ## after 'partition' (applies the layout), 'mount' (mounts the target, incl. a
+    ## separate /boot), 'unpackfs' and 'grubcfg'; the 'bootloader' job (grub-install on
+    ## the same disk) follows it.
+    if ! chroot "${CHROOT}" test -d /boot; then
+        printf '%s\n' "ERROR: ${CHROOT}/boot missing; cannot determine the grub-pc install device." >&2
+        exit 1
+    fi
+    if ! grub_pc_install_devices="$(chroot "${CHROOT}" grub-probe --target=disk /boot)"; then
+        printf '%s\n' "ERROR: grub-probe --target=disk ${CHROOT}/boot failed; cannot determine the grub-pc install device." >&2
+        exit 1
+    fi
+    if [ -z "${grub_pc_install_devices}" ]; then
+        printf '%s\n' "ERROR: grub-probe found no disk for ${CHROOT}/boot; refusing to seed an empty grub-pc/install_devices." >&2
+        exit 1
+    fi
+    ## grub-probe can output multiple disks.
+    grub_pc_install_devices="${grub_pc_install_devices//$'\n'/, }"
+    printf '%s\n' "grub-pc grub-pc/install_devices multiselect ${grub_pc_install_devices}" | chroot "${CHROOT}" debconf-set-selections
+    debug_grub_state after-seed
+    chroot "${CHROOT}" apt-get-noninteractive "${live_sources_param_list[@]}" -y install grub-pc
+    debug_grub_state after-grub-pc-install
+fi
+
+## Re-enable os-prober:
+sed -i "s/#GRUB_DISABLE_OS_PROBER=false/# OS_PROBER re-enabled by Debian Calamares installation:\nGRUB_DISABLE_OS_PROBER=false/g" "${CHROOT}/etc/default/grub"
+chroot "${CHROOT}" /usr/sbin/update-grub

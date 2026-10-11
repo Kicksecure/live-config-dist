@@ -17,6 +17,10 @@ set -o pipefail
 set -o errtrace
 shopt -s inherit_errexit
 shopt -s shift_verbose
+export LC_ALL=C
+
+# shellcheck source=../../../helper-scripts/usr/libexec/helper-scripts/light_sleep.bsh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/light_sleep.bsh
 
 kernel_cmdline=''
 if [ -f /proc/cmdline ]; then
@@ -38,6 +42,38 @@ You are currently booted into 'LIVE Mode | USER Session', which does not provide
       sleep 86400
       exit 0
    fi
+fi
+
+## In unrestricted-admin mode the unlock -- check-unrestricted-admin.service purging
+## user-sysmaint-split, which (via the security-misc permission-hardener dpkg trigger, run
+## synchronously inside the purge) restores sudo/pkexec to setuid root:root -- is a slow apt
+## operation that does NOT gate the autologin desktop, so the installer can be launched before
+## it finishes. Wait for the system to finish coming up rather than racing it: do NOT start the
+## unit (it is auto-started at boot) and do NOT busy-poll. Reuse the sanctioned system-wide
+## readiness action 'leaprun system-ready-check' (= 'timeout 5 systemctl --wait
+## is-system-running'); each call blocks up to ~5s, so retry for up to ~180s (matching the
+## installer's previous wait) to cover a slow purge on slow media. leaprun itself waits up to
+## ~5s for the privleap comm socket (wait_for_comm_socket), so a not-yet-ready socket makes the
+## loop wait rather than spin. The pkexec/sudo assert below stays the authoritative gate.
+if [[ "${kernel_cmdline}" == *'boot-role=unrestricted-admin'* ]]; then
+   system_ready_waited=''
+   ## Up to 36 iterations: each = one leaprun readiness probe (blocks up to ~5s while the
+   ## system is still starting) plus light_sleep 1. ~180s+ ceiling. light_sleep guarantees a
+   ## per-iteration wait even if leaprun returns immediately (missing binary, rejected socket),
+   ## so the loop can neither busy-spin nor collapse the wait.
+   waited=0
+   while [ "${waited}" -lt 36 ]; do
+      system_ready_result="$(leaprun system-ready-check 2>/dev/null || true)"
+      if [ "${system_ready_result}" = 'running' ] || [ "${system_ready_result}" = 'degraded' ]; then
+         break
+      fi
+      if [ -z "${system_ready_waited}" ]; then
+         printf '%s\n' "$0: waiting for the system to finish starting before elevating..."
+         system_ready_waited='yes'
+      fi
+      light_sleep 1
+      waited=$(( waited + 1 ))
+   done
 fi
 
 if ! [ -x '/usr/bin/pkexec' ] || ! [ -x '/usr/bin/sudo' ]; then

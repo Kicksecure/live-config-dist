@@ -3,6 +3,22 @@
 ## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
 ## See the file COPYING for copying conditions.
 
+## Calamares job 'shellprocess@grub_setup', runs right after the 'bootloader' job.
+##
+## Why it exists (EFI only):
+## - The 'bootloader' job (installEFIFallback: true) copies PLAIN grubx64.efi to the
+##   removable path EFI/BOOT/BOOTX64.EFI. Firmware booting that path under Secure Boot
+##   refuses it. Observed on a test install: BOOTX64.EFI hash == grubx64.efi, != shimx64.efi.
+## - grub-efi's postinst cannot fix this at package install time: it only runs
+##   grub-install when /boot/grub/<target>/core.efi already exists, which is not yet the
+##   case on a fresh target (calamares-bootloader-config.dist installs grub-efi before
+##   'bootloader' runs).
+## - Here, after 'bootloader', 'dpkg-reconfigure grub-efi-<arch>' with
+##   grub2/force_efi_extra_removable=true runs grub-install --force-extra-removable,
+##   which puts the shim at EFI/BOOT/BOOTX64.EFI.
+##
+## Why there is no grub-pc branch (BIOS): see the else-branch below.
+
 set -o errexit
 set -o nounset
 set -o pipefail
@@ -14,6 +30,22 @@ export LC_ALL=C
 # shellcheck source=../../../../helper-scripts/usr/libexec/helper-scripts/package_installed_check.sh
 source /usr/libexec/helper-scripts/package_installed_check.sh
 
+## DEBUG (temporary, BIOS grub-pc investigation): mirror output into a log that
+## survives on the installed disk (Calamares does not surface it).
+mkdir --parents -- /var/log/live-config-dist
+exec > >(tee --append -- /var/log/live-config-dist/finish-grub-setup.log) 2>&1
+debug_err_trap() {
+   local rc=$?
+   printf '%s\n' "$0: DEBUG: FAILED rc=${rc} at line ${BASH_LINENO[0]}"
+}
+trap debug_err_trap ERR
+printf '%s\n' "$0: DEBUG: id: '$(id)' TMPDIR='${TMPDIR:-<unset>}'"
+if [ -n "${TMPDIR:-}" ]; then
+   printf '%s\n' "$0: DEBUG: TMPDIR exists: $(test -d "${TMPDIR}" && printf '%s' yes || printf '%s' NO)"
+fi
+printf '%s\n' "$0: DEBUG: grub-pc debconf:"
+debconf-show grub-pc 2>&1 || true
+
 system_arch="$(dpkg --print-architecture)"
 
 grub_pc_dpkg_query_output="$(dpkg-query --show --showformat='${Status}' "grub-pc" 2>&1)" || true
@@ -24,14 +56,33 @@ printf '%s\n' "$0: DEBUG: grub-pc grub_pc_dpkg_query_output: '${grub_pc_dpkg_que
 printf '%s\n' "$0: DEBUG: grub-efi-${system_arch} grub_efi_dpkg_query_output: '${grub_efi_dpkg_query_output}'"
 
 if pkg_installed "grub-efi-${system_arch}"; then
+   printf '%s\n' "$0: DEBUG: branch taken: grub-efi-${system_arch}"
    printf '%s\n' "grub-efi-${system_arch} grub2/force_efi_extra_removable boolean true" | debconf-set-selections
-   dpkg-reconfigure-noninteractive "grub-efi-${system_arch}"
-elif pkg_installed grub-pc; then
-   ## Calamares doesn't configure debconf to know where GRUB is installed, so
-   ## we do that here.
-   grub_pc_disks="$(grub-probe --target=disk /boot/grub)"
-   ## grub-probe can output multiple disks.
-   install_devices="${grub_pc_disks//$'\n'/, }"
-   printf '%s\n' "grub-pc grub-pc/install_devices multiselect ${install_devices}" | debconf-set-selections
-   dpkg-reconfigure-noninteractive grub-pc
+   ## grub-efi's postinst wraps grub-install in run_grub_install(), which turns a failing
+   ## grub-install into a WARNING and still returns 0. So dpkg-reconfigure exiting 0 does
+   ## NOT prove the shim reached EFI/BOOT/BOOTX64.EFI (e.g. a non-FAT ESP makes grub-install
+   ## fail its EFI-partition probe). Fail loud on the postinst's own failure marker so
+   ## Calamares surfaces a Secure-Boot-unbootable install instead of reporting success.
+   ## Capture rc with '|| rc=$?' so errexit does not abort AT the assignment on a non-zero
+   ## dpkg-reconfigure: that would skip the printf below and swallow the diagnostic output
+   ## (Calamares would show only a bare 'exit code 1'). Print first, then act on the status.
+   reconfigure_rc=0
+   reconfigure_output="$(dpkg-reconfigure-noninteractive "grub-efi-${system_arch}" 2>&1)" || reconfigure_rc=$?
+   printf '%s\n' "${reconfigure_output}"
+   if [ "${reconfigure_rc}" -ne 0 ]; then
+      printf '%s\n' "$0: ERROR: dpkg-reconfigure grub-efi-${system_arch} exited ${reconfigure_rc}" >&2
+      exit "${reconfigure_rc}"
+   fi
+   case "${reconfigure_output}" in
+      *"Failed: grub-install"*)
+         printf '%s\n' "$0: ERROR: grub-install failed inside the grub-efi-${system_arch} postinst; removable-path shim NOT installed" >&2
+         exit 1
+         ;;
+   esac
+else
+   ## No grub-pc branch: calamares-bootloader-config.dist seeds grub-pc/install_devices
+   ## before installing grub-pc, whose postinst then installs GRUB to that disk, and it
+   ## aborts the install if it cannot. Re-seeding + dpkg-reconfigure here would only
+   ## repeat the same grub-install.
+   printf '%s\n' "$0: DEBUG: branch taken: NONE (grub-efi-${system_arch} not fully installed)"
 fi
