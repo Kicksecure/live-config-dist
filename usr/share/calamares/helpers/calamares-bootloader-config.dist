@@ -34,7 +34,12 @@ get_stable_disk_id() {
       return 0
     fi
   done
-  return 1
+
+  ## Xen /dev/xvd* devices do not have stable IDs under /dev/disk/by-id,
+  ## therefore fall back to using unstable IDs. TODO: Is there anything
+  ## better we can do here?
+  printf '%s\n' "${orig_disk_id}"
+  return 0
 }
 
 ## Debugging.
