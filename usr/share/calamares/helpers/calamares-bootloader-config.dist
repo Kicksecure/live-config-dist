@@ -32,16 +32,7 @@ get_stable_disk_id() {
   return 0
 }
 
-## Resolve a grub-probe device to a stable /dev/disk/by-id/ name, falling back to the RAW
-## device when the disk has no by-id symlink (virtio-blk with no serial, Xen PV /dev/xvda, ...).
-## Both forms are valid grub-pc/install_devices values; the raw device is the historical seed.
-## Returns 0 either way, so the caller's `var="$(grub_pc_seed_device ...)"` cannot trip errexit
-## and abort the whole install when no by-id link exists.
-grub_pc_seed_device() {
-  get_stable_disk_id "$1" || printf '%s\n' "$1"
-}
-
-## Sourced (live-config-dist-tests) -> expose the functions above only. Executed -> run the
+## Sourced (live-config-dist-tests) -> expose the function above only. Executed -> run the
 ## installer body below.
 [ "${BASH_SOURCE[0]}" = "${0}" ] || return 0
 
@@ -108,10 +99,10 @@ elif [ "$(dpkg --print-architecture)" = 'amd64' ]; then
     exit 1
   fi
   ## grub-probe can output multiple disks. Resolve each to a stable /dev/disk/by-id/ name
-  ## where one exists, else keep the raw device (grub_pc_seed_device), never aborting.
+  ## where one exists, else keep the raw device (get_stable_disk_id falls back), never aborting.
   grub_pc_install_device_debconf_str=""
   while read -r grub_pc_install_dev_item; do
-    grub_pc_install_device_stable="$(grub_pc_seed_device "${grub_pc_install_dev_item}")"
+    grub_pc_install_device_stable="$(get_stable_disk_id "${grub_pc_install_dev_item}")"
     if [ -z "${grub_pc_install_device_debconf_str}" ]; then
       grub_pc_install_device_debconf_str="${grub_pc_install_device_stable}"
     else
