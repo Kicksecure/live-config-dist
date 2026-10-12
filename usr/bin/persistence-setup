@@ -132,8 +132,10 @@ done
 
 range_arg filesystem "${filesystem}" ext4 btrfs
 
-if ! [[ "${luks_uuid}" =~ ^[A-Fa-f0-9-]+$ ]]; then
-   die 1 "--luks-uuid must be a UUID ([A-Fa-f0-9-]+), got '${luks_uuid}'."
+## Canonical 8-4-4-4-12 UUID: cryptsetup luksFormat --uuid rejects anything else, and
+## it runs only AFTER the disk is wiped -- so validate here, before any destructive op.
+if ! [[ "${luks_uuid}" =~ ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$ ]]; then
+   die 1 "--luks-uuid must be a canonical UUID (8-4-4-4-12 hex), got '${luks_uuid}'."
 fi
 
 ## Root required: partitioning + LUKS + mount.
@@ -179,7 +181,7 @@ ensure_overlay_dirs() {
 ## /run/initramfs/live) and the running root, so the picker and --device cannot
 ## target them.
 build_candidate_disks() {
-   local name mountpoints
+   local name mountpoints type_line mapping_active
    candidate_disks=()
    while read -r name; do
       [ -n "${name}" ] || continue
@@ -190,6 +192,21 @@ build_candidate_disks() {
       esac
       mountpoints="$(lsblk --noheadings --output MOUNTPOINT -- "/dev/${name}" 2>/dev/null | tr -d '[:space:]' || true)"
       if [ -n "${mountpoints}" ]; then
+         continue
+      fi
+      ## Also exclude a disk with an ACTIVE mapping among its descendants (open LUKS,
+      ## active LVM PV, assembled MD): such a device has no mountpoint but must not be
+      ## wiped. Any crypt/lvm/raid/md/mpath/dmraid TYPE row marks it in use.
+      mapping_active='false'
+      while IFS= read -r type_line; do
+         case "${type_line}" in
+            crypt|lvm|raid[0-9]*|mpath|md|dmraid)
+               mapping_active='true'
+               break
+               ;;
+         esac
+      done < <(lsblk --noheadings --output TYPE -- "/dev/${name}" 2>/dev/null || true)
+      if [ "${mapping_active}" = 'true' ]; then
          continue
       fi
       candidate_disks+=( "${name}" )
@@ -269,6 +286,13 @@ if [ "${force}" != 'true' ]; then
    ## Fail closed: a 'no' (1) or 'cannot ask' (2) both abort this destructive op.
    prompt_yes_no_tty "Erase '${device}' and continue?" \
       || die 1 "Aborted (declined, or no controlling terminal). Re-run with --force to skip the prompt."
+fi
+
+## cryptsetup needs an interactive terminal for the passphrase and runs AFTER the
+## wipe. Verify /dev/tty is openable NOW so LUKS setup cannot erase the disk and then
+## fail to format it for lack of a terminal.
+if [ "${use_luks}" = 'true' ] && ! { true < /dev/tty; } 2>/dev/null; then
+   die 2 "LUKS setup needs an interactive terminal for the passphrase; aborting before any disk change. Use a terminal, or pass --no-luks."
 fi
 
 ## Write a fresh GPT with one partition spanning the disk, typed per the
