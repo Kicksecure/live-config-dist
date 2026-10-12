@@ -157,7 +157,7 @@ if [[ " ${kernel_cmdline} " != *" rd.live.image "* ]] \
    die 1 "Not a live ISO boot (no 'rd.live.image' on the kernel command line). This tool only applies while running the live ISO."
 fi
 
-die_if_not_has lsblk blkid wipefs sgdisk udevadm cryptsetup mount umount mktemp findmnt "mkfs.${filesystem}"
+die_if_not_has lsblk blkid wipefs sfdisk udevadm cryptsetup mount umount mktemp findmnt "mkfs.${filesystem}"
 
 ## Create (or re-ensure) the overlay upper + work directories on an already-mounted
 ## persistence filesystem device.
@@ -296,24 +296,41 @@ if [ "${use_luks}" = 'true' ] && ! { true < /dev/tty; } 2>/dev/null; then
 fi
 
 ## Write a fresh GPT with one partition spanning the disk, typed per the
-## Discoverable Partitions Specification: 8300 (Linux filesystem data) for the
-## plaintext case, 8309 (Linux LUKS) for the encrypted case. Neither type is
-## auto-mounted by systemd-gpt-auto-generator, so there is no conflict with the
-## dmsquash-live overlay. The GPT partition name mirrors the filesystem label.
-log_run notice wipefs --all -- "${device}"
-log_run notice sgdisk --zap-all -- "${device}"
+## Discoverable Partitions Specification: Linux-filesystem-data for the plaintext
+## case, Linux-LUKS for the encrypted case. Neither type is auto-mounted by
+## systemd-gpt-auto-generator, so there is no conflict with the dmsquash-live
+## overlay. The GPT partition name mirrors the filesystem label.
+##
+## Use sfdisk (util-linux) rather than sgdisk (gdisk): gdisk is NOT shipped in the
+## live ISO, whereas util-linux always is. sfdisk sets the GPT type by its GUID.
 if [ "${use_luks}" = 'true' ]; then
-   partition_typecode='8309'
+   partition_type_guid='CA7D7CCB-63ED-4C53-861C-1742536059CC'
 else
-   partition_typecode='8300'
+   partition_type_guid='0FC63DAF-8483-4772-8E79-3D69D8477DE4'
 fi
-log_run notice sgdisk "--new=1:0:0" "--typecode=1:${partition_typecode}" "--change-name=1:${persistence_label}" -- "${device}"
-log_run notice udevadm settle
-
-## Resolve the new partition node (first child of the disk); handles sdX1, nvmeXn1p1,
-## mmcblkXp1 naming uniformly.
-partition_device="$(lsblk --noheadings --raw --output NAME --paths -- "${device}" | sed -n '2p')"
-if [ -z "${partition_device}" ] || [ ! -b "${partition_device}" ]; then
+log_run notice wipefs --all -- "${device}"
+## One GPT partition, default start/size (fills the disk), typed + named. --wipe
+## always clears any residual partition-table/fs signatures first. sfdisk reads the
+## layout script from stdin.
+log notice "Creating GPT partition on '${device}' (type ${partition_type_guid})."
+printf '%s\n' 'label: gpt' "type=${partition_type_guid}, name=\"${persistence_label}\"" \
+   | sfdisk --wipe always -- "${device}"
+## Resolve the new partition node (first child of the disk; handles sdX1 /
+## nvmeXn1p1 / mmcblkXp1 naming uniformly). Wait a bounded time: udev may lag after
+## sfdisk's partition-table re-read before the node appears.
+partition_device=''
+resolve_tries=0
+while [ "${resolve_tries}" -lt 10 ]; do
+   udevadm settle
+   partition_device="$(lsblk --noheadings --raw --output NAME --paths -- "${device}" | sed -n '2p')"
+   if [ -n "${partition_device}" ] && [ -b "${partition_device}" ]; then
+      break
+   fi
+   partition_device=''
+   resolve_tries=$(( resolve_tries + 1 ))
+   sleep 1
+done
+if [ -z "${partition_device}" ]; then
    die 1 "could not resolve the new partition on '${device}' after partitioning."
 fi
 
