@@ -358,13 +358,13 @@ mapper_name=''
 trap - EXIT
 
 log notice "Done. '${device}' is now the live-persistence overlay (label '${persistence_label}')."
-log notice "Reboot, open the GRUB 'Persistent (Advanced Users Only)' submenu, and pick 'PERSISTENT Mode | USER Session'."
 if [ "${use_luks}" = 'true' ]; then
-   if [ "${luks_uuid}" = "${default_luks_uuid}" ]; then
-      log notice "LUKS: the disk unlocks automatically when you boot the Persistent entry (it prompts for the passphrase in early boot); no GRUB editing needed."
-   else
-      log notice "LUKS: you used a custom --luks-uuid, which the baked entry does not target. At each persistent boot, edit the entry with GRUB 'e' and append (it cannot be stored; /boot is non-persistent): rd.luks.uuid=${luks_uuid}"
+   log notice "Reboot, open 'Persistent (Advanced Users Only)' -> 'Encrypted persistence (LUKS)' -> 'PERSISTENT Mode | USER Session (LUKS)'. The disk unlocks automatically (passphrase prompt in early boot); no GRUB editing. Boot it only with this disk attached."
+   if [ "${luks_uuid}" != "${default_luks_uuid}" ]; then
+      log notice "You used a custom --luks-uuid, which the Encrypted entry does not target. Either rebuild the ISO with --persistence-luks-uuid=${luks_uuid}, or at each boot edit the entry with GRUB 'e' and set rd.luks.uuid=${luks_uuid}."
    fi
+else
+   log notice "Reboot, open 'Persistent (Advanced Users Only)' -> 'Plaintext persistence' -> 'PERSISTENT Mode | USER Session (plaintext)'."
 fi
 log warn "/boot stays NON-persistent: kernel, initramfs and GRUB upgrades will NOT take effect in live mode; reflash the medium or install to disk for those."
 log warn "The overlay is chosen by the SPOOFABLE label '${persistence_label}': a plaintext disk carrying it would be used as the read-write root. LUKS protects your DATA (confidentiality/integrity), not the selection; pin a specific filesystem with the ISO build flag --persistence-uuid to prevent label spoofing."
