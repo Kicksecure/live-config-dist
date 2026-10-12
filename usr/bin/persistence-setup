@@ -1,0 +1,259 @@
+#!/bin/bash
+
+## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## AI-Assisted
+
+## Opt-in provisioning for the live-persistence overlay disk.
+##
+## Prepares a SECOND disk so the live ISO can boot as a normal PERSISTENT system
+## (full root, logs and state kept across reboots) via the 'Persistent' GRUB
+## submenu, while disk 1 stays free as the Calamares install target. It:
+##   - formats a chosen disk, optionally inside LUKS2 (recommended),
+##   - labels the (decrypted) filesystem 'persistence',
+##   - creates the dmsquash-live overlay upper + work directories (the classic
+##     module does NOT auto-create them -> without them the system silently
+##     falls back to an amnesic RAM overlay).
+##
+## Security: OFF by default; this is a conscious, destructive, opt-in action.
+## The 'persistence' label is spoofable (an attacker disk labeled 'persistence'
+## becomes the read-write root upperdir), so LUKS is strongly recommended -- the
+## passphrase is the authentication gate. Plaintext persistence defeats the
+## amnesic design.
+##
+## Live-ISO only: refuses on an installed system (no rd.live.image on the cmdline).
+
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
+export LC_ALL=C
+
+## parse_opt.sh pulls in log_run_die.sh (log, die, die_if_not_has, log_run,
+## prompt_yes_no_tty), get_colors.sh, strings.bsh (is_positive_integer) and
+## has.bsh.
+# shellcheck source=../../../helper-scripts/usr/libexec/helper-scripts/parse_opt.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/parse_opt.sh
+
+## dmsquash-live overlay location on the persistence filesystem. Must match the
+## '<device>:<path>' tail of rd.live.overlay=LABEL=persistence:/live/overlay that
+## help-steps/dm-raw-to-iso bakes into the 'Persistent' boot entries.
+persistence_label='persistence'
+overlay_dir='live/overlay'
+overlay_workdir='live/ovlwork'
+
+usage() {
+   printf '%s\n' "Usage: ${0##*/} [OPTIONS]
+
+Provision a SECOND disk as the opt-in live-persistence overlay for the live ISO.
+This ERASES the chosen disk. LUKS encryption is strongly recommended.
+
+Options:
+  -d, --device <dev>     target whole-disk block device (e.g. /dev/sdb). Omit for
+                         an interactive picker that excludes the live medium and
+                         any in-use disk.
+  -f, --filesystem <fs>  overlay filesystem: ext4 or btrfs (default: ext4).
+      --no-luks          do NOT encrypt. Not recommended: plaintext persistence
+                         defeats the amnesic design.
+      --force            skip the destructive-write confirmation prompt.
+  -h, --help             show this help.
+"
+   exit "${1}"
+}
+
+device=''
+filesystem='ext4'
+use_luks='true'
+force='false'
+
+while true; do
+   begin_optparse "${1:-}" "${2:-}" || break
+   case "${opt}" in
+      d|device)
+         get_arg
+         device="${arg}"
+         ;;
+      f|filesystem)
+         get_arg
+         filesystem="${arg}"
+         ;;
+      no-luks)
+         use_luks='false'
+         ;;
+      force)
+         force='true'
+         ;;
+      h|help)
+         usage 0
+         ;;
+      "")
+         break
+         ;;
+      *)
+         die 2 "Invalid option: '${opt_orig}'"
+         ;;
+   esac
+   shift "${shift_n:-1}"
+done
+
+range_arg filesystem "${filesystem}" ext4 btrfs
+
+## Root required: formatting + LUKS + mount.
+if [ "$(id -u)" != '0' ]; then
+   die 1 "This tool must run as root (via sudo)."
+fi
+
+## Live-ISO only. On an installed system a live overlay disk is meaningless and
+## provisioning one would only risk data loss.
+kernel_cmdline=''
+if [ -r /proc/cmdline ]; then
+   kernel_cmdline="$(cat -- /proc/cmdline)"
+fi
+if [[ "${kernel_cmdline}" != *rd.live.image* ]]; then
+   die 1 "Not a live ISO boot (no 'rd.live.image' on the kernel command line). This tool only applies while running the live ISO."
+fi
+
+die_if_not_has lsblk wipefs cryptsetup mount umount mktemp findmnt "mkfs.${filesystem}"
+
+## Whole disks (TYPE=disk, loop major 7 excluded) that are NOT currently backing
+## any mount. This excludes the live USB/DVD medium (mounted at
+## /run/initramfs/live from its partition) and the running root, so the picker
+## and --device cannot target them.
+build_candidate_disks() {
+   local src _rest pk disk_of_src disk
+   declare -A inuse_disks=()
+   while read -r src _rest; do
+      if [[ "${src}" != /dev/* ]]; then
+         continue
+      fi
+      pk="$(lsblk --noheadings --output PKNAME -- "${src}" 2>/dev/null | head -n 1 || true)"
+      if [ -n "${pk}" ]; then
+         disk_of_src="${pk}"
+      else
+         disk_of_src="${src#/dev/}"
+      fi
+      inuse_disks["${disk_of_src}"]=1
+   done < /proc/self/mounts
+
+   candidate_disks=()
+   while read -r disk; do
+      [ -n "${disk}" ] || continue
+      if [ -n "${inuse_disks[${disk}]:-}" ]; then
+         continue
+      fi
+      candidate_disks+=( "${disk}" )
+   done < <(lsblk --noheadings --nodeps --output NAME --exclude 7)
+}
+
+candidate_disks=()
+build_candidate_disks
+
+if [ "${#candidate_disks[@]}" -eq 0 ]; then
+   die 1 "No eligible second disk found (the live medium and in-use disks are excluded). Attach a blank disk and retry."
+fi
+
+if [ -n "${device}" ]; then
+   ## Accept only a candidate whole disk, so --device cannot clobber the live
+   ## medium, the running root, or a partition.
+   if [[ "${device}" != /dev/* ]]; then
+      die 1 "--device must be an absolute /dev path, got '${device}'."
+   fi
+   device_name="${device#/dev/}"
+   device_ok='false'
+   for candidate in "${candidate_disks[@]}"; do
+      if [ "${candidate}" = "${device_name}" ]; then
+         device_ok='true'
+         break
+      fi
+   done
+   if [ "${device_ok}" != 'true' ]; then
+      die 1 "'${device}' is not an eligible whole disk (it is in use, the live medium, or a partition)."
+   fi
+else
+   log notice "Eligible disks (live medium and in-use disks excluded):"
+   index=0
+   for candidate in "${candidate_disks[@]}"; do
+      index=$(( index + 1 ))
+      candidate_info="$(lsblk --noheadings --nodeps --output SIZE,MODEL -- "/dev/${candidate}" | head -n 1)"
+      log notice "  ${index}: /dev/${candidate}  (${candidate_info})"
+   done
+   reply=''
+   read -r -p "Select the disk number to provision: " reply < /dev/tty || die 2 "no controlling terminal to prompt on; pass --device."
+   if ! is_positive_integer "${reply}"; then
+      die 1 "'${reply}' is not a disk number."
+   fi
+   if [ "${reply}" -lt 1 ] || [ "${reply}" -gt "${#candidate_disks[@]}" ]; then
+      die 1 "disk number out of range."
+   fi
+   device="/dev/${candidate_disks[$(( reply - 1 ))]}"
+fi
+
+log warn "About to ERASE ALL DATA on '${device}' and provision it as the live-persistence overlay."
+if [ "${use_luks}" = 'true' ]; then
+   log notice "The overlay filesystem will be LUKS2-encrypted; you will set a passphrase."
+else
+   log warn "LUKS encryption DISABLED (--no-luks). Plaintext persistence defeats the amnesic design."
+fi
+
+if [ "${force}" != 'true' ]; then
+   ## Fail closed: a 'no' (1) or 'cannot ask' (2) both abort this destructive op.
+   prompt_yes_no_tty "Erase '${device}' and continue?" \
+      || die 1 "Aborted (declined, or no controlling terminal). Re-run with --force to skip the prompt."
+fi
+
+log_run notice wipefs --all -- "${device}"
+
+mapper_name=''
+if [ "${use_luks}" = 'true' ]; then
+   ## luksFormat has its own uppercase-YES confirmation.
+   log_run notice cryptsetup luksFormat --type luks2 -- "${device}"
+   mapper_name="persistence_setup_${$}"
+   log_run notice cryptsetup luksOpen -- "${device}" "${mapper_name}"
+   fs_device="/dev/mapper/${mapper_name}"
+else
+   fs_device="${device}"
+fi
+
+## Clean up the LUKS mapping on any later failure.
+cleanup() {
+   if [ -n "${mapper_name}" ] && [ -b "/dev/mapper/${mapper_name}" ]; then
+      cryptsetup luksClose "${mapper_name}" || true
+   fi
+}
+trap cleanup EXIT
+
+## The device was just wiped/created, so force past any residual signature
+## prompt. ext4: -F; btrfs: -f. (mkfs.* take the device as the final argument;
+## they do not support a '--' end-of-options separator.)
+case "${filesystem}" in
+   ext4)
+      "mkfs.${filesystem}" -F -L "${persistence_label}" "${fs_device}"
+      ;;
+   btrfs)
+      "mkfs.${filesystem}" -f -L "${persistence_label}" "${fs_device}"
+      ;;
+esac
+
+mount_dir="$(mktemp --directory)"
+log_run notice mount -- "${fs_device}" "${mount_dir}"
+log_run notice mkdir --parents -- "${mount_dir}/${overlay_dir}" "${mount_dir}/${overlay_workdir}"
+log_run notice umount -- "${mount_dir}"
+rmdir -- "${mount_dir}"
+
+if [ -n "${mapper_name}" ]; then
+   log_run notice cryptsetup luksClose "${mapper_name}"
+fi
+mapper_name=''
+trap - EXIT
+
+log notice "Done. '${device}' is now the live-persistence overlay (label '${persistence_label}')."
+log notice "Reboot, open the GRUB 'Persistent (Advanced Users Only)' submenu, and pick 'PERSISTENT Mode | USER Session'."
+if [ "${use_luks}" = 'true' ]; then
+   header_uuid="$(cryptsetup luksUUID -- "${device}")"
+   log notice "Optional: to PIN unlocking to THIS disk (e.g. if you have several LUKS disks), edit the GRUB entry with 'e' and append: rd.luks.uuid=${header_uuid}"
+fi
+log warn "/boot stays NON-persistent: kernel, initramfs and GRUB upgrades will NOT take effect in live mode; reflash the medium or install to disk for those."
+log warn "The 'persistence' label is spoofable; keep LUKS to protect against a malicious disk being used as the read-write root."
