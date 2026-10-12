@@ -57,6 +57,14 @@ persistence_label='persistence'
 overlay_dir='live/overlay'
 overlay_workdir='live/ovlwork'
 
+## Deterministic LUKS header UUID. The ISO's persistent entry bakes
+## rd.luks.uuid=<this> (dm-raw-to-iso --persistence-luks-uuid default), so a disk
+## formatted with it unlocks automatically at boot with no per-boot typing. Override
+## with --luks-uuid for a unique UUID (then unlock via a manual rd.luks.uuid GRUB
+## edit, since the baked entry targets this default).
+default_luks_uuid='40e273d7-4e63-4459-b16f-ba3df4374905'
+luks_uuid="${default_luks_uuid}"
+
 usage() {
    printf '%s\n' "Usage: ${0##*/} [OPTIONS]
 
@@ -72,6 +80,10 @@ Options:
   -f, --filesystem <fs>  overlay filesystem: ext4 or btrfs (default: ext4).
       --no-luks          do NOT encrypt. Not recommended: plaintext persistence
                          defeats the amnesic design.
+      --luks-uuid <u>    LUKS header UUID to format with. Defaults to the value the
+                         ISO's persistent entry expects, so the disk unlocks with no
+                         per-boot typing. A custom value needs a manual rd.luks.uuid
+                         GRUB edit each boot.
       --force            (re)format even if the disk already holds a persistence
                          or LUKS volume, and skip the destructive confirmation.
   -h, --help             show this help.
@@ -98,6 +110,10 @@ while true; do
       no-luks)
          use_luks='false'
          ;;
+      luks-uuid)
+         get_arg
+         luks_uuid="${arg}"
+         ;;
       force)
          force='true'
          ;;
@@ -115,6 +131,10 @@ while true; do
 done
 
 range_arg filesystem "${filesystem}" ext4 btrfs
+
+if ! [[ "${luks_uuid}" =~ ^[A-Fa-f0-9-]+$ ]]; then
+   die 1 "--luks-uuid must be a UUID ([A-Fa-f0-9-]+), got '${luks_uuid}'."
+fi
 
 ## Root required: partitioning + LUKS + mount.
 if [ "$(id -u)" != '0' ]; then
@@ -285,8 +305,9 @@ fi
 
 mapper_name=''
 if [ "${use_luks}" = 'true' ]; then
-   ## luksFormat has its own uppercase-YES confirmation.
-   log_run notice cryptsetup luksFormat --type luks2 -- "${partition_device}"
+   ## luksFormat has its own uppercase-YES confirmation. Format with the deterministic
+   ## header UUID the ISO's persistent entry targets, so the disk unlocks with no typing.
+   log_run notice cryptsetup luksFormat --type luks2 --uuid "${luks_uuid}" -- "${partition_device}"
    mapper_name="persistence_setup_${$}"
    log_run notice cryptsetup luksOpen -- "${partition_device}" "${mapper_name}"
    fs_device="/dev/mapper/${mapper_name}"
@@ -325,8 +346,11 @@ trap - EXIT
 log notice "Done. '${device}' is now the live-persistence overlay (label '${persistence_label}')."
 log notice "Reboot, open the GRUB 'Persistent (Advanced Users Only)' submenu, and pick 'PERSISTENT Mode | USER Session'."
 if [ "${use_luks}" = 'true' ]; then
-   header_uuid="$(cryptsetup luksUUID -- "${partition_device}")"
-   log notice "LUKS: this disk will NOT unlock automatically. At each persistent boot, edit the entry with GRUB 'e' and append (it cannot be stored, /boot is non-persistent): rd.luks.uuid=${header_uuid}"
+   if [ "${luks_uuid}" = "${default_luks_uuid}" ]; then
+      log notice "LUKS: the disk unlocks automatically when you boot the Persistent entry (it prompts for the passphrase in early boot); no GRUB editing needed."
+   else
+      log notice "LUKS: you used a custom --luks-uuid, which the baked entry does not target. At each persistent boot, edit the entry with GRUB 'e' and append (it cannot be stored; /boot is non-persistent): rd.luks.uuid=${luks_uuid}"
+   fi
 fi
 log warn "/boot stays NON-persistent: kernel, initramfs and GRUB upgrades will NOT take effect in live mode; reflash the medium or install to disk for those."
 log warn "The overlay is chosen by the SPOOFABLE label '${persistence_label}': a plaintext disk carrying it would be used as the read-write root. LUKS protects your DATA (confidentiality/integrity), not the selection; pin a specific filesystem with the ISO build flag --persistence-uuid to prevent label spoofing."
