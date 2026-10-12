@@ -21,9 +21,9 @@
 ##     module does NOT auto-create them -> without them the system silently
 ##     falls back to an amnesic RAM overlay).
 ##
-## Idempotent: re-running on an already-provisioned plaintext disk just re-ensures
-## the overlay directories (no reformat). An existing LUKS container is never
-## clobbered without --force.
+## Idempotent/safe re-run: refuses to reformat a disk that already holds a
+## persistence filesystem or a LUKS container unless --force, so a re-run never
+## silently destroys an already-provisioned volume.
 ##
 ## Security: OFF by default; (re)formatting is a conscious, destructive, opt-in
 ## action. The overlay is selected by the SPOOFABLE filesystem label 'persistence':
@@ -70,8 +70,8 @@ usage() {
 
 Provision a SECOND disk as the opt-in live-persistence overlay for the live ISO.
 (Re)formatting ERASES the chosen disk. LUKS encryption is strongly recommended.
-Re-running on an already-provisioned plaintext disk only re-ensures the overlay
-directories; an existing LUKS container is left intact unless --force is given.
+Re-running refuses to reformat a disk that already holds a persistence or LUKS
+volume unless --force is given.
 
 Options:
   -d, --device <dev>     target whole-disk block device (e.g. /dev/sdb). Omit for
@@ -147,7 +147,11 @@ kernel_cmdline=''
 if [ -r /proc/cmdline ]; then
    kernel_cmdline="$(cat -- /proc/cmdline)"
 fi
-if [[ "${kernel_cmdline}" != *rd.live.image* ]]; then
+## Whole-token match on the space-padded cmdline: bare 'rd.live.image' or
+## 'rd.live.image=1' enable live mode; 'rd.live.image=0' (disabled) and any
+## substring must NOT pass.
+if [[ " ${kernel_cmdline} " != *" rd.live.image "* ]] \
+  && [[ " ${kernel_cmdline} " != *" rd.live.image=1 "* ]]; then
    die 1 "Not a live ISO boot (no 'rd.live.image' on the kernel command line). This tool only applies while running the live ISO."
 fi
 
@@ -165,34 +169,31 @@ ensure_overlay_dirs() {
    rmdir -- "${mount_dir}"
 }
 
-## Whole disks (TYPE=disk, loop major 7 excluded) that are NOT currently backing
-## any mount. This excludes the live USB/DVD medium (mounted at
-## /run/initramfs/live from its partition) and the running root, so the picker
-## and --device cannot target them.
+## Eligible whole disks: real disks (loop major 7 and optical major 11 excluded)
+## that are NOT in use. A disk is IN USE if the disk OR ANY descendant (partition,
+## LUKS/LVM/dm mapper) has a mountpoint or is active swap -- lsblk prints the
+## descendants in tree form and shows '[SWAP]' in the MOUNTPOINT column, so this
+## one check covers mounts, swap, and mapped LVM/LUKS that a bare PKNAME parent
+## lookup would miss. Also skip pseudo "disks" that must never be formatted (zram,
+## eMMC boot/rpmb areas). This excludes the live medium (mounted at
+## /run/initramfs/live) and the running root, so the picker and --device cannot
+## target them.
 build_candidate_disks() {
-   local src _rest pk disk_of_src disk
-   declare -A inuse_disks=()
-   while read -r src _rest; do
-      if [[ "${src}" != /dev/* ]]; then
-         continue
-      fi
-      pk="$(lsblk --noheadings --output PKNAME -- "${src}" 2>/dev/null | head -n 1 || true)"
-      if [ -n "${pk}" ]; then
-         disk_of_src="${pk}"
-      else
-         disk_of_src="${src#/dev/}"
-      fi
-      inuse_disks["${disk_of_src}"]=1
-   done < /proc/self/mounts
-
+   local name mountpoints
    candidate_disks=()
-   while read -r disk; do
-      [ -n "${disk}" ] || continue
-      if [ -n "${inuse_disks[${disk}]:-}" ]; then
+   while read -r name; do
+      [ -n "${name}" ] || continue
+      case "${name}" in
+         zram*|*boot0|*boot1|*rpmb)
+            continue
+            ;;
+      esac
+      mountpoints="$(lsblk --noheadings --output MOUNTPOINT -- "/dev/${name}" 2>/dev/null | tr -d '[:space:]' || true)"
+      if [ -n "${mountpoints}" ]; then
          continue
       fi
-      candidate_disks+=( "${disk}" )
-   done < <(lsblk --noheadings --nodeps --output NAME --exclude 7)
+      candidate_disks+=( "${name}" )
+   done < <(lsblk --noheadings --nodeps --output NAME --exclude 7,11)
 }
 
 candidate_disks=()
@@ -238,34 +239,23 @@ else
    device="/dev/${candidate_disks[$(( reply - 1 ))]}"
 fi
 
-## Idempotency: inspect the chosen disk's partitions for an existing persistence
-## plaintext filesystem or a LUKS container, so a re-run does not silently destroy
-## a volume that was already provisioned.
-existing_persistence_part=''
-existing_luks='false'
-device_basename="${device#/dev/}"
-while read -r child_name child_fstype child_label; do
-   if [ "${child_name}" = "${device_basename}" ]; then
-      continue
+## Idempotency: refuse to reformat a disk that already holds a persistence
+## filesystem or a LUKS container unless --force, so a re-run never silently
+## destroys an already-provisioned volume. Scan the disk AND its descendants
+## (a whole-disk filesystem appears on the disk line itself; a LUKS mapper and the
+## label inside it as descendant lines).
+existing_state=''
+while read -r _node node_fstype node_label; do
+   if [ "${node_fstype}" = 'crypto_LUKS' ]; then
+      existing_state='a LUKS container'
    fi
-   if [ "${child_fstype}" = 'crypto_LUKS' ]; then
-      existing_luks='true'
-   fi
-   if [ "${child_label}" = "${persistence_label}" ]; then
-      existing_persistence_part="/dev/${child_name}"
+   if [ "${node_label}" = "${persistence_label}" ]; then
+      existing_state="a '${persistence_label}' filesystem"
    fi
 done < <(lsblk --noheadings --raw --output NAME,FSTYPE,LABEL -- "${device}")
 
-if [ "${force}" != 'true' ]; then
-   if [ -n "${existing_persistence_part}" ]; then
-      log notice "'${device}' already holds a plaintext persistence filesystem (${existing_persistence_part}); re-ensuring overlay directories (no reformat)."
-      ensure_overlay_dirs "${existing_persistence_part}"
-      log notice "Done. Overlay directories ensured on the existing persistence volume."
-      exit 0
-   fi
-   if [ "${existing_luks}" = 'true' ]; then
-      die 1 "'${device}' already holds a LUKS container (possibly your existing persistence volume). Not touching it. Re-run with --force to REFORMAT it (DESTROYS all data on the disk)."
-   fi
+if [ "${force}" != 'true' ] && [ -n "${existing_state}" ]; then
+   die 1 "'${device}' already holds ${existing_state}; not reformatting. Re-run with --force to ERASE and reprovision (DESTROYS all data on the disk)."
 fi
 
 log warn "About to ERASE ALL DATA on '${device}' and provision it as the live-persistence overlay."
