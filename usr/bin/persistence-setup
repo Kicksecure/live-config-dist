@@ -10,17 +10,29 @@
 ## Prepares a SECOND disk so the live ISO can boot as a normal PERSISTENT system
 ## (full root, logs and state kept across reboots) via the 'Persistent' GRUB
 ## submenu, while disk 1 stays free as the Calamares install target. It:
-##   - formats a chosen disk, optionally inside LUKS2 (recommended),
+##   - writes a GPT with a single partition spanning the disk, typed per the
+##     Discoverable Partitions Specification (Linux filesystem data, or Linux LUKS
+##     when encrypted) for standards-compliance and tool recognition. systemd does
+##     NOT auto-mount these generic types, so there is no conflict with the dracut
+##     dmsquash-live overlay, which still finds the volume by LABEL=persistence,
+##   - optionally wraps it in LUKS2 (recommended),
 ##   - labels the (decrypted) filesystem 'persistence',
 ##   - creates the dmsquash-live overlay upper + work directories (the classic
 ##     module does NOT auto-create them -> without them the system silently
 ##     falls back to an amnesic RAM overlay).
 ##
-## Security: OFF by default; this is a conscious, destructive, opt-in action.
-## The 'persistence' label is spoofable (an attacker disk labeled 'persistence'
-## becomes the read-write root upperdir), so LUKS is strongly recommended -- the
-## passphrase is the authentication gate. Plaintext persistence defeats the
-## amnesic design.
+## Idempotent: re-running on an already-provisioned plaintext disk just re-ensures
+## the overlay directories (no reformat). An existing LUKS container is never
+## clobbered without --force.
+##
+## Security: OFF by default; (re)formatting is a conscious, destructive, opt-in
+## action. The overlay is selected by the SPOOFABLE filesystem label 'persistence':
+## a plaintext disk carrying that label plus the overlay directories would be chosen
+## as the read-write root (code injection), whether or not a LUKS persistence disk is
+## also attached. LUKS protects the CONFIDENTIALITY and INTEGRITY of your own
+## persistence data; it does NOT prevent a spoofed-label disk from being selected. To
+## pin the overlay to one specific filesystem, build the ISO with --persistence-uuid.
+## Plaintext persistence also defeats the amnesic design.
 ##
 ## Live-ISO only: refuses on an installed system (no rd.live.image on the cmdline).
 
@@ -49,7 +61,9 @@ usage() {
    printf '%s\n' "Usage: ${0##*/} [OPTIONS]
 
 Provision a SECOND disk as the opt-in live-persistence overlay for the live ISO.
-This ERASES the chosen disk. LUKS encryption is strongly recommended.
+(Re)formatting ERASES the chosen disk. LUKS encryption is strongly recommended.
+Re-running on an already-provisioned plaintext disk only re-ensures the overlay
+directories; an existing LUKS container is left intact unless --force is given.
 
 Options:
   -d, --device <dev>     target whole-disk block device (e.g. /dev/sdb). Omit for
@@ -58,7 +72,8 @@ Options:
   -f, --filesystem <fs>  overlay filesystem: ext4 or btrfs (default: ext4).
       --no-luks          do NOT encrypt. Not recommended: plaintext persistence
                          defeats the amnesic design.
-      --force            skip the destructive-write confirmation prompt.
+      --force            (re)format even if the disk already holds a persistence
+                         or LUKS volume, and skip the destructive confirmation.
   -h, --help             show this help.
 "
    exit "${1}"
@@ -101,7 +116,7 @@ done
 
 range_arg filesystem "${filesystem}" ext4 btrfs
 
-## Root required: formatting + LUKS + mount.
+## Root required: partitioning + LUKS + mount.
 if [ "$(id -u)" != '0' ]; then
    die 1 "This tool must run as root (via sudo)."
 fi
@@ -116,7 +131,19 @@ if [[ "${kernel_cmdline}" != *rd.live.image* ]]; then
    die 1 "Not a live ISO boot (no 'rd.live.image' on the kernel command line). This tool only applies while running the live ISO."
 fi
 
-die_if_not_has lsblk wipefs cryptsetup mount umount mktemp findmnt "mkfs.${filesystem}"
+die_if_not_has lsblk blkid wipefs sgdisk udevadm cryptsetup mount umount mktemp findmnt "mkfs.${filesystem}"
+
+## Create (or re-ensure) the overlay upper + work directories on an already-mounted
+## persistence filesystem device.
+ensure_overlay_dirs() {
+   local fs_device mount_dir
+   fs_device="${1}"
+   mount_dir="$(mktemp --directory)"
+   log_run notice mount -- "${fs_device}" "${mount_dir}"
+   log_run notice mkdir --parents -- "${mount_dir}/${overlay_dir}" "${mount_dir}/${overlay_workdir}"
+   log_run notice umount -- "${mount_dir}"
+   rmdir -- "${mount_dir}"
+}
 
 ## Whole disks (TYPE=disk, loop major 7 excluded) that are NOT currently backing
 ## any mount. This excludes the live USB/DVD medium (mounted at
@@ -191,6 +218,36 @@ else
    device="/dev/${candidate_disks[$(( reply - 1 ))]}"
 fi
 
+## Idempotency: inspect the chosen disk's partitions for an existing persistence
+## plaintext filesystem or a LUKS container, so a re-run does not silently destroy
+## a volume that was already provisioned.
+existing_persistence_part=''
+existing_luks='false'
+device_basename="${device#/dev/}"
+while read -r child_name child_fstype child_label; do
+   if [ "${child_name}" = "${device_basename}" ]; then
+      continue
+   fi
+   if [ "${child_fstype}" = 'crypto_LUKS' ]; then
+      existing_luks='true'
+   fi
+   if [ "${child_label}" = "${persistence_label}" ]; then
+      existing_persistence_part="/dev/${child_name}"
+   fi
+done < <(lsblk --noheadings --raw --output NAME,FSTYPE,LABEL -- "${device}")
+
+if [ "${force}" != 'true' ]; then
+   if [ -n "${existing_persistence_part}" ]; then
+      log notice "'${device}' already holds a plaintext persistence filesystem (${existing_persistence_part}); re-ensuring overlay directories (no reformat)."
+      ensure_overlay_dirs "${existing_persistence_part}"
+      log notice "Done. Overlay directories ensured on the existing persistence volume."
+      exit 0
+   fi
+   if [ "${existing_luks}" = 'true' ]; then
+      die 1 "'${device}' already holds a LUKS container (possibly your existing persistence volume). Not touching it. Re-run with --force to REFORMAT it (DESTROYS all data on the disk)."
+   fi
+fi
+
 log warn "About to ERASE ALL DATA on '${device}' and provision it as the live-persistence overlay."
 if [ "${use_luks}" = 'true' ]; then
    log notice "The overlay filesystem will be LUKS2-encrypted; you will set a passphrase."
@@ -204,17 +261,37 @@ if [ "${force}" != 'true' ]; then
       || die 1 "Aborted (declined, or no controlling terminal). Re-run with --force to skip the prompt."
 fi
 
+## Write a fresh GPT with one partition spanning the disk, typed per the
+## Discoverable Partitions Specification: 8300 (Linux filesystem data) for the
+## plaintext case, 8309 (Linux LUKS) for the encrypted case. Neither type is
+## auto-mounted by systemd-gpt-auto-generator, so there is no conflict with the
+## dmsquash-live overlay. The GPT partition name mirrors the filesystem label.
 log_run notice wipefs --all -- "${device}"
+log_run notice sgdisk --zap-all -- "${device}"
+if [ "${use_luks}" = 'true' ]; then
+   partition_typecode='8309'
+else
+   partition_typecode='8300'
+fi
+log_run notice sgdisk "--new=1:0:0" "--typecode=1:${partition_typecode}" "--change-name=1:${persistence_label}" -- "${device}"
+log_run notice udevadm settle
+
+## Resolve the new partition node (first child of the disk); handles sdX1, nvmeXn1p1,
+## mmcblkXp1 naming uniformly.
+partition_device="$(lsblk --noheadings --raw --output NAME --paths -- "${device}" | sed -n '2p')"
+if [ -z "${partition_device}" ] || [ ! -b "${partition_device}" ]; then
+   die 1 "could not resolve the new partition on '${device}' after partitioning."
+fi
 
 mapper_name=''
 if [ "${use_luks}" = 'true' ]; then
    ## luksFormat has its own uppercase-YES confirmation.
-   log_run notice cryptsetup luksFormat --type luks2 -- "${device}"
+   log_run notice cryptsetup luksFormat --type luks2 -- "${partition_device}"
    mapper_name="persistence_setup_${$}"
-   log_run notice cryptsetup luksOpen -- "${device}" "${mapper_name}"
+   log_run notice cryptsetup luksOpen -- "${partition_device}" "${mapper_name}"
    fs_device="/dev/mapper/${mapper_name}"
 else
-   fs_device="${device}"
+   fs_device="${partition_device}"
 fi
 
 ## Clean up the LUKS mapping on any later failure.
@@ -225,9 +302,9 @@ cleanup() {
 }
 trap cleanup EXIT
 
-## The device was just wiped/created, so force past any residual signature
-## prompt. ext4: -F; btrfs: -f. (mkfs.* take the device as the final argument;
-## they do not support a '--' end-of-options separator.)
+## The partition was just created, so force past any residual signature prompt.
+## ext4: -F; btrfs: -f. (mkfs.* take the device as the final argument; they do not
+## support a '--' end-of-options separator.)
 case "${filesystem}" in
    ext4)
       "mkfs.${filesystem}" -F -L "${persistence_label}" "${fs_device}"
@@ -237,11 +314,7 @@ case "${filesystem}" in
       ;;
 esac
 
-mount_dir="$(mktemp --directory)"
-log_run notice mount -- "${fs_device}" "${mount_dir}"
-log_run notice mkdir --parents -- "${mount_dir}/${overlay_dir}" "${mount_dir}/${overlay_workdir}"
-log_run notice umount -- "${mount_dir}"
-rmdir -- "${mount_dir}"
+ensure_overlay_dirs "${fs_device}"
 
 if [ -n "${mapper_name}" ]; then
    log_run notice cryptsetup luksClose "${mapper_name}"
@@ -252,8 +325,8 @@ trap - EXIT
 log notice "Done. '${device}' is now the live-persistence overlay (label '${persistence_label}')."
 log notice "Reboot, open the GRUB 'Persistent (Advanced Users Only)' submenu, and pick 'PERSISTENT Mode | USER Session'."
 if [ "${use_luks}" = 'true' ]; then
-   header_uuid="$(cryptsetup luksUUID -- "${device}")"
-   log notice "Optional: to PIN unlocking to THIS disk (e.g. if you have several LUKS disks), edit the GRUB entry with 'e' and append: rd.luks.uuid=${header_uuid}"
+   header_uuid="$(cryptsetup luksUUID -- "${partition_device}")"
+   log notice "LUKS: this disk will NOT unlock automatically. At each persistent boot, edit the entry with GRUB 'e' and append (it cannot be stored, /boot is non-persistent): rd.luks.uuid=${header_uuid}"
 fi
 log warn "/boot stays NON-persistent: kernel, initramfs and GRUB upgrades will NOT take effect in live mode; reflash the medium or install to disk for those."
-log warn "The 'persistence' label is spoofable; keep LUKS to protect against a malicious disk being used as the read-write root."
+log warn "The overlay is chosen by the SPOOFABLE label '${persistence_label}': a plaintext disk carrying it would be used as the read-write root. LUKS protects your DATA (confidentiality/integrity), not the selection; pin a specific filesystem with the ISO build flag --persistence-uuid to prevent label spoofing."
