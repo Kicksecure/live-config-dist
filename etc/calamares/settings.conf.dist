@@ -27,6 +27,9 @@ instances:
 - id: livecheck_report_install_done
   module: shellprocess
   config: shellprocess_livecheck_report_install_done.conf
+- id: overlay_squashfs_pack
+  module: shellprocess
+  config: shellprocess_overlay_squashfs_pack.conf
 
 sequence:
 # Phase 1 - prepare.
@@ -50,6 +53,11 @@ sequence:
   - shellprocess@livecheck_report_install_start
   - partition
   - mount
+  ## Developer opt-in (DEVOVERLAY): pack live overlayfs edits into the
+  ## supplementary overlay squashfs just before unpackfs copies the squashfs
+  ## layers into the target. No-op unless the developer opts in, so a normal
+  ## user's install is unaffected.
+  - shellprocess@overlay_squashfs_pack
   - unpackfs
   # Disabled because debian-installer is disabled.
   # - sources-media

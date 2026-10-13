@@ -8,16 +8,6 @@ shopt -s inherit_errexit
 shopt -s shift_verbose
 export LC_ALL=C
 
-set -x
-
-CHROOT="$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc##g")" || true
-if [ -z "${CHROOT}" ]; then
-  printf '%s\n' "ERROR: could not determine the Calamares target root!" >&2
-  exit 1
-fi
-
-live_sources_param_list=( -o Dir::Etc::sourceparts='/usr/share/live-config-dist/sources.list.d' )
-
 get_stable_disk_id() {
   local orig_disk_id stable_disk_id stable_id_target
 
@@ -41,6 +31,20 @@ get_stable_disk_id() {
   printf '%s\n' "${orig_disk_id}"
   return 0
 }
+
+## Sourced (live-config-dist-tests) -> expose the function above only. Executed -> run the
+## installer body below.
+[ "${BASH_SOURCE[0]}" = "${0}" ] || return 0
+
+set -x
+
+CHROOT="$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc##g")" || true
+if [ -z "${CHROOT}" ]; then
+  printf '%s\n' "ERROR: could not determine the Calamares target root!" >&2
+  exit 1
+fi
+
+live_sources_param_list=( -o Dir::Etc::sourceparts='/usr/share/live-config-dist/sources.list.d' )
 
 ## Debugging.
 debug_log_dir="${CHROOT}/var/log/live-config-dist"
@@ -94,8 +98,8 @@ elif [ "$(dpkg --print-architecture)" = 'amd64' ]; then
     printf '%s\n' "ERROR: grub-probe found no disk for '${CHROOT}/boot'!" >&2
     exit 1
   fi
-  ## grub-probe can output multiple disks. All devices must be resolved to a
-  ## stable ID.
+  ## grub-probe can output multiple disks. Resolve each to a stable /dev/disk/by-id/ name
+  ## where one exists, else keep the raw device (get_stable_disk_id falls back), never aborting.
   grub_pc_install_device_debconf_str=""
   while read -r grub_pc_install_dev_item; do
     grub_pc_install_device_stable="$(get_stable_disk_id "${grub_pc_install_dev_item}")"

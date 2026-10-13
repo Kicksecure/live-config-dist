@@ -3,3 +3,14 @@ unpack:
     -   source: "/run/initramfs/live/live/filesystem.squashfs"
         sourcefs: "squashfs"
         destination: ""
+    ## Supplementary overlay squashfs. Later entries overlay earlier ones onto
+    ## the same destination, so live edits packed by overlay-squashfs-pack reach
+    ## the INSTALLED system without a full image rebuild. The source lives on the
+    ## live root's writable overlayfs (tmpfs under /run), NOT the read-only
+    ## medium, so it can be created in-session (the pre-unpackfs
+    ## shellprocess@overlay_squashfs_pack step writes it). 'optional: true' means
+    ## a missing overlay.squashfs is simply skipped.
+    -   source: "/run/overlay-squashfs/overlay.squashfs"
+        sourcefs: "squashfs"
+        destination: ""
+        optional: true
