@@ -1,13 +1,5 @@
 #!/bin/bash
 
-set -o errexit
-set -o nounset
-set -o pipefail
-set -o errtrace
-shopt -s inherit_errexit
-shopt -s shift_verbose
-export LC_ALL=C
-
 get_stable_disk_id() {
   local orig_disk_id stable_disk_id stable_id_target
 
@@ -32,11 +24,17 @@ get_stable_disk_id() {
   return 0
 }
 
-## Sourced (live-config-dist-tests) -> expose the function above only. Executed -> run the
-## installer body below.
+## Only set functions when sourced.
 [ "${BASH_SOURCE[0]}" = "${0}" ] || return 0
 
 set -x
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
+export LC_ALL=C
 
 CHROOT="$(mount | grep proc | grep calamares | awk '{print $3}' | sed -e "s#/proc##g")" || true
 if [ -z "${CHROOT}" ]; then
@@ -98,8 +96,8 @@ elif [ "$(dpkg --print-architecture)" = 'amd64' ]; then
     printf '%s\n' "ERROR: grub-probe found no disk for '${CHROOT}/boot'!" >&2
     exit 1
   fi
-  ## grub-probe can output multiple disks. Resolve each to a stable /dev/disk/by-id/ name
-  ## where one exists, else keep the raw device (get_stable_disk_id falls back), never aborting.
+  ## grub-probe can output multiple disks. All devices that can be resolved to
+  ## a stable ID must be.
   grub_pc_install_device_debconf_str=""
   while read -r grub_pc_install_dev_item; do
     grub_pc_install_device_stable="$(get_stable_disk_id "${grub_pc_install_dev_item}")"

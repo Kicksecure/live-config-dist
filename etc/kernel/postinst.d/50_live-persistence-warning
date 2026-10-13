@@ -13,19 +13,13 @@ shopt -s inherit_errexit
 shopt -s shift_verbose
 export LC_ALL=C
 
-## Warn when a kernel upgrade (which also regenerates the initramfs and runs
-## update-grub) happens while running a live PERSISTENT overlay. /boot
-## (bootloader, kernel, initramfs) is NON-persistent in live mode, so the new
-## kernel/initramfs/GRUB will NOT take effect on the next boot. Debian live-boot
-## has the same limitation. Reflash the medium or install to disk to persist
-## boot-chain changes.
-##
-## Reuse live-mode.sh (single source of truth) as an isolated subprocess so a
-## detection failure can never abort the kernel upgrade.
+## If running in live mode with a persistent overlay, warn that a kernel
+## upgrade will not persist as one might expect.
+
 live_mode_output="$(/usr/libexec/helper-scripts/live-mode.sh 2>/dev/null)" || true
 if grep --quiet --line-regexp "live_status_persistence_active='true'" \
-  <<< "${live_mode_output}"; then
-   printf '%s\n' "WARNING: live persistent mode active." >&2
-   printf '%s\n' "This kernel/initramfs/GRUB change will NOT take effect: /boot is non-persistent in live mode." >&2
-   printf '%s\n' "Reflash the medium or install to disk for boot-chain upgrades to persist." >&2
+   <<< "${live_mode_output}"; then
+   printf '%s\n' "WARNING: Boot-related software update has occurred in live mode with persistence active." >&2
+   printf '%s\n' "Boot-related software updates will NOT take effect in this mode." >&2
+   printf '%s\n' "Install the OS to disk for boot-related updates to persist." >&2
 fi
