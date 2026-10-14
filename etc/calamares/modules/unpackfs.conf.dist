@@ -3,9 +3,7 @@ unpack:
     -   source: "/run/initramfs/live/live/filesystem.squashfs"
         sourcefs: "squashfs"
         destination: ""
-    ## TODO: Rename overlay-squashfs to install-augment-data, rename
-    ## overlay.squashfs to augment.squashfs
-    -   source: "/run/overlay-squashfs/overlay.squashfs"
+    -   source: "/run/install-augment-data/augment.squashfs"
         sourcefs: "squashfs"
         destination: ""
         optional: true

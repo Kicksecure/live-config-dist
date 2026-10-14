@@ -27,9 +27,9 @@ instances:
 - id: livecheck_report_install_done
   module: shellprocess
   config: shellprocess_livecheck_report_install_done.conf
-- id: overlay_squashfs_pack
+- id: augment_squashfs_pack
   module: shellprocess
-  config: shellprocess_overlay_squashfs_pack.conf
+  config: shellprocess_augment_squashfs_pack.conf
 
 sequence:
 # Phase 1 - prepare.
@@ -53,7 +53,7 @@ sequence:
   - shellprocess@livecheck_report_install_start
   - partition
   - mount
-  - shellprocess@overlay_squashfs_pack
+  - shellprocess@augment_squashfs_pack
   - unpackfs
   # Disabled because debian-installer is disabled.
   # - sources-media
