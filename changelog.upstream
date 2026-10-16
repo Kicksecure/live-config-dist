@@ -1,9 +1,201 @@
+commit 843ec23a15d7f9eae6792f368226a7f0b9c9fc65
+Merge: a45092a 32a4e32
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Fri Oct 16 10:52:18 2026 -0400
+
+    Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit 32a4e32807fd200c81f39e64a1765568d00ea2ae
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Wed Oct 14 01:50:17 2026 -0400
+
+    Adjust how augoment-squashfs-pack is called
+
+commit c9eb9e8bcc44172f984ecb928ad69b3bdbded942
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Tue Oct 13 00:07:03 2026 -0400
+
+    Polish, rework persistence-setup
+
+commit 7fc2d571befd72c3f45158af8b360a665fdfd0ae
+Merge: 2323481 37d8fb6
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Mon Oct 12 20:32:44 2026 -0400
+
+    Merge branch 'ai' into arraybolt3/trixie
+
+commit 37d8fb6727ebddabbf48c9a9c369b0829565c5b1
+Author: claude (dev1116 21b1d580-5a08-4281-b0ed-75eb0b28aa38) <noreply@anthropic.com>
+Date:   Mon Oct 12 17:44:55 2026 -0400
+
+    persistence-setup: partition with sfdisk, not sgdisk
+
+    - Boot test: sgdisk (gdisk) is NOT in the live ISO, so persistence-setup aborted
+      ('Required command not found: sgdisk'). Switch to sfdisk (util-linux, always
+      present) to write the DPS-typed GPT (Linux-filesystem-data / Linux-LUKS GUIDs).
+      Loop-tested: correct PARTTYPE + PARTLABEL.
+    - Wait a bounded time for the new partition node (udev may lag after the
+      partition-table re-read) instead of a single-shot lookup.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit d3b9d790af66f9437e1333e550587369ea090c84
+Author: claude (dev1116 21b1d580-5a08-4281-b0ed-75eb0b28aa38) <noreply@anthropic.com>
+Date:   Mon Oct 12 14:48:25 2026 -0400
+
+    persistence-setup: point to Encrypted/Plaintext submenu
+
+    - Final guidance now names the Encrypted (LUKS) vs Plaintext submenu per the disk
+      type, matching the split boot entries.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit d82bb0b1502151d2813c218b0dbe66d89b06afaf
+Author: claude (dev1116 21b1d580-5a08-4281-b0ed-75eb0b28aa38) <noreply@anthropic.com>
+Date:   Mon Oct 12 12:57:02 2026 -0400
+
+    persistence-setup: canonical UUID, pre-wipe tty, mapping guard
+
+    - Validate --luks-uuid as a canonical 8-4-4-4-12 UUID BEFORE wiping (cryptsetup
+      rejects non-canonical only after the erase).
+    - Require an openable /dev/tty for the LUKS passphrase before wiping (else it would
+      erase then fail to format).
+    - Exclude disks with an active-but-unmounted mapping (open LUKS, active LVM PV, MD)
+      from candidates, not just mounted/swap (ai-review).
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 1ff2b06c03e0b61f4ff91b8084eb4f8182bab2c9
+Author: claude (dev1116 21b1d580-5a08-4281-b0ed-75eb0b28aa38) <noreply@anthropic.com>
+Date:   Mon Oct 12 12:25:08 2026 -0400
+
+    persistence-setup: robust disk-safety + guard + idempotency
+
+    - In-use detection now excludes a disk if it OR any descendant (partition, LVM/LUKS
+      mapper, swap) is mounted/active -- a bare PKNAME parent lookup missed mounted
+      LVM/LUKS and could wipe them (ai-review).
+    - Skip pseudo-disks (zram, eMMC boot/rpmb) and optical; word-boundary rd.live.image
+      guard (reject rd.live.image=0).
+    - Idempotency: refuse to reformat a disk already holding a persistence/LUKS volume
+      (scan the disk line too) instead of the symlink-following mkdir repair.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit af0741785a60fef3074758e528b37af8e46079f6
+Author: claude (dev1116 21b1d580-5a08-4281-b0ed-75eb0b28aa38) <noreply@anthropic.com>
+Date:   Mon Oct 12 12:13:30 2026 -0400
+
+    persistence-setup: format LUKS with deterministic UUID
+
+    - Format with the header UUID the ISO's persistent entry bakes (--luks-uuid,
+      default), so a LUKS disk unlocks automatically with no per-boot typing; a custom
+      UUID falls back to a manual rd.luks.uuid GRUB edit.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 398e6aeb7067beca1a30e8a71287adab8ac60292
+Author: claude (dev1116 21b1d580-5a08-4281-b0ed-75eb0b28aa38) <noreply@anthropic.com>
+Date:   Mon Oct 12 11:51:12 2026 -0400
+
+    persistence-setup: DPS-typed GPT, idempotent, honest copy
+
+    - Write a GPT with a DPS-typed partition (8300 data / 8309 LUKS) instead of a
+      whole-disk fs; standards-compliant, not systemd-auto-mounted.
+    - Idempotent: re-run re-ensures overlay dirs on an existing plaintext volume; never
+      clobbers an existing LUKS container without --force.
+    - LUKS rd.luks.uuid is REQUIRED (rd.auto dropped); correct the security copy -- the
+      label is spoofable and LUKS guards data, not overlay selection (--persistence-uuid
+      pins it) (ai-review).
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 5d5b5105eeceaa4bedb76792e3b37de2f0178325
+Author: claude (dev1116 21b1d580-5a08-4281-b0ed-75eb0b28aa38) <noreply@anthropic.com>
+Date:   Mon Oct 12 08:44:32 2026 -0400
+
+    Add opt-in live-persistence provisioning + warnings
+
+    - persistence-setup: format/label a second disk (optional LUKS) as the
+      live-persistence overlay; live-ISO only; creates /live/overlay + ovlwork.
+    - kernel postinst hook warns boot-chain upgrades do not persist in live mode.
+    - Calamares partition.conf: document avoiding the persistence disk on install.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit f0fe56a638044a6e72e84e8e985891bf3b801680
+Author: claude (dev1085 eb965182-88e2-4785-a8be-cfdf5bad6fa0) <noreply@anthropic.com>
+Date:   Mon Oct 12 03:57:15 2026 -0400
+
+    bootloader-config: drop redundant seed wrapper
+
+    - get_stable_disk_id now falls back to the raw device itself (arraybolt3 2323481), so the grub_pc_seed_device wrapper's || branch is dead; seed the device directly. Keep the sourceable guard for the regression test.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit a95323dc5a0117ca9136e7ba7f41b10f1a785829
+Merge: de129c6 2323481
+Author: assisted-by-ai <assisted-by-ai@users.noreply.github.com>
+Date:   Mon Oct 12 03:54:21 2026 -0400
+
+    Merge arraybolt3/trixie into ai (remaster)
+
+commit de129c66362860a369793768164fdd32faadd0d7
+Author: claude (dev1085 eb965182-88e2-4785-a8be-cfdf5bad6fa0) <noreply@anthropic.com>
+Date:   Mon Oct 12 03:42:43 2026 -0400
+
+    bootloader-config: raw-device seed fallback
+
+    - get_stable_disk_id returns non-zero when a disk has no /dev/disk/by-id link (virtio-blk w/o serial, Xen PV); the bare assignment under errexit then aborted the whole install. grub_pc_seed_device falls back to the raw grub-probe device (a valid install_devices value) and always returns 0.
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit 2323481912dd8c1822b48978ceda96703e9ce73f
+Author: Aaron Rainbolt <arraybolt3@gmail.com>
+Date:   Sun Oct 11 23:53:38 2026 -0400
+
+    Attempt to unbreak installation under Xen HVMs
+
+commit 355eb40c6ca9587ffc15ec2bb873ca5f7abc8ee7
+Merge: 4ffc7ca a45092a
+Author: assisted-by-ai <assisted-by-ai@users.noreply.github.com>
+Date:   Sun Oct 11 16:14:23 2026 -0400
+
+    Merge master into ai (remaster)
+
+commit 4ffc7ca1bd49eb956a03b23bd80feb231a633831
+Author: claude (dev1085 eb965182-88e2-4785-a8be-cfdf5bad6fa0) <noreply@anthropic.com>
+Date:   Sun Oct 11 15:16:13 2026 -0400
+
+    mok-enroll-opt-in: sign VirtualBox GA modules against the MOK
+
+    - GA modules are built outside DKMS, so rebuild-dkms-modules never signed them; the comment claiming they were auto-signed was wrong -> under Secure Boot they stayed unsigned and were rejected
+    - run vbox-guest-installer after the MOK exists so the GA modules are rebuilt and signed; self-gates to a VirtualBox guest
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+commit a45092a955b12c8e6c2fb3c3d565ba0682f9eff8
+Author: Patrick Schleizer <adrelanos@whonix.org>
+Date:   Sun Oct 11 18:44:01 2026 +0000
+
+    bumped changelog version
+
 commit 1bd7b0d54872b1414d2fe5542d723b9ecda30c44
 Merge: 3303564 de915e4
 Author: Patrick Schleizer <adrelanos@whonix.org>
 Date:   Sun Oct 11 14:41:29 2026 -0400
 
     Merge remote-tracking branch 'ArrayBolt3/arraybolt3/trixie'
+
+commit 0676e5f774af971214fb91cf0a4d9ce2b2e9a5bf
+Author: claude (dev1103 4290ad90-c149-4142-ae81-755dd67c1435) <noreply@anthropic.com>
+Date:   Sun Oct 11 14:03:03 2026 -0400
+
+    Layer a supplementary overlay squashfs in Calamares
+
+    - optional unpackfs entry reads /run/overlay-squashfs/overlay.squashfs
+    - pre-unpackfs shellprocess packs live overlay edits, DEVOVERLAY opt-in
+
+    Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
 
 commit de915e43b30e1be452c66290dcad22867e861da8
 Author: Aaron Rainbolt <arraybolt3@gmail.com>
