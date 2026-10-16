@@ -1,0 +1,25 @@
+#!/bin/bash
+
+## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## AI-Assisted
+
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
+export LC_ALL=C
+
+## If running in live mode with a persistent overlay, warn that a kernel
+## upgrade will not persist as one might expect.
+
+live_mode_output="$(/usr/libexec/helper-scripts/live-mode.sh 2>/dev/null)" || true
+if grep --quiet --line-regexp "live_status_persistence_active='true'" \
+   <<< "${live_mode_output}"; then
+   printf '%s\n' "WARNING: Boot-related software update has occurred in live mode with persistence active." >&2
+   printf '%s\n' "Boot-related software updates will NOT take effect in this mode." >&2
+   printf '%s\n' "Install the OS to disk for boot-related updates to persist." >&2
+fi

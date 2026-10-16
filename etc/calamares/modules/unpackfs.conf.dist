@@ -3,3 +3,7 @@ unpack:
     -   source: "/run/initramfs/live/live/filesystem.squashfs"
         sourcefs: "squashfs"
         destination: ""
+    -   source: "/run/install-augment-data/augment.squashfs"
+        sourcefs: "squashfs"
+        destination: ""
+        optional: true

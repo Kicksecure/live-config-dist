@@ -1,0 +1,21 @@
+#!/bin/bash
+
+## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+overlay_pack_enabled() {
+  local cmdline_file
+
+  cmdline_file="${OVERLAY_PACK_CMDLINE_FILE:-/proc/cmdline}"
+  if [ -r "${cmdline_file}" ] && grep --word-regexp -- devoverlay "${cmdline_file}" >/dev/null 2>&1; then
+    return 0
+  fi
+  if [ "${DEVOVERLAY:-}" = 'true' ]; then
+    return 0
+  fi
+  return 1
+}
+
+if overlay_pack_enabled; then
+  augment-squashfs-pack --from-overlay /
+fi

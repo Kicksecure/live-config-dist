@@ -1,0 +1,321 @@
+#!/bin/bash
+
+## Copyright (C) 2026 - 2026 ENCRYPTED SUPPORT LLC <adrelanos@whonix.org>
+## See the file COPYING for copying conditions.
+
+## AI-Assisted
+
+## Sets up a disk to act as a persistent overlay for a live system.
+
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o errtrace
+shopt -s inherit_errexit
+shopt -s shift_verbose
+export LC_ALL=C
+
+# shellcheck source=../../../helper-scripts/usr/libexec/helper-scripts/as_root.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/as_root.sh
+
+# shellcheck source=../../../helper-scripts/usr/libexec/helper-scripts/parse_opt.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/parse_opt.sh
+
+# shellcheck source=../../../helper-scripts/usr/libexec/helper-scripts/log_run_die.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/log_run_die.sh
+
+# shellcheck source=../../../helper-scripts/usr/libexec/helper-scripts/get_password.sh
+source "${HELPER_SCRIPTS_PATH:-}"/usr/libexec/helper-scripts/get_password.sh
+
+persistence_label='persistence'
+overlay_dir='live/overlay'
+overlay_workdir='live/ovlwork'
+
+## HARDCODED. Also in derivative-maker dm-raw-to-iso.
+##
+## TODO: Can we use a human-readable label here? rd.luks.uuid cannot have a
+## label passed in, rd.luks.name doesn't seem to do anything, and rd.luks.label
+## does not exist, but hardcoding a UUID is awful.
+##
+## TODO-HUMAN-DEVELOPER-ONLY: Regenerate this UUID securely.
+default_luks_uuid='40e273d7-4e63-4459-b16f-ba3df4374905'
+luks_uuid="${default_luks_uuid}"
+
+usage() {
+   printf '%s\n' "Usage: ${0##*/} [OPTIONS]
+
+Set up a second disk as a persistent overlay for a live ISO.
+
+Options:
+  -d, --device <dev>     target whole-disk block device (e.g. /dev/sdb).
+  -f, --filesystem <fs>  overlay filesystem: ext4 or btrfs (default: ext4).
+      --no-luks          do not encrypt the overlay filesystem.
+      --luks-uuid <u>    LUKS header UUID to format with. Defaults to a
+                         hardcoded value that can be automatically recognized.
+                         If modified, one will need to adjsut rd.luks.uuid on
+                         the kernel command line to match on every boot.
+      --force            (re)format even if the disk already holds a persistence
+                         or LUKS volume.
+  -h, --help             show this help.
+"
+   exit "${1}"
+}
+
+device=''
+filesystem='ext4'
+use_luks='true'
+force='false'
+
+while true; do
+   begin_optparse "${1:-}" "${2:-}" || break
+   case "${opt}" in
+      d|device)
+         get_arg
+         device="${arg}"
+         ;;
+      f|filesystem)
+         get_arg
+         filesystem="${arg}"
+         ;;
+      no-luks)
+         use_luks='false'
+         ;;
+      luks-uuid)
+         get_arg
+         luks_uuid="${arg}"
+         ;;
+      force)
+         force='true'
+         ;;
+      h|help)
+         usage 0
+         ;;
+      "")
+         break
+         ;;
+      *)
+         die 2 "Invalid option: '${opt_orig}'"
+         ;;
+   esac
+   shift "${shift_n:-1}"
+done
+
+range_arg filesystem "${filesystem}" ext4 btrfs
+
+if ! [[ "${luks_uuid}" =~ ^[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}$ ]]; then
+   die 1 "--luks-uuid must be a UUID, got '${luks_uuid}'."
+fi
+
+## Forbid use on non-ISO-live systems.
+kernel_cmdline=''
+if [ -r /proc/cmdline ]; then
+   kernel_cmdline="$(cat -- /proc/cmdline)"
+fi
+if [[ " ${kernel_cmdline} " != *" rd.live.image "* ]] \
+   && [[ " ${kernel_cmdline} " != *" rd.live.image=1 "* ]]; then
+   die 1 "'rd.live.image' not found on kernel command line. This tool is only useful in ISO live mode."
+fi
+
+die_if_not_has lsblk blkid wipefs sfdisk udevadm cryptsetup mount umount mktemp findmnt "mkfs.${filesystem}"
+
+## Ensure the specified device has overlayfs directories present on it.
+ensure_overlay_dirs() {
+   local fs_device mount_dir
+   fs_device="${1}"
+   mount_dir="$(mktemp --directory)"
+   log_run notice mount -- "${fs_device}" "${mount_dir}"
+   log_run notice mkdir --parents -- "${mount_dir}/${overlay_dir}" "${mount_dir}/${overlay_workdir}"
+   log_run notice umount -- "${mount_dir}"
+   rmdir -- "${mount_dir}"
+}
+
+## Find all disks that may be used as persistent overlays.
+build_candidate_disk_list() {
+   local lsblk_line lsblk_disk_name lsblk_mounts_str sysfs_block_dir \
+      dev_is_held
+
+   candidate_disk_list=()
+
+   while read -r lsblk_line; do
+      dev_is_held='false'
+
+      read -r lsblk_disk_name lsblk_mounts_str <<< "${lsblk_line}"
+
+      if ! [[ "${lsblk_disk_name}" \
+         =~ ^(sd[a-z]+|vd[a-z]+|xvd[a-z]+|nvme[0-9]+n[0-9]+|mmcblk[0-9]+)$ ]]; then
+         continue
+      fi
+
+      if [ -n "${lsblk_mounts_str}" ]; then
+         continue
+      fi
+
+      for sysfs_block_dir in "/sys/class/block/${lsblk_disk_name}"*; do
+         if ! [ -d "${sysfs_block_dir}" ]; then
+            continue
+         fi
+         if [ -n "$(find "${sysfs_block_dir}/holders" -mindepth 1 -maxdepth 1 2>&1)" ]; then
+            dev_is_held='true'
+            break
+         fi
+      done
+      if [ "${dev_is_held}" = 'true' ]; then
+         continue
+      fi
+
+      candidate_disk_list+=( "${lsblk_disk_name}" )
+   done < <(lsblk --raw --noheadings --output=NAME,MOUNTPOINTS)
+}
+
+candidate_disk_list=()
+build_candidate_disk_list
+
+if [ "${#candidate_disk_list[@]}" -eq 0 ]; then
+   die 1 "No eligible second disk found. Attach a blank disk and retry."
+fi
+
+## Reject non-candidate disks.
+if [ -n "${device}" ]; then
+   if [[ "${device}" != /dev/* ]]; then
+      die 1 "--device must be an absolute /dev path, got '${device}'."
+   fi
+   device_name="${device#/dev/}"
+   device_ok='false'
+   for candidate_disk in "${candidate_disk_list[@]}"; do
+      if [ "${candidate_disk}" = "${device_name}" ]; then
+         device_ok='true'
+         break
+      fi
+   done
+   if [ "${device_ok}" = 'false' ]; then
+      die 1 "'${device}' is not an eligible whole disk."
+   fi
+else
+   log notice "Eligible disks:"
+   index=0
+   for candidate_disk in "${candidate_disk_list[@]}"; do
+      index=$(( index + 1 ))
+      candidate_disk_info="$(lsblk --noheadings --nodeps --output SIZE,MODEL -- "/dev/${candidate_disk}" | head -n 1)"
+      log notice "  ${index}: /dev/${candidate_disk}  (${candidate_disk_info})"
+   done
+   reply=''
+   read -r -p "Select the disk number to provision: " reply < /dev/tty || die 2 "no controlling terminal to prompt on, pass --device."
+   if ! is_positive_integer "${reply}"; then
+      die 1 "'${reply}' is not a disk number."
+   fi
+   if [ "${reply}" -lt 1 ] || [ "${reply}" -gt "${#candidate_disk_list[@]}" ]; then
+      die 1 "disk number out of range."
+   fi
+   device="/dev/${candidate_disk_list[$(( reply - 1 ))]}"
+fi
+
+## Refuse to reformat a disk that already contains a persistence filesystem or
+## a LUKS container unless --force is passed.
+existing_state=''
+while read -r node_fstype node_label; do
+   if [ "${node_fstype}" = 'crypto_LUKS' ]; then
+      existing_state='a LUKS container'
+      break
+   fi
+   if [ "${node_label}" = "${persistence_label}" ]; then
+      existing_state="a '${persistence_label}' filesystem"
+      break
+   fi
+done < <(lsblk --noheadings --raw --output FSTYPE,LABEL -- "${device}")
+
+if [ "${force}" != 'true' ] && [ -n "${existing_state}" ]; then
+   die 1 "'${device}' already holds ${existing_state}, not reformatting. Re-run with --force to reformat."
+fi
+
+if [ "${force}" != 'true' ]; then
+   prompt_yes_no_tty "Erase '${device}' and create a persistent overlay fs on it?" \
+      || die 1 "Aborted (declined, or no controlling terminal). Re-run with --force to skip the prompt."
+fi
+
+## TODO: Should we allow specifying a file containing the LUKS passphrase?
+if [ "${use_luks}" = 'true' ] && ! { true < /dev/tty; } 2>/dev/null; then
+   die 2 "No controlling terminal, cannot read LUKS prompt, therefore aborting. Use a terminal, or pass --no-luks."
+fi
+
+## Partition the disk.
+if [ "${use_luks}" = 'true' ]; then
+   ## Generally agreed-upon UUID for LUKS partitions, see
+   ## https://en.wikipedia.org/wiki/GUID_Partition_Table
+   partition_type_guid='CA7D7CCB-63ED-4C53-861C-1742536059CC'
+else
+   ## UAPI.2 Discoverable Partition Specification UUID for generic Linux data
+   ## partitions, see
+   ## https://uapi-group.org/specifications/specs/discoverable_partitions_specification/
+   partition_type_guid='0FC63DAF-8483-4772-8E79-3D69D8477DE4'
+fi
+log_run notice wipefs --all -- "${device}"
+log notice "Creating GPT partition on '${device}' (type ${partition_type_guid})."
+printf '%s\n' 'label: gpt' "type=${partition_type_guid}, name=\"${persistence_label}\"" \
+   | sfdisk --wipe always -- "${device}"
+
+## Wait for the new partition to appear.
+partition_device=''
+wait_count=0
+while [ "${wait_count}" -lt 10 ]; do
+   udevadm settle
+   partition_device="$(lsblk --noheadings --raw --output NAME --paths -- "${device}" | sed -n '2p')"
+   if [ -n "${partition_device}" ] && [ -b "${partition_device}" ]; then
+      break
+   fi
+   partition_device=''
+   wait_count=$(( wait_count + 1 ))
+   sleep 1
+done
+if [ -z "${partition_device}" ]; then
+   die 1 "could not find the new partition on '${device}' after partitioning."
+fi
+
+## Set up LUKS if needed.
+mapper_name=''
+if [ "${use_luks}" = 'true' ]; then
+   ## Prompt for the passphrase separately so cryptsetup doesn't prompt the
+   ## user for it three times.
+   log notice "Enter the new passphrase for disk '${partition_device}':"
+   ## Sets ${password}.
+   get_password
+   luks_password="${password}"
+   cryptsetup_command=( cryptsetup luksFormat --type luks2 --uuid "${luks_uuid}" -- "${partition_device}" )
+   log notice "Command executing: $ ${cryptsetup_command[*]}"
+   "${cryptsetup_command[@]}" <<< "${luks_password}"
+   mapper_name="persistence_setup_${$}"
+   log_run notice cryptsetup luksOpen -- "${partition_device}" "${mapper_name}"
+   fs_device="/dev/mapper/${mapper_name}"
+else
+   fs_device="${partition_device}"
+fi
+
+## Clean up the LUKS mapping on any later failure.
+cleanup() {
+   if [ -n "${mapper_name}" ] && [ -b "/dev/mapper/${mapper_name}" ]; then
+      cryptsetup luksClose "${mapper_name}" || true
+   fi
+}
+trap cleanup EXIT
+
+## Format and prepare the partition.
+log_run notice wipefs --all -- "${fs_device}"
+"mkfs.${filesystem}" -L "${persistence_label}" "${fs_device}"
+
+ensure_overlay_dirs "${fs_device}"
+
+if [ -n "${mapper_name}" ]; then
+   log_run notice cryptsetup luksClose "${mapper_name}"
+fi
+mapper_name=''
+trap - EXIT
+
+log notice "Done. '${device}' is now a persistent overlay."
+if [ "${use_luks}" = 'true' ]; then
+   log notice "Reboot, open 'Persistent (Advanced Users Only)' -> 'Encrypted persistence (LUKS)' -> 'PERSISTENT Mode | USER Session (LUKS)'. Ensure no disks are connected except the boot and persistence disks when doing this."
+   if [ "${luks_uuid}" != "${default_luks_uuid}" ]; then
+      log notice "You used a custom --luks-uuid. Either rebuild the ISO with --persistence-luks-uuid=${luks_uuid}, or at each boot edit the entry with GRUB 'e' and set rd.luks.uuid=${luks_uuid}."
+   fi
+else
+   log notice "Reboot, open 'Persistent (Advanced Users Only)' -> 'Plaintext persistence' -> 'PERSISTENT Mode | USER Session (plaintext)'."
+fi
+log warn "Kernel, initramfs, and GRUB upgrades will not take effect even when booted with a persistent overlay."

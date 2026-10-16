@@ -47,9 +47,8 @@ mok_enroll_opt_in() {
    printf '%s\n' "$0: MOK_ENROLL set and EFI detected; creating MOK and signing out-of-tree modules."
    shim-signed-mok-setup
    rebuild-dkms-modules
-   ## Oracle VirtualBox Guest Additions modules are rebuilt+signed by
-   ## vbox-guest-installer and by the GA's own vboxadd boot setup, so there is no
-   ## separate GA signing step here.
+   ## Oracle VirtualBox Guest Additions modules are built outside DKMS.
+   vbox-guest-installer
 
    mok_pub_state='MISSING'
    if [ -f "${dkms_mok_public_file}" ]; then
